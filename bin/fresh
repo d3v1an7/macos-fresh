@@ -1,0 +1,151 @@
+#!/bin/bash
+
+# Predownload variables
+FRESH_DIR="${HOME}/.fresh"
+FRESH_TAR="https://github.com/d3v1an7/fresh/tarball/master"
+
+# If missing, download and extract the Fresh repository
+if [[ ! -d ${FRESH_DIR} ]]; then
+  echo "Downloading Fresh..."
+  mkdir ${FRESH_DIR}
+  # Get the tarball
+  curl -fsSLo ${HOME}/fresh.tar.gz ${FRESH_TAR}
+  # Extract to the fresh directory
+  tar -zxf ${HOME}/fresh.tar.gz --strip-components 1 -C ${FRESH_DIR}
+  # Remove the tarball
+  rm -rf ${HOME}/fresh.tar.gz
+fi
+
+# Load in variables and functions
+cd ${FRESH_DIR}
+source ./conf/variables
+source ./lib/utils
+source ./lib/vars
+source ./lib/taps
+source ./lib/brew
+source ./lib/npm
+source ./lib/casks
+source ./lib/links
+source ./lib/home
+
+# Fancy panys intro
+clear
+echo
+echo "    ______               __   "
+echo "   / ____/_______  _____/ /_  "
+echo "  / /_  / ___/ _ \/ ___/ __ \ "
+echo " / __/ / /  /  __(__  ) / / / "
+echo "/_/   /_/   \___/____/_/ /_/  "
+echo
+
+# Ask for the administrator password upfront
+echo
+echo "Let's start off by grabbing your sudo password."
+echo
+sudo -v
+
+# Sudo keep-alive credit: https://gist.github.com/cowboy/3118588
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+# Ensure user varaibles are correct before kicking off
+output_variables
+validate_variables
+
+# Confirmation of homebrew formulae
+title_info "Homebrew check"
+columnize "${desired_brew_formulae[@]}"
+seek_confirmation "Is the list above correct?"
+if is_confirmed; then
+  clear
+else
+  echo
+  e_error "Update ~/.fresh/conf/varaibles then run this script again."
+  title_error "Script aborted"
+fi
+
+# Confirmation of homebrew casks
+title_info "Cask check"
+columnize "${desired_casks[@]}"
+seek_confirmation "Is the list above correct?"
+if is_confirmed; then
+  clear
+else
+  echo
+  e_error "Update ~/.fresh/conf/varaibles then run this script again."
+  title_error "Script aborted"
+fi
+
+# Before relying on Homebrew, check that packages can be compiled
+if ! type_exists 'gcc'; then
+  title_info "Install Xcode"
+  echo "You'll recieve a system prompt to install shortly."
+  echo "This script will just chill until Xcode has installed."
+  echo
+  until $(gcc -v); do
+    sleep 60
+  done
+  echo
+  echo "Xcode installed, moving on..."
+fi
+
+# Check for Homebrew
+if ! type_exists 'brew'; then
+  title_info "Install, check and update homebrew"
+  ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+fi
+
+# Add taps
+title_info "Checking status of taps"
+run_taps
+
+# Update packages
+title_info "Updating packages"
+run_brew
+run_npm
+
+# Ruby Version Manager
+if ! type_exists 'rvm'; then
+  \curl -sSL https://get.rvm.io | bash -s stable
+fi
+
+# Install apps
+title_info "Installing apps"
+run_casks
+
+# Initialize the git repository if it's missing
+if ! is_git_repo; then
+  title_info "Initializing git repository"
+  git init
+  git remote add origin ${GIT_REMOTE}
+  e_success "Done"
+fi
+
+# Symlink dotfiles
+title_info "Symlinking dotfiles"
+mirrorfiles
+
+# Update OS X system settings
+title_info "Updating OS X system settings"
+source ./osx/system
+
+# Update app settings
+title_info "Updating application settings"
+source ./osx/apps
+
+# Install licences
+if [[ -f ./conf/secret ]]; then
+  title_info "Installing licences"
+  source ./conf/secret
+fi
+
+# Set home directory if change detected
+set_home_directory
+
+# Restart apps
+for app in "Dashboard" "Dock" "Finder" "SystemUIServer" "cfprefsd"; do
+  killall "$app" > /dev/null 2>&1
+done
+source ${HOME}/.bash_profile
+
+# Great job!
+title_pass "All done. Great sucess!"

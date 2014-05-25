@@ -1,0 +1,308 @@
+#!/bin/bash
+
+# ---------------------------------------------------
+# System Preferences
+# ---------------------------------------------------
+
+#
+# General
+# -----------------
+
+# Apperance
+/usr/bin/defaults write -g 'AppleAquaColorVariant' -int 6 # Graphite
+
+# Recent items
+/usr/bin/osascript -e 'tell application "System Events" to tell appearance preferences to set recent applications limit to 0'
+/usr/bin/osascript -e 'tell application "System Events" to tell appearance preferences to set recent documents limit to 0'
+/usr/bin/osascript -e 'tell application "System Events" to tell appearance preferences to set recent servers limit to 0'
+
+e_success "System Preferences/Personal/General"
+
+#
+# Desktop & Screen Saver
+# -----------------
+
+/usr/bin/defaults -currentHost write com.apple.screensaver 'idleTime' -int 180
+/usr/bin/defaults -currentHost write com.apple.screensaver moduleDict -dict moduleName -string "iOS 7 lockscreen by bodysoulspirit.qtz" path -string "$HOME/Library/Screen Savers/iOS 7 lockscreen by bodysoulspirit.qtz" type -int 0
+
+e_success "System Preferences/Personal/Desktop & Screen Saver"
+
+#
+# Dock
+# -----------------
+
+/usr/bin/defaults write com.apple.dock 'autohide' -bool true
+/usr/bin/defaults write com.apple.dock 'autohide-delay' -int 0
+/usr/bin/defaults write com.apple.dock 'tilesize' -int 42
+/usr/bin/defaults write com.apple.dock 'largesize' -int 48
+
+e_success "System Preferences/Personal/Dock"
+
+#
+# Security & Privacy
+# -----------------
+
+# Ask for password on wake
+/usr/bin/defaults write com.apple.screensaver 'askForPassword' -int 1
+/usr/bin/defaults write com.apple.screensaver 'askForPasswordDelay' -int 60
+
+# Disable OS X Gatekeeper
+/usr/bin/sudo /usr/sbin/spctl --master-disable
+
+e_success "System Preferences/Personal/Security & Privacy"
+
+#
+# Spotlight
+# -----------------
+
+# Disable Spotlight keyboard shortcuts so we can use these with Alfred
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.symbolichotkeys.plist" -c 'Delete AppleSymbolicHotKeys:64' > /dev/null 2>&1
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.symbolichotkeys.plist" -c 'Add AppleSymbolicHotKeys:64:enabled bool false'
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.symbolichotkeys.plist" -c 'Delete AppleSymbolicHotKeys:65' > /dev/null 2>&1
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.symbolichotkeys.plist" -c 'Add AppleSymbolicHotKeys:65:enabled bool false'
+
+e_success "System Preferences/Personal/Spotlight"
+
+#
+# Displays
+# -----------------
+
+# Automatically adjust brightness: off
+/usr/bin/defaults write com.apple.BezelServices 'dAuto' -bool false
+
+e_success "System Preferences/Hardware/Displays"
+
+#
+# Energy Saver
+# -----------------
+
+# Battery
+/usr/bin/sudo /usr/bin/pmset -b sleep 10 # Computer sleep
+/usr/bin/sudo /usr/bin/pmset -b displaysleep 5 # Display sleep
+/usr/bin/sudo /usr/bin/pmset -b disksleep 10 # HDD sleep
+/usr/bin/sudo /usr/bin/pmset -b lessbright 1 # Dim display
+/usr/bin/sudo /usr/bin/pmset -b halfdim 0 # Reduce brightness before sleep
+
+# Power Adapter
+/usr/bin/sudo /usr/bin/pmset -c sleep 0 # Computer sleep
+/usr/bin/sudo /usr/bin/pmset -c displaysleep 10 # Display sleep
+/usr/bin/sudo /usr/bin/pmset -c disksleep 10 # HDD sleep
+/usr/bin/sudo /usr/bin/pmset -c womp 1 # Wake for network access
+/usr/bin/sudo /usr/bin/pmset -c halfdim 0 # Dim display
+/usr/bin/sudo /usr/bin/pmset -c autorestart 1 # Auto restart (Power failure)
+
+# Uncheck show battery status
+/usr/bin/defaults -currentHost write com.apple.systemuiserver 'dontAutoLoad' -array-add '/System/Library/CoreServices/Menu Extras/Battery.menu'
+
+e_success "System Preferences/Hardware/Energy Saver"
+
+#
+# Keyboard
+# -----------------
+
+/usr/bin/defaults write com.apple.BezelServices 'kDim' -bool true
+/usr/bin/defaults write com.apple.BezelServices 'kDimTime' -int 300
+
+e_success "System Preferences/Hardware/Keyboard"
+
+#
+# Mouse
+# -----------------
+
+# Enable right click
+/usr/bin/defaults write com.apple.driver.AppleBluetoothMultitouch.mouse 'MouseButtonMode' -string 'TwoButton'
+
+e_success "System Preferences/Hardware/Mouse"
+
+#
+# Trackpad
+# -----------------
+
+# Disable 'natural' scrolling
+/usr/bin/defaults write -g 'com.apple.swipescrolldirection' -bool false 
+
+# Tap to click (for this user and for the login screen)
+/usr/bin/defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad 'Clicking' -bool true
+/usr/bin/defaults -currentHost write -g com.apple.mouse.tapBehavior -int 1
+/usr/bin/defaults write -g com.apple.mouse.tapBehavior -int 1
+
+e_success "System Preferences/Hardware/Trackpad"
+
+#
+# Sharing
+# -----------------
+
+# Set computer and host names
+sudo scutil --set ComputerName "$OSX_COMPUTER_NAME"
+sudo scutil --set LocalHostName "$OSX_HOST_NAME"
+sudo scutil --set HostName "$OSX_HOST_NAME"
+
+# Enable file sharing
+sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.AppleFileServer.plist
+sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.AppleFileServer.plist
+
+# Set shell -> to do one day
+# if [ ! $SHELL = '/bin/zsh' ]; then
+#   /usr/bin/chsh -s /bin/zsh
+#   /usr/bin/sudo /usr/bin/chsh -s /bin/zsh
+# fi
+
+e_success "System Preferences/Internet & Wireless/Sharing"
+
+#
+# Users & Groups
+# -----------------
+
+# Login Items -> to do one day
+# /usr/bin/osascript -e 'tell application "System Events" to make new login item at end of login items with properties { path: "/Applications/Utilities/SteerMouse.app/Contents/Resources/SteerMouse Manager.app" }' > /dev/null 2>&1
+# /usr/bin/osascript -e 'tell application "System Events" to make new login item at end of login items with properties { path: "/Applications/iTunes.app/Contents/MacOS/iTunesHelper.app", hidden: true }' > /dev/null 2>&1
+
+# e_success "System Preferences/System/Users & Groups"
+
+#
+# Date & Time
+# -----------------
+
+# Show date and time in menu bar: no
+/usr/bin/defaults -currentHost write com.apple.systemuiserver 'dontAutoLoad' -array-add '/System/Library/CoreServices/Menu Extras/Clock.menu'
+
+e_success "System Preferences/System/Date & Time"
+
+
+# ---------------------------------------------------
+# Hidden preferences
+# ---------------------------------------------------
+
+# Enable full keyboard access for all controls (e.g. enable Tab in modal dialogs)
+/usr/bin/defaults write -g 'AppleKeyboardUIMode' -int 3
+
+# Disable new window 'pop' animation
+/usr/bin/defaults write -g 'NSAutomaticWindowAnimationsEnabled' -bool false
+
+# Speed up window resize animations
+/usr/bin/defaults write -g 'NSWindowResizeTime' -float .001
+
+# Set Save dialogue to expanded state by default
+/usr/bin/defaults write -g 'NSNavPanelExpandedStateForSaveMode' -bool true
+
+# Disable recent lists
+/usr/bin/defaults write -g 'NSRecentDocumentsLimit' -int 0
+
+# Disable dashboard
+/usr/bin/defaults write com.apple.dashboard 'mcx-disabled' -bool true
+
+# Semi transparent dock icons for hidden apps
+/usr/bin/defaults write com.apple.dock 'showhidden' -bool true
+
+# Enable AirDrop over ethernet
+/usr/bin/defaults write com.apple.NetworkBrowser 'BrowseAllInterfaces' -bool true
+
+# Quit printer app once the print jobs complete
+/usr/bin/defaults write com.apple.print.PrintingPrefs 'Quit When Finished' -bool true
+
+# Disable new disks requests for Time Machine
+/usr/bin/defaults write com.apple.TimeMachine 'DoNotOfferNewDisksForBackup' -bool true
+
+# Disable disk image verification
+/usr/bin/defaults write com.apple.frameworks.diskimages 'skip-verify' -bool true
+/usr/bin/defaults write com.apple.frameworks.diskimages 'skip-verify-locked' -bool true
+/usr/bin/defaults write com.apple.frameworks.diskimages 'skip-verify-remote' -bool true
+
+## Disable crash reports
+/usr/bin/defaults write com.apple.CrashReporter 'DialogType' -string 'none'
+
+# Menubar order (left to right) -> To do one day
+# /usr/bin/defaults write com.apple.systemuiserver 'menuExtras' -array '/Library/Application Support/iStat local/extras/iStatMenusBattery.menu' 'etc' 
+
+# Hide spotlight icon
+/usr/bin/sudo /bin/chmod 600 /System/Library/CoreServices/Search.bundle/Contents/MacOS/Search
+
+e_success "Misc hidden preferences"
+
+
+# ---------------------------------------------------
+# Finder
+# ---------------------------------------------------
+
+# Show hidden files
+/usr/bin/defaults write com.apple.finder 'AppleShowAllFiles' -bool true
+
+# Set user home as the default location for new Finder windows
+/usr/bin/defaults write com.apple.finder 'NewWindowTarget' -string 'PfHm'
+
+# Show status bar
+/usr/bin/defaults write com.apple.finder 'ShowStatusBar' -bool true
+
+# Disable the warning when changing a file extension
+/usr/bin/defaults write com.apple.finder 'FXEnableExtensionChangeWarning' -bool false
+
+# Finder: allow text selection in Quick Look
+/usr/bin/defaults write com.apple.finder 'QLEnableTextSelection' -bool true
+
+# Avoid creating .DS_Store files on network volumes
+/usr/bin/defaults write com.apple.desktopservices 'DSDontWriteNetworkStores' -bool true
+
+## Show icons for hard drives, servers, and removable media on the desktop
+/usr/bin/defaults write com.apple.finder 'ShowExternalHardDrivesOnDesktop' -bool true
+/usr/bin/defaults write com.apple.finder 'ShowHardDrivesOnDesktop' -bool true
+/usr/bin/defaults write com.apple.finder 'ShowMountedServersOnDesktop' -bool true
+/usr/bin/defaults write com.apple.finder 'ShowRemovableMediaOnDesktop' -bool true
+
+# Show ejectables, removables and servers in the finder sidebar
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.sidebarlists.plist" -c "Set :systemitems:ShowEjectables true"
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.sidebarlists.plist" -c "Set :systemitems:ShowRemovable true"
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.sidebarlists.plist" -c "Set :systemitems:ShowServers true"
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.sidebarlists.plist" -c "Set :systemitems:ShowHardDisks true"
+
+# Setup desktop icons so they look nice and tidy
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy grid"
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c "Set :DesktopViewSettings:IconViewSettings:gridSpacing 40"
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c "Set :DesktopViewSettings:IconViewSettings:iconSize 44"
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c "Set :DesktopViewSettings:IconViewSettings:labelOnBottom false"
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c "Set :DesktopViewSettings:IconViewSettings:showIconPreview true"
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c "Set :DesktopViewSettings:IconViewSettings:showItemInfo false"
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c "Set :DesktopViewSettings:IconViewSettings:textSize 10"
+
+# Better finder toolbar layout
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Delete "NSToolbar Configuration Browser" dict' > /dev/null 2>&1
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Add "NSToolbar Configuration Browser:TB Display Mode" integer 2'
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Add "NSToolbar Configuration Browser:TB Icon Size Mode" integer 1'
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Add "NSToolbar Configuration Browser:TB Is Shown" integer 1'
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Add "NSToolbar Configuration Browser:TB Item Identifiers" array'
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Add "NSToolbar Configuration Browser:TB Item Identifiers:0" string "com.apple.finder.BACK"'
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Add "NSToolbar Configuration Browser:TB Item Identifiers:1" string "com.apple.finder.PATH"'
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Add "NSToolbar Configuration Browser:TB Item Identifiers:2" string "com.apple.finder.ARNG"'
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Add "NSToolbar Configuration Browser:TB Item Identifiers:3" string "com.apple.finder.ACTN"'
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Add "NSToolbar Configuration Browser:TB Item Identifiers:4" string "com.apple.finder.SWCH"'
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Add "NSToolbar Configuration Browser:TB Item Identifiers:5" string "NSToolbarSpaceItem"'
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Add "NSToolbar Configuration Browser:TB Item Identifiers:6" string "NSToolbarFlexibleSpaceItem"'
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Add "NSToolbar Configuration Browser:TB Item Identifiers:7" string "com.apple.finder.INFO"'
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Add "NSToolbar Configuration Browser:TB Item Identifiers:8" string "com.apple.finder.CNCT"'
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Add "NSToolbar Configuration Browser:TB Item Identifiers:9" string "com.apple.finder.EJCT"'
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Add "NSToolbar Configuration Browser:TB Item Identifiers:10" string "com.apple.finder.TRSH"'
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Add "NSToolbar Configuration Browser:TB Size Mode" integer 1'
+
+# Use column view in all Finder windows by default
+/usr/bin/defaults write com.apple.finder 'FXPreferredViewStyle' -string "clmv"
+
+# Sort by kind
+/usr/bin/defaults write com.apple.finder 'FXPreferredGroupBy' -string 'Kind'
+
+# Supposed to show folder sizes - unsure if working
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Delete "StandardViewSettings:ExtendedListViewSettings:calculateAllSizes" bool'
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Add "StandardViewSettings:ExtendedListViewSettings:calculateAllSizes" bool true'
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Delete "StandardViewSettings:ListViewSettings:calculateAllSizes" bool'
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c 'Add "StandardViewSettings:ListViewSettings:calculateAllSizes" bool true'
+
+e_success "Finder preferences"
+
+# Configure dock apps
+/usr/bin/defaults write com.apple.dock 'checked-for-launchpad' -bool true
+/usr/bin/defaults write com.apple.dock 'persistent-apps' -array ""
+/usr/bin/defaults write com.apple.dock 'persistent-others' -array ""
+/usr/bin/defaults write com.apple.dock 'persistent-apps' -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>$HOME/Applications/Google Chrome.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"
+/usr/bin/defaults write com.apple.dock 'persistent-apps' -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>$HOME/Applications/Spotify.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"
+/usr/bin/defaults write com.apple.dock 'persistent-apps' -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>$HOME/Applications/HipChat.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"
+/usr/bin/defaults write com.apple.dock 'persistent-apps' -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>$HOME/Applications/Sublime Text 2.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"
+
+e_success "Reset dock"

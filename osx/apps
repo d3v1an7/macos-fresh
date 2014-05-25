@@ -1,0 +1,116 @@
+#!/bin/bash
+
+#
+# Alfred 2
+# -----------------
+open -a "Alfred 2" && sleep 1
+
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.runningwithcrayons.Alfred-Preferences.plist" -c "Set :hotkey.default:key 49"
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.runningwithcrayons.Alfred-Preferences.plist" -c "Set :hotkey.default:mod 1048576"
+/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.runningwithcrayons.Alfred-Preferences.plist" -c "Set :hotkey.default:string Space"
+brew cask alfred link > /dev/null
+
+e_success "Setup Alfred"
+
+#
+# Git
+# -----------------
+git config --global user.name "${GIT_NAME}"
+git config --global user.email "${GIT_EMAIL}"
+git config --global core.editor "subl -w"
+
+e_success "Setup Git"
+
+#
+# Add Source Code Pro to fonts 
+# -----------------
+if [[ ! -f $HOME/Library/Fonts/SourceCodePro-Regular.otf ]]; then
+  wget http://downloads.sourceforge.net/project/sourcecodepro.adobe/SourceCodePro_FontsOnly-1.017.zip
+  unzip -o SourceCodePro_FontsOnly-1.017.zip
+  cp SourceCodePro_FontsOnly-1.017/OTF/*.otf $HOME/Library/Fonts
+  rm -r SourceCodePro_FontsOnly-1.017 && rm SourceCodePro_FontsOnly-1.017.zip
+fi
+
+e_success "Installed Source Code Pro font"
+
+#
+# iTerm
+# -----------------
+open -a iTerm && sleep 1
+killall iTerm
+
+# Don’t display the annoying prompt when quitting
+/usr/bin/defaults write com.googlecode.iterm2 'PromptOnQuit' -bool false
+
+# Set font
+/usr/libexec/PlistBuddy -c "Set 'New Bookmarks':0:'Normal Font' SourceCodePro-Regular 14" ~/Library/Preferences/com.googlecode.iTerm2.plist
+
+# Unlimited Scrollback
+/usr/libexec/PlistBuddy -c "Set 'New Bookmarks':0:'Unlimited Scrollback' true" ~/Library/Preferences/com.googlecode.iTerm2.plist
+
+# Colour
+wget -q https://raw.githubusercontent.com/chriskempson/base16-iterm2/master/base16-ocean.dark.itermcolors
+open base16-ocean.dark.itermcolors
+rm base16-ocean.dark.itermcolors
+killall iTerm
+
+e_success "Setup iTerm"
+
+#
+# Sublime Text 2
+# ----------------- 
+# Symlink executable for use in terminal
+ln -fs "/opt/homebrew-cask/Caskroom/sublime-text/2.0.2/Sublime Text 2.app/Contents/SharedSupport/bin/subl" /usr/local/bin/subl
+
+SUBLIME_TEXT_PACKAGES="$HOME/Library/Application Support/Sublime Text 2/Packages"
+
+if [ ! -d "$SUBLIME_TEXT_PACKAGES/Package Control" ]; then
+  echo "Installing Sublime Text 2 Package Control"
+  git clone -q https://github.com/wbond/sublime_package_control.git "$SUBLIME_TEXT_PACKAGES/Package Control"
+fi
+
+if [ ! -d "$SUBLIME_TEXT_PACKAGES/Theme - Spacegray" ]; then
+  echo "Installing Customized Spacegray"
+  git clone -q https://github.com/pongstr/spacegray.git "$SUBLIME_TEXT_PACKAGES/Theme - Spacegray"
+fi
+
+cp -f "$HOME/.fresh/conf/sublime" "$SUBLIME_TEXT_PACKAGES/User/Preferences.sublime-settings"
+
+e_success "Setup Sublime Text 2"
+
+#
+# iStat Menus
+# -----------------
+/usr/bin/defaults write com.bjango.istatmenus.extras 'BatteryCustomizeStates' -int 0
+/usr/bin/defaults write com.bjango.istatmenus.extras 'BatteryDisplayMode' -int 2
+/usr/bin/defaults write com.bjango.istatmenus.extras 'CPUDisplayMode' -int 1
+/usr/bin/defaults write com.bjango.istatmenus.extras 'ClockDisplayMode' -array 'EE' "' '" 'h' ':' 'mm' "' '" 'a'
+/usr/bin/defaults write com.bjango.istatmenus.extras 'ClockShowMoon' -int 0
+/usr/bin/defaults write com.bjango.istatmenus.extras 'DiskDisplayMode' -string ''
+/usr/bin/defaults write com.bjango.istatmenus.extras 'MemoryDisplayMode' -int 6
+/usr/bin/defaults write com.bjango.istatmenus.extras 'MemoryIncludeInactive' -int 1
+/usr/bin/defaults write com.bjango.istatmenus.extras 'MenubarGraphOpacity' -float 0.45
+/usr/bin/defaults write com.bjango.istatmenus.extras 'SensorsActiveSet' -string ''
+/usr/bin/defaults write com.bjango.istatmenus.extras 'SensorsDisplayMode' -string ''
+/usr/bin/defaults write com.bjango.istatmenus.extras 'SensorsFanSetDefault' -string ''
+/usr/bin/defaults write com.bjango.istatmenus.extras 'SkinType' -int 0
+/usr/bin/defaults write com.bjango.istatmenus.extras 'sendDiagnostics' -bool false
+/usr/bin/defaults write com.bjango.istatmenus.extras 'skinColor' -int 7
+
+e_success "Setup iStat Menus"
+
+#
+# HipChat
+# -----------------
+/usr/bin/defaults write com.hipchat.HipChat 'signInEmail' -string '$USER_EMAIL'
+/usr/bin/defaults write com.hipchat.HipChat 'account_email' -string '$USER_EMAIL'
+
+e_success "Setup HipChat"
+
+#
+# GitBox
+# -----------------
+/usr/bin/defaults write com.oleganza.gitbox.plist 'WelcomeWasDisplayed' -bool true
+/usr/bin/defaults write com.oleganza.gitbox.plist 'diffTool' -string 'Kaleidoscope'
+
+e_success "Setup GitBox"

@@ -1,0 +1,38 @@
+#!/bin/bash
+
+run_casks() {
+  # Check for Homebrew
+  if type_exists 'brew'; then
+    local list_formulae
+    local -a missing_formulae
+    
+    for index in ${!desired_casks[*]}
+    do
+      if ! cask_exists ${desired_casks[$index]}; then
+        # Store the name (and options) of every missing formula
+        missing_formulae=("${missing_formulae[@]}" "${desired_casks[$index]}")
+      fi
+    done
+
+    if [[ "$missing_formulae" ]]; then
+      # Convert the array of missing formula into a list of space-separate strings
+      list_formulae=$( printf "%s " "${missing_formulae[@]}" )
+
+      echo "Installing missing Homebrew formulae..."
+      # Install all missing formulae
+      brew cask install $list_formulae
+
+      [[ $? ]] && e_success "Done"
+    fi
+
+    # Remove outdated versions from the Cellar
+    brew cleanup
+
+  else
+    printf "\n"
+    e_error "Error: Homebrew not found."
+    printf "Aborting...\n"
+    exit
+  fi
+
+}

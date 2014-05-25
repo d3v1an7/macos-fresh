@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Output all variables for visual confirmation
+output_variables() {
+  title_info "Variable check"
+  echo "Name:          $USER_NAME"
+  echo "Email:         $USER_EMAIL"
+  echo "User home:     $OSX_HOME_DIR"
+  echo "Git remote:    $GIT_REMOTE"
+  echo "Computer name: $OSX_COMPUTER_NAME"
+  echo "Computer host: $OSX_HOST_NAME"
+  echo
+  read -p "Are the above credentials correct? (y/n) " -n 1 user_input
+  echo
+}
+
+# Allow the user to update the variables on the fly
+# Defaults are kept if no input detected
+update_varaibles() {
+  title_info "Update variables"
+  read -p  "Name: " input
+  USER_NAME="${input:-$USER_NAME}"
+  read -p  "Email: " input
+  USER_EMAIL="${input:-$USER_EMAIL}"
+  read -p  "User home: " input
+  OSX_HOME_DIR="${input:-$OSX_HOME_DIR}"
+  read -p  "Git remote: " input
+  GIT_REMOTE="${input:-$GIT_REMOTE}"
+  read -p  "Computer name: " input
+  OSX_COMPUTER_NAME="${input:-$OSX_COMPUTER_NAME}"
+  read -p  "Computer host: " input
+  OSX_HOST_NAME="${input:-$OSX_HOST_NAME}"
+}
+
+# User confirmation
+validate_variables() {
+  if [[ $user_input =~ ^[Nn]$ ]]; then
+    update_varaibles
+    output_variables
+    validate_variables
+  elif [[ $user_input =~ ^[Yy]$ ]]; then
+    clear
+  else
+    title_error "Invalid input"
+  fi
+}

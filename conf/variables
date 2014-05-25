@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# User editable
+OSX_COMPUTER_NAME="Ben's iMac"
+OSX_HOST_NAME="mac-benwhite"
+OSX_HOME_DIR="/Volumes/Home/Users/benwhite"
+USER_NAME="Ben White"
+USER_EMAIL="ben.white@alluremedia.com.au"
+GIT_REMOTE="git@github.com:d3v1an7/fresh.git"
+
+# Hard coded
+COLOUR_PASS=$(tput setaf 2)
+COLOUR_INFO=$(tput setaf 4)
+COLOUR_WARN=$(tput setaf 3)
+COLOUR_ERROR=$(tput setaf 1)
+COLOUR_RESET=$(tput sgr0)
+
+local -a desired_brew_formulae=(
+  'coreutils' # GNU core utilities (those that come with OS X are outdated)
+  'git'
+  'ack'
+  'bash'
+  'bash-completion'
+  'brew-cask'
+  'curl'
+  'php55-intl' # Composer
+  'josegonzalez/php/composer' # Composer
+  'libevent'
+  'node'
+  'openssl'
+  'packer'
+  'vim'
+  'wget'
+)
+
+local -a desired_casks=(
+  'adium'
+  'adobe-creative-cloud' # Manual install
+  'alfred'
+  'atom'
+  'cakebrew'
+  'cloud'
+  'dashlane'
+  'dropbox'
+  'firefox'
+  'gas-mask'
+  'google-chrome'
+  'heroku-toolbelt'
+  'hipchat'
+  'ios7-screensaver'
+  'istat-menus'
+  'iterm2'
+  'kaleidoscope'
+  'mpeg-streamclip'
+  'origin'
+  'sequel-pro'
+  'skype'
+  'sonos'
+  'spotify'
+  'steam'
+  'sublime-text'
+  'teamviewer' # Manual install
+  'utorrent' # Manual install
+  'virtualbox' # Manual install
+  'vagrant'
+  'vagrant-manager'
+)
+
+local -a desired_taps=(
+  'caskroom/cask' # Casks
+  'homebrew/binary' # Packer
+  'homebrew/versions' # Composer
+  'josegonzalez/homebrew-php' # Composer
+)

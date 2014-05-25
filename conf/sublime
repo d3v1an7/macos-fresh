@@ -1,0 +1,17 @@
+{
+	"theme": "Spacegray.sublime-theme",
+	"color_scheme": "Packages/Theme - Spacegray/base16-ocean.dark.tmTheme",
+	"default_line_ending": "unix",
+	"show_line_endings": true,
+	"default_encoding": "UTF-8",
+	"show_encoding": true,
+	"detect_indentation": false,
+	"font_face": "SourceCodePro-Regular",
+	"font_size": 13,
+	"highlight_modified_tabs": true,
+	"line_padding_bottom": 6,
+	"match_brackets": true,
+	"match_brackets_angle": true,
+	"tab_size": 2,
+	"translate_tabs_to_spaces": true
+}
