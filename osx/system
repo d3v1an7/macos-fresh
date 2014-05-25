@@ -211,8 +211,8 @@ e_success "System Preferences/System/Date & Time"
 ## Disable crash reports
 /usr/bin/defaults write com.apple.CrashReporter 'DialogType' -string 'none'
 
-# Menubar order (left to right) -> To do one day
-# /usr/bin/defaults write com.apple.systemuiserver 'menuExtras' -array '/Library/Application Support/iStat local/extras/iStatMenusBattery.menu' 'etc' 
+# Menubar order (left to right)
+/usr/bin/defaults write com.apple.systemuiserver 'menuExtras' -array "/Library/Application Support/iStat Menus 4/extras/iStatMenusTemps.menu" "/Library/Application Support/iStat Menus 4/extras/iStatMenusMemory.menu" "/Library/Application Support/iStat Menus 4/extras/iStatMenusCPU.menu" "/Library/Application Support/iStat Menus 4/extras/iStatMenusBattery.menu" "/System/Library/CoreServices/Menu Extras/AirPort.menu" "/System/Library/CoreServices/Menu Extras/volume.menu" "/Library/Application Support/iStat Menus 4/extras/iStatMenusDateAndTimes.menu"
 
 # Hide spotlight icon
 /usr/bin/sudo /bin/chmod 600 /System/Library/CoreServices/Search.bundle/Contents/MacOS/Search
