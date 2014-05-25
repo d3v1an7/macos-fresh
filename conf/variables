@@ -15,7 +15,7 @@ COLOUR_WARN=$(tput setaf 3)
 COLOUR_ERROR=$(tput setaf 1)
 COLOUR_RESET=$(tput sgr0)
 
-local -a desired_brew_formulae=(
+desired_brew_formulae=(
   'coreutils' # GNU core utilities (those that come with OS X are outdated)
   'git'
   'ack'
@@ -33,7 +33,7 @@ local -a desired_brew_formulae=(
   'wget'
 )
 
-local -a desired_casks=(
+desired_casks=(
   'adium'
   'adobe-creative-cloud' # Manual install
   'alfred'
@@ -66,7 +66,7 @@ local -a desired_casks=(
   'vagrant-manager'
 )
 
-local -a desired_taps=(
+desired_taps=(
   'caskroom/cask' # Casks
   'homebrew/binary' # Packer
   'homebrew/versions' # Composer

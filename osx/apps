@@ -49,9 +49,9 @@ killall iTerm
 /usr/libexec/PlistBuddy -c "Set 'New Bookmarks':0:'Unlimited Scrollback' true" ~/Library/Preferences/com.googlecode.iTerm2.plist
 
 # Colour
-wget -q https://raw.githubusercontent.com/chriskempson/base16-iterm2/master/base16-ocean.dark.itermcolors
-open base16-ocean.dark.itermcolors
-rm base16-ocean.dark.itermcolors
+wget -q https://raw.githubusercontent.com/chriskempson/base16-iterm2/master/base16-ocean.dark.256.itermcolors
+open base16-ocean.dark.256.itermcolors
+rm base16-ocean.dark.256.itermcolors
 killall iTerm
 
 e_success "Setup iTerm"
@@ -81,29 +81,29 @@ e_success "Setup Sublime Text 2"
 #
 # iStat Menus
 # -----------------
-/usr/bin/defaults write com.bjango.istatmenus.extras 'BatteryCustomizeStates' -int 0
-/usr/bin/defaults write com.bjango.istatmenus.extras 'BatteryDisplayMode' -int 2
-/usr/bin/defaults write com.bjango.istatmenus.extras 'CPUDisplayMode' -int 1
+/usr/bin/defaults write com.bjango.istatmenus.extras 'BatteryCustomizeStates' -string "0"
+/usr/bin/defaults write com.bjango.istatmenus.extras 'BatteryDisplayMode' -string "2"
+/usr/bin/defaults write com.bjango.istatmenus.extras 'CPUDisplayMode' -string "1"
 /usr/bin/defaults write com.bjango.istatmenus.extras 'ClockDisplayMode' -array 'EE' "' '" 'h' ':' 'mm' "' '" 'a'
-/usr/bin/defaults write com.bjango.istatmenus.extras 'ClockShowMoon' -int 0
-/usr/bin/defaults write com.bjango.istatmenus.extras 'DiskDisplayMode' -string ''
-/usr/bin/defaults write com.bjango.istatmenus.extras 'MemoryDisplayMode' -int 6
-/usr/bin/defaults write com.bjango.istatmenus.extras 'MemoryIncludeInactive' -int 1
-/usr/bin/defaults write com.bjango.istatmenus.extras 'MenubarGraphOpacity' -float 0.45
-/usr/bin/defaults write com.bjango.istatmenus.extras 'SensorsActiveSet' -string ''
-/usr/bin/defaults write com.bjango.istatmenus.extras 'SensorsDisplayMode' -string ''
-/usr/bin/defaults write com.bjango.istatmenus.extras 'SensorsFanSetDefault' -string ''
-/usr/bin/defaults write com.bjango.istatmenus.extras 'SkinType' -int 0
+/usr/bin/defaults write com.bjango.istatmenus.extras 'ClockShowMoon' -string "0"
+/usr/bin/defaults write com.bjango.istatmenus.extras 'DiskDisplayMode' -string ""
+/usr/bin/defaults write com.bjango.istatmenus.extras 'MemoryDisplayMode' -string "6"
+/usr/bin/defaults write com.bjango.istatmenus.extras 'MemoryIncludeInactive' -string "1"
+/usr/bin/defaults write com.bjango.istatmenus.extras 'MenubarGraphOpacity' -string "0.45"
+/usr/bin/defaults write com.bjango.istatmenus.extras 'SensorsActiveSet' -string ""
+/usr/bin/defaults write com.bjango.istatmenus.extras 'SensorsDisplayMode' -string ""
+/usr/bin/defaults write com.bjango.istatmenus.extras 'SensorsFanSetDefault' -string ""
+/usr/bin/defaults write com.bjango.istatmenus.extras 'SkinType' -string "0"
 /usr/bin/defaults write com.bjango.istatmenus.extras 'sendDiagnostics' -bool false
-/usr/bin/defaults write com.bjango.istatmenus.extras 'skinColor' -int 7
+/usr/bin/defaults write com.bjango.istatmenus.extras 'skinColor' -string "7"
 
 e_success "Setup iStat Menus"
 
 #
 # HipChat
 # -----------------
-/usr/bin/defaults write com.hipchat.HipChat 'signInEmail' -string '$USER_EMAIL'
-/usr/bin/defaults write com.hipchat.HipChat 'account_email' -string '$USER_EMAIL'
+/usr/bin/defaults write com.hipchat.HipChat 'signInEmail' -string "${USER_EMAIL}"
+/usr/bin/defaults write com.hipchat.HipChat 'account_email' -string "${USER_EMAIL}"
 
 e_success "Setup HipChat"
 

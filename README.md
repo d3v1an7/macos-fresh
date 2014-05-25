@@ -20,7 +20,7 @@ Open 'terminal' and run `bash -c "$(curl -fsSL raw.github.com/d3v1an7/fresh/mast
   - Uncheck: All My Files, Documents, Downloads, Movies, Music, Pictures
   - Order: Desktop, User home, Applications, AirDrop
 - iTerm > Preferences > Profiles > Color
-  - Load presets: base16-ocean.dark
+  - Load presets: base16-ocean.dark.256
 - Install apps listed as 'Manual Install' in `conf/variables`
 - Install Microsoft Office
 
