@@ -29,7 +29,7 @@ Optional:
 - Install apps I stupidly bought from the App Store
 
 ## Contributing
-If you have any questions or suggestions, please either submit a pull request, raise and issue ticket, or catch me on [Twitter](https://twitter.com/d3v1an7).
+If you have any questions or suggestions, please either submit a pull request, create an issue ticket, or catch me on [Twitter](https://twitter.com/d3v1an7).
 
 ## Acknowledgements
 Hat tip to the many who have tread this ground before:
