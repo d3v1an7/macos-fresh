@@ -75,19 +75,6 @@ else
   title_error "Script aborted"
 fi
 
-# Before relying on Homebrew, check that packages can be compiled
-if ! type_exists 'gcc'; then
-  title_info "Install Xcode"
-  echo "You'll recieve a system prompt to install shortly."
-  echo "This script will just chill until Xcode has installed."
-  echo
-  until $(gcc -v); do
-    sleep 60
-  done
-  echo
-  echo "Xcode installed, moving on..."
-fi
-
 # Check for Homebrew
 if ! type_exists 'brew'; then
   title_info "Install, check and update homebrew"
