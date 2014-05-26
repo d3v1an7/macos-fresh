@@ -11,9 +11,12 @@ Homebrew requires Xcode, or at very least the Xcode Command Lines Tools. Thankfu
 ## Installation
 Open 'terminal' and run `bash -c "$(curl -fsSL raw.github.com/d3v1an7/fresh/master/bin/fresh)"`
 
-- You'll be prompted for a few details before everything kicks off
-- Default variables are read from `conf/variables`
-- If the script ends early, you can safely start over with `bash ~/.fresh/bin/fresh`
+You'll be prompted for a few details before everything kicks off.  
+If the script ends early, you can safely start over with `bash ~/.fresh/bin/fresh`
+
+Optional:
+- Update the default variables and packages in `~/.fresh/conf/variables`
+- Run `cp ~/.fresh/conf/secret.example ~/.fresh/conf/secret` and populate with your licences
 
 ## Manual steps (for now)
 - Finder > Preferences > Sidebar > Favourites
@@ -23,6 +26,7 @@ Open 'terminal' and run `bash -c "$(curl -fsSL raw.github.com/d3v1an7/fresh/mast
   - Load presets: base16-ocean.dark.256
 - Install apps listed as 'Manual Install' in `conf/variables`
 - Install Microsoft Office
+- Install apps I stupidly bought from the App Store
 
 ## Contributing
 If you have any questions or suggestions, please either submit a pull request, raise and issue ticket, or catch me on [Twitter](https://twitter.com/d3v1an7).
