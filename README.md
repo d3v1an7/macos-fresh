@@ -20,10 +20,12 @@ Optional:
 
 ## Manual steps (for now)
 - Finder > Preferences > Sidebar > Favourites
-  - Uncheck: All My Files, Documents, Downloads, Movies, Music, Pictures
+  - Leave checked: AirDrop, Desktop, User home, Connected Servers, Hard disks, External disks, CDs
+  - Manually add: ~/Applications
   - Order: Desktop, User home, Applications, AirDrop
 - iTerm > Preferences > Profiles > Color
-  - Load presets: base16-ocean.dark.256
+  - Load presets > Import > ~/Desktop/base16-ocean.dark.256
+  - Remove ~/Desktop/base16-ocean.dark.256
 - Install apps listed as 'Manual Install' in `conf/variables`
 - Install Microsoft Office
 - Install apps I stupidly bought from the App Store

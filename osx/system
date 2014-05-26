@@ -35,6 +35,7 @@ e_success "System Preferences/Personal/Desktop & Screen Saver"
 /usr/bin/defaults write com.apple.dock 'autohide-delay' -int 0
 /usr/bin/defaults write com.apple.dock 'tilesize' -int 42
 /usr/bin/defaults write com.apple.dock 'largesize' -int 48
+/usr/bin/defaults write com.apple.dock 'magnification' -bool true
 
 e_success "System Preferences/Personal/Dock"
 
@@ -95,15 +96,6 @@ e_success "System Preferences/Hardware/Displays"
 /usr/bin/defaults -currentHost write com.apple.systemuiserver 'dontAutoLoad' -array-add '/System/Library/CoreServices/Menu Extras/Battery.menu'
 
 e_success "System Preferences/Hardware/Energy Saver"
-
-#
-# Keyboard
-# -----------------
-
-/usr/bin/defaults write com.apple.BezelServices 'kDim' -bool true
-/usr/bin/defaults write com.apple.BezelServices 'kDimTime' -int 300
-
-e_success "System Preferences/Hardware/Keyboard"
 
 #
 # Mouse
@@ -176,9 +168,6 @@ e_success "System Preferences/System/Date & Time"
 # Enable full keyboard access for all controls (e.g. enable Tab in modal dialogs)
 /usr/bin/defaults write -g 'AppleKeyboardUIMode' -int 3
 
-# Disable new window 'pop' animation
-/usr/bin/defaults write -g 'NSAutomaticWindowAnimationsEnabled' -bool false
-
 # Speed up window resize animations
 /usr/bin/defaults write -g 'NSWindowResizeTime' -float .001
 
@@ -208,12 +197,28 @@ e_success "System Preferences/System/Date & Time"
 /usr/bin/defaults write com.apple.frameworks.diskimages 'skip-verify-locked' -bool true
 /usr/bin/defaults write com.apple.frameworks.diskimages 'skip-verify-remote' -bool true
 
-## Disable crash reports
+# Disable crash reports
 /usr/bin/defaults write com.apple.CrashReporter 'DialogType' -string 'none'
 
-# Menubar order (left to right)
-/usr/bin/defaults write com.apple.systemuiserver 'menuExtras' -array "/Library/Application Support/iStat Menus 4/extras/iStatMenusTemps.menu" "/Library/Application Support/iStat Menus 4/extras/iStatMenusMemory.menu" "/Library/Application Support/iStat Menus 4/extras/iStatMenusCPU.menu" "/Library/Application Support/iStat Menus 4/extras/iStatMenusBattery.menu" "/System/Library/CoreServices/Menu Extras/AirPort.menu" "/System/Library/CoreServices/Menu Extras/volume.menu" "/Library/Application Support/iStat Menus 4/extras/iStatMenusDateAndTimes.menu"
-
+# Menubar hide
+/usr/bin/defaults write $HOME/Library/Preferences/ByHost/com.apple.systemuiserver.* 'dontAutoLoad' -array \
+  "/System/Library/CoreServices/Menu Extras/AirPort.menu" \
+  "/System/Library/CoreServices/Menu Extras/Bluetooth.menu" \
+  "/System/Library/CoreServices/Menu Extras/Clock.menu" \
+  "/System/Library/CoreServices/Menu Extras/TimeMachine.menu" \
+  "/System/Library/CoreServices/Menu Extras/User.menu" \
+  "/System/Library/CoreServices/Menu Extras/Volume.menu"
+  
+# Menubar show (order: left to right)
+/usr/bin/defaults write com.apple.systemuiserver 'menuExtras' -array \
+  "/Library/Application Support/iStat Menus 4/extras/iStatMenusTemps.menu" \
+  "/Library/Application Support/iStat Menus 4/extras/iStatMenusMemory.menu" \
+  "/Library/Application Support/iStat Menus 4/extras/iStatMenusCPU.menu" \
+  "/Library/Application Support/iStat Menus 4/extras/iStatMenusBattery.menu" \
+  "/System/Library/CoreServices/Menu Extras/AirPort.menu" \
+  "/System/Library/CoreServices/Menu Extras/Volume.menu" \
+  "/Library/Application Support/iStat Menus 4/extras/iStatMenusDateAndTimes.menu"
+  
 # Hide spotlight icon
 /usr/bin/sudo /bin/chmod 600 /System/Library/CoreServices/Search.bundle/Contents/MacOS/Search
 
@@ -248,11 +253,11 @@ e_success "Misc hidden preferences"
 /usr/bin/defaults write com.apple.finder 'ShowMountedServersOnDesktop' -bool true
 /usr/bin/defaults write com.apple.finder 'ShowRemovableMediaOnDesktop' -bool true
 
-# Show ejectables, removables and servers in the finder sidebar
-/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.sidebarlists.plist" -c "Set :systemitems:ShowEjectables true"
-/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.sidebarlists.plist" -c "Set :systemitems:ShowRemovable true"
-/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.sidebarlists.plist" -c "Set :systemitems:ShowServers true"
-/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.sidebarlists.plist" -c "Set :systemitems:ShowHardDisks true"
+# Show ejectables, removables and servers in the finder sidebar - not wokring in Mavericks
+# /usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.sidebarlists.plist" -c "Set :systemitems:ShowEjectables true"
+# /usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.sidebarlists.plist" -c "Set :systemitems:ShowRemovable true"
+# /usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.sidebarlists.plist" -c "Set :systemitems:ShowServers true"
+# /usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.sidebarlists.plist" -c "Set :systemitems:ShowHardDisks true"
 
 # Setup desktop icons so they look nice and tidy
 /usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.finder.plist" -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy grid"

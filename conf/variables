@@ -53,6 +53,7 @@ desired_casks=(
   'kaleidoscope'
   'mpeg-streamclip'
   'origin'
+  'prefs-editor'
   'sequel-pro'
   'skype'
   'sonos'
