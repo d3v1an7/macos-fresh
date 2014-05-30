@@ -19,6 +19,7 @@ Optional:
 - Run `cp ~/.fresh/conf/secret.example ~/.fresh/conf/secret` and populate with your licences
 
 ## Manual steps (for now)
+- Update .gitconfig
 - Move existing `~/.ssh` from secure source
 - Finder > Preferences > Sidebar > Favourites
   - Leave checked: AirDrop, Desktop, User home, Connected Servers, Hard disks, External disks, CDs
