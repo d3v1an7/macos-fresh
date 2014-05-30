@@ -18,7 +18,7 @@ set_home_directory() {
       set_home_directory
     elif [[ $user_input =~ ^[Yy]$ ]]; then
       sudo dscl . -change Users/$USER NFSHomeDirectory $HOME $OSX_HOME_DIR
-      sudo mv $HOME $OSX_HOME_DIR
+      sudo mv $HOME/* $OSX_HOME_DIR
       title_pass "All done. Great sucess!"
       echo "Logging out for settings to take effect."
       logout
