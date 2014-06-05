@@ -1,26 +1,10 @@
 #!/bin/bash
 
 #
-# Alfred 2
-# -----------------
-open -a "Alfred 2" && sleep 1
-until [[ -f $HOME/Library/Preferences/com.runningwithcrayons.Alfred-Preferences.plist ]]; do
-  echo "Waiting for Alfred preference file..."
-  sleep 5
-done
-/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.runningwithcrayons.Alfred-Preferences.plist" -c 'Delete "hotkey.default" dict' > /dev/null 2>&1
-/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.runningwithcrayons.Alfred-Preferences.plist" -c 'Add "hotkey.default:key" integer 49'
-/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.runningwithcrayons.Alfred-Preferences.plist" -c 'Add "hotkey.default:mod" integer 1048576'
-/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.runningwithcrayons.Alfred-Preferences.plist" -c 'Add "hotkey.default:string" string Space'
-brew cask alfred link > /dev/null
-
-e_success "Setup Alfred"
-
-#
 # Git
 # -----------------
-git config --global user.name "${GIT_NAME}"
-git config --global user.email "${GIT_EMAIL}"
+git config --global user.name "${USER_NAME}"
+git config --global user.email "${USER_EMAIL}"
 git config --global core.editor "subl -w"
 
 e_success "Setup Git"

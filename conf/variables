@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # User editable
-OSX_COMPUTER_NAME="Ben's iMac"
-OSX_HOST_NAME="mac-benwhite"
+OSX_COMPUTER_NAME="Ben's Lappy"
+OSX_HOST_NAME="laptop-benwhite"
 OSX_HOME_DIR="/Volumes/Home/Users/benwhite"
 USER_NAME="Ben White"
 USER_EMAIL="hello@bemm.com.au"
@@ -17,16 +17,18 @@ COLOUR_RESET=$(tput sgr0)
 
 desired_brew_formulae=(
   'coreutils' # GNU core utilities (those that come with OS X are outdated)
+  'node'
   'git'
   'ack'
+  'awscli'
   'bash'
   'bash-completion'
   'brew-cask'
   'curl'
-  'php55-intl' # Composer
-  'josegonzalez/php/composer' # Composer
+  # PHP/Composer failing on Xcode 6 beta
+  #'php55-intl' # Composer 
+  #’josegonzalez/php/composer' # Composer
   'libevent'
-  'node'
   'openssl'
   'packer'
   'vim'
@@ -36,7 +38,6 @@ desired_brew_formulae=(
 desired_casks=(
   'adium'
   'adobe-creative-cloud' # Manual install
-  'alfred'
   'atom'
   'cakebrew'
   'cloud'

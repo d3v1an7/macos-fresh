@@ -108,7 +108,6 @@ cask_exists() {
 
 logout() {
   osascript -e 'tell application "System Events" to log out'
-  builtin logout
 }
 
 # columnize.sh credit: https://github.com/Arko/Columnize

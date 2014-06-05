@@ -12,9 +12,9 @@
 /usr/bin/defaults write -g 'AppleAquaColorVariant' -int 6 # Graphite
 
 # Recent items
-/usr/bin/osascript -e 'tell application "System Events" to tell appearance preferences to set recent applications limit to 0'
-/usr/bin/osascript -e 'tell application "System Events" to tell appearance preferences to set recent documents limit to 0'
-/usr/bin/osascript -e 'tell application "System Events" to tell appearance preferences to set recent servers limit to 0'
+/usr/bin/osascript -e 'tell application "System Events" to tell appearance preferences to set recent applications limit to 5'
+/usr/bin/osascript -e 'tell application "System Events" to tell appearance preferences to set recent documents limit to 5'
+/usr/bin/osascript -e 'tell application "System Events" to tell appearance preferences to set recent servers limit to 5'
 
 e_success "System Preferences/Personal/General"
 
@@ -53,18 +53,6 @@ e_success "System Preferences/Personal/Dock"
 e_success "System Preferences/Personal/Security & Privacy"
 
 #
-# Spotlight
-# -----------------
-
-# Disable Spotlight keyboard shortcuts so we can use these with Alfred
-/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.symbolichotkeys.plist" -c 'Delete AppleSymbolicHotKeys:64' > /dev/null 2>&1
-/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.symbolichotkeys.plist" -c 'Add AppleSymbolicHotKeys:64:enabled bool false'
-/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.symbolichotkeys.plist" -c 'Delete AppleSymbolicHotKeys:65' > /dev/null 2>&1
-/usr/libexec/PlistBuddy "$HOME/Library/Preferences/com.apple.symbolichotkeys.plist" -c 'Add AppleSymbolicHotKeys:65:enabled bool false'
-
-e_success "System Preferences/Personal/Spotlight"
-
-#
 # Displays
 # -----------------
 
@@ -91,9 +79,6 @@ e_success "System Preferences/Hardware/Displays"
 /usr/bin/sudo /usr/bin/pmset -c womp 1 # Wake for network access
 /usr/bin/sudo /usr/bin/pmset -c halfdim 0 # Dim display
 /usr/bin/sudo /usr/bin/pmset -c autorestart 1 # Auto restart (Power failure)
-
-# Uncheck show battery status
-/usr/bin/defaults -currentHost write com.apple.systemuiserver 'dontAutoLoad' -array-add '/System/Library/CoreServices/Menu Extras/Battery.menu'
 
 e_success "System Preferences/Hardware/Energy Saver"
 
@@ -214,13 +199,10 @@ e_success "System Preferences/System/Date & Time"
   "/Library/Application Support/iStat Menus 4/extras/iStatMenusTemps.menu" \
   "/Library/Application Support/iStat Menus 4/extras/iStatMenusMemory.menu" \
   "/Library/Application Support/iStat Menus 4/extras/iStatMenusCPU.menu" \
-  "/Library/Application Support/iStat Menus 4/extras/iStatMenusBattery.menu" \
+  "/System/Library/CoreServices/Menu Extras/Battery.menu" \
   "/System/Library/CoreServices/Menu Extras/AirPort.menu" \
   "/System/Library/CoreServices/Menu Extras/Volume.menu" \
   "/Library/Application Support/iStat Menus 4/extras/iStatMenusDateAndTimes.menu"
-  
-# Hide spotlight icon
-/usr/bin/sudo /bin/chmod 600 /System/Library/CoreServices/Search.bundle/Contents/MacOS/Search
 
 e_success "Misc hidden preferences"
 

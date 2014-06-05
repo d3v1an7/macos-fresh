@@ -36,3 +36,6 @@ load_dotfiles() {
 
 load_dotfiles
 unset load_dotfiles
+
+# Add allure-stack scripts to path
+PATH=$PATH:/Volumes/Home/Users/benwhite/allure-stack/bin/
