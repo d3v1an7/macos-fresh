@@ -78,7 +78,7 @@ fi
 # Check for Homebrew
 if ! type_exists 'brew'; then
   title_info "Install, check and update homebrew"
-  ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+  ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 fi
 
 # Add taps
