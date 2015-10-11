@@ -59,7 +59,7 @@ if is_confirmed; then
   clear
 else
   echo
-  e_error "Update ~/.fresh/conf/varaibles then run this script again."
+  e_error "Update ~/.fresh/conf/variables then run this script again."
   title_error "Script aborted"
 fi
 
