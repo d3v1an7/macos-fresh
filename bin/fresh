@@ -84,7 +84,7 @@ run_argument_first-run() {
   install_fresh
   print_status_recap "PASS" "FIRST RUN"
   print_status_secondary "WARN" "About to run \`ansible/install.yml\`"
-  confirm "Continue with the defaults in \`ansible/group_vars/all\`?"
+  # confirm "Continue with the defaults in \`ansible/group_vars/all\`?"
   run_argument_install
 }
 
