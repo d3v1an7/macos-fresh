@@ -1,0 +1,23 @@
+#!/bin/bash
+
+## Credit: http://stackoverflow.com/a/9911082
+if [ -n "`$SHELL -c 'echo $ZSH_VERSION'`" ]; then
+  DETECTED_SHELL="zsh"
+  SHELLRC_DIR="${HOME}/.zshrc"
+elif [ -n "`$SHELL -c 'echo $BASH_VERSION'`" ]; then
+  DETECTED_SHELL="bash"
+  SHELLRC_DIR="${HOME}/.bashrc"
+else
+  echo -e "{\"failed\": true, \"msg\": \"Could not detect the shell! (expected bash or zsh)\"}"
+  exit 0
+fi
+
+cat << EOF
+{
+  "changed": true,
+  "ansible_facts": {
+    "detected_shell": "${DETECTED_SHELL}",
+    "shellrc_dir": "${SHELLRC_DIR}"
+  }
+}
+EOF

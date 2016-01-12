@@ -1,0 +1,19 @@
+---
+- name: restart services
+  command: "killall {{ item }}"
+  with_items:
+    - Finder
+    - Dock
+    - SystemUIServer
+    - cfprefsd
+
+- name: NOTE run these after playbook recap
+  debug: var=run_later
+
+- name: NOTE open these after playbook recap
+  debug: var=open_later
+
+- name: see you space cowboy
+  osx_say:
+    msg: "See you, Space Cowboy"
+    voice: "Fred"

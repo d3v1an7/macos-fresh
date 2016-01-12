@@ -1,0 +1,18 @@
+#!/bin/bash
+
+## Credit: http://www.commandlinefu.com/commands/view/13592/get-hardware-uuid-in-mac-os-x
+UUID="$(system_profiler SPHardwareDataType | awk '/UUID/ { print $3; }')"
+
+if [ -z "${UUID}" ]; then
+  echo -e "{\"failed\": true, \"msg\": \"Could not detect the hardware UUID!\"}"
+  exit 0
+fi
+
+cat << EOF
+{
+  "changed": true,
+  "ansible_facts": {
+    "uuid": "${UUID}"
+  }
+}
+EOF

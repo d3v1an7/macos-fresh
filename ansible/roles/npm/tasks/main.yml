@@ -1,0 +1,6 @@
+---
+# - include_vars: group_vars/npm
+
+- name: install npm packages
+  npm: global=yes name={{ item }}
+  with_items: npm_packages

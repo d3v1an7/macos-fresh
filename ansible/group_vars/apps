@@ -1,0 +1,86 @@
+homebrew_libraries:
+  - ack
+  - ansible
+  - awscli
+  - bash-completion
+  - brew-cask
+  - coreutils
+  - curl
+  - git
+  - keybase
+  - mysql
+  - node
+  - openssl
+  - rbenv
+  - thefuck
+  - vim
+  - wget
+
+homebrew_taps:
+  - caskroom/cask
+
+homebrew_casks:
+  - adobe-creative-cloud
+  - alfred
+  - atom
+  - beamer
+  - cakebrew
+  - cloud
+  - cyberduck
+  - dockertoolbox
+  - dropbox
+  - filebot
+  - firefox
+  - fliqlo
+  - flux
+  - github-desktop
+  - google-chrome
+  - google-drive
+  - istat-menus
+  - iterm2
+  - kaleidoscope
+  - lastpass
+  - mpeg-streamclip
+  - mplayerx
+  - private-internet-access
+  - sequel-pro
+  - sketch
+  - skyfonts
+  - skype
+  - slack
+  - spectacle
+  - spotify
+  - steam
+  - teamviewer
+  - the-unarchiver
+  - transmission
+  - virtualbox
+  - vlc
+
+npm_packages:
+  - grunt-cli
+  - grunt
+  - bower
+
+chrome_default_browser: true
+
+atom_config_overwrite: true
+
+atom_config: |
+  "*":
+    welcome:
+      showOnStartup: false
+    editor:
+      invisibles: {}
+      fontFamily: "Source Code Pro"
+      fontSize: 13
+      showInvisibles: true
+      showIndentGuide: true
+      tabType: "soft"
+    core:
+      themes: [
+        "one-dark-ui"
+        "base16-eighties-one-dark"
+      ]
+
+iterm_config_overwrite: true

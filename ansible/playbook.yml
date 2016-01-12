@@ -1,0 +1,22 @@
+---
+- hosts: workstation
+
+  vars_files:
+    - group_vars/apps
+    - group_vars/system
+    - group_vars/licences
+
+  roles:
+    # Install
+    - { role: configure, tags: [ "install", "configure" ] }
+    - { role: homebrew, tags: ["install", "homebrew"] }
+    - { role: npm, tags: ["install", "npm"] }
+    - { role: rvm, tags: ["install", "rvm"] }
+    - { role: osx_defaults, tags: ["install", "osx_defaults"] }
+    - { role: osx_commands, tags: ["install", "osx_commands"] }
+    - { role: homebrew_caveats, tags: ["install", "homebrew_caveats"] }
+    - { role: osx_apps, tags: ["install", "osx_apps"] }
+    - { role: space_cowboy, tags: ["install", "space_cowboy"] }
+
+    # Not implemented
+    - { role: not_implemented, tags: [ "update", "clean" ] }

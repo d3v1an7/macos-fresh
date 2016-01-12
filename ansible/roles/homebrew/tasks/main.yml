@@ -1,0 +1,37 @@
+---
+- name: set current time and time allowed between updates
+  set_fact:
+   run_time: "{{ ansible_date_time.epoch }}"
+   time_allowed_between_updates: "{{ 60 * 60 * 24 }}" # 24 hr
+
+- name: get last homebrew update
+  shell: cd /usr/local/ && git log -1 --format="%ct" HEAD
+  register: last_homebrew_update
+  changed_when: no
+
+- name: get time since last homebrew update
+  set_fact: time_since_update="{{ run_time | int - last_homebrew_update.stdout | int }}"
+
+- name: update homebrew
+  homebrew:
+    update_homebrew: yes
+  when: time_since_update | int > time_allowed_between_updates | int
+
+- name: install homebrew taps
+  homebrew_tap:
+    name: "{{ item }}"
+    state: present
+  with_items: homebrew_taps
+
+- name: install homebrew formulae
+  homebrew:
+    name: "{{ item }}"
+    state: present
+  with_items: homebrew_libraries
+
+- name: install homebrew casks
+  homebrew_cask:
+    name: "{{ item }}"
+    state: present
+  with_items: homebrew_casks
+  when: skip_casks is not defined # set true via command line if required

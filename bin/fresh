@@ -1,138 +1,259 @@
 #!/bin/bash
 
-# Predownload variables
-FRESH_DIR="${HOME}/.fresh"
-FRESH_TAR="https://github.com/d3v1an7/fresh/tarball/master"
+## Exit immediately if a command exits with a non-zero status
+set -e
 
-# If missing, download and extract the Fresh repository
-if [[ ! -d ${FRESH_DIR} ]]; then
-  echo "Downloading Fresh..."
-  mkdir ${FRESH_DIR}
-  # Get the tarball
-  curl -fsSLo ${HOME}/fresh.tar.gz ${FRESH_TAR}
-  # Extract to the fresh directory
-  tar -zxf ${HOME}/fresh.tar.gz --strip-components 1 -C ${FRESH_DIR}
-  # Remove the tarball
-  rm -rf ${HOME}/fresh.tar.gz
-fi
+## Enables pattern lists like @(init|start|stop)
+## Credit: http://stackoverflow.com/a/13254908
+shopt -s extglob
 
-# Load in variables and functions
-cd ${FRESH_DIR}
-source ./conf/variables
-source ./lib/utils
-source ./lib/vars
-source ./lib/taps
-source ./lib/brew
-source ./lib/npm
-source ./lib/casks
-source ./lib/links
-source ./lib/home
+## Run this function after exit
+trap print_runtime EXIT
 
-# Fancy panys intro
-clear
-echo
-echo "    ______               __   "
-echo "   / ____/_______  _____/ /_  "
-echo "  / /_  / ___/ _ \/ ___/ __ \ "
-echo " / __/ / /  /  __(__  ) / / / "
-echo "/_/   /_/   \___/____/_/ /_/  "
-echo
+init_variables() {
+  VAR_TIMER_START=$(date +%s)
+  VAR_DIR="${HOME}/.fresh"
+  VAR_VALID_ARGUMENTS="@(first-run|install|update|clean|help)"
+  VAR_RECAP_ARRAY=()
 
-# Ask for the administrator password upfront
-echo
-echo "Let's start off by grabbing your sudo password."
-echo
-sudo -v
+  ## Symbols
+  VAR_SYMBOL_ERROR="x"
+  VAR_SYMBOL_PASS="✓"
+  VAR_SYMBOL_WARN="!"
+  VAR_SYMBOL_INFO="*"
 
-# Sudo keep-alive credit: https://gist.github.com/cowboy/3118588
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+  ## Colours
+  VAR_COLOUR_PASS=$(tput setaf 2)
+  VAR_COLOUR_INFO=$(tput setaf 4)
+  VAR_COLOUR_WARN=$(tput setaf 3)
+  VAR_COLOUR_ERROR=$(tput setaf 1)
+  VAR_COLOUR_LOGO_TOP=$(tput setaf 6)
+  VAR_COLOUR_LOGO_MID=$(tput setaf 12)
+  VAR_COLOUR_LOGO_BTM=$(tput setaf 4)
+  VAR_COLOUR_RESET=$(tput sgr0)
+}
 
-# Ensure user varaibles are correct before kicking off
-output_variables
-validate_variables
+init_fresh() {
+  init_variables
 
-# Confirmation of homebrew formulae
-title_info "Homebrew check"
-columnize "${desired_brew_formulae[@]}"
-seek_confirmation "Is the list above correct?"
-if is_confirmed; then
-  clear
-else
+  ## Very gradient such ascii wow
+  ## Credit: http://patorjk.com/software/taag/#p=display&h=2&v=0&c=echo&f=Chunky&t=FRESH
   echo
-  e_error "Update ~/.fresh/conf/variables then run this script again."
-  title_error "Script aborted"
-fi
-
-# Confirmation of homebrew casks
-title_info "Cask check"
-columnize "${desired_casks[@]}"
-seek_confirmation "Is the list above correct?"
-if is_confirmed; then
-  clear
-else
+  print_logo "TOP" " _______ ______ _______ _______ _______ ";
+  print_logo "MID" "|    ___|   __ \    ___|     __|   |   |";
+  print_logo "MID" "|    ___|      <    ___|__     |       |";
+  print_logo "BTM" "|___|   |___|__|_______|_______|___|___|";
   echo
-  e_error "Update ~/.fresh/conf/varaibles then run this script again."
-  title_error "Script aborted"
-fi
 
-# Check for Homebrew
-if ! type_exists 'brew'; then
-  title_info "Install, check and update homebrew"
-  ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-fi
+  ## Quick compatability check
+  if [[ $(uname) != "Darwin" ]]; then
+    print_status_primary "ERROR" "ERROR"
+    print_status_secondary "ERROR" "fresh requires OS X"
+    echo
+    exit 1
+  fi
 
-# Add taps
-title_info "Checking status of taps"
-run_taps
+  ## Business logic
+  ## Credit: https://github.com/yellowducklabs/duckos/blob/master/duck#L85
+  case "$1" in
+    ## When $1 is a valid argument...
+    "--"$VAR_VALID_ARGUMENTS)
+    run_argument_${1#"--"} $2
+    ;;
+    ## When $1 is anything else...
+    *)
+    case "$2" in
+      *)
+      print_status_primary "ERROR" "ERROR"
+      print_status_secondary "ERROR" "Invalid argument: ${1-[null]}"
+      echo
+      print_help
+      ;;
+    esac
+    ;;
+  esac
+}
 
-# Update packages
-title_info "Updating packages"
-run_brew
-run_npm
+## Run
+run_argument_first-run() {
+  print_status_primary "INFO" "FIRST RUN"
+  install_cli_tools
+  install_homebrew
+  install_git
+  install_ansible
+  install_fresh
+  print_status_recap "PASS" "FIRST RUN"
+  print_status_secondary "WARN" "About to run \`ansible/install.yml\`"
+  confirm "Continue with the defaults in \`ansible/group_vars/all\`?"
+  run_argument_install
+}
 
-# Ruby Version Manager
-if ! type_exists 'rvm'; then
-  \curl -sSL https://get.rvm.io | bash -s stable
-fi
+run_argument_install() {
+  print_status_primary "INFO" "INSTALL"
+  ansible_playbook "${VAR_DIR}/ansible/playbook.yml" "--ask-become-pass --tags=install ${1}"
+  print_status_recap "PASS" "INSTALL"
+}
 
-# Install apps
-title_info "Installing apps"
-run_casks
+run_argument_update() {
+  print_status_primary "INFO" "UPDATE"
+  ansible_playbook "${VAR_DIR}/ansible/playbook.yml" "--tags=update ${1}"
+  print_status_recap "PASS" "UPDATE"
+}
 
-# Initialize the git repository if it's missing
-if ! is_git_repo; then
-  title_info "Initializing git repository"
-  git init
-  git remote add origin ${GIT_REMOTE}
-  e_success "Done"
-fi
+run_argument_clean() {
+  print_status_primary "INFO" "CLEAN"
+  ansible_playbook "${VAR_DIR}/ansible/playbook.yml" "--tags=clean ${1}"
+  print_status_recap "PASS" "CLEAN"
+}
 
-# Symlink dotfiles
-title_info "Symlinking dotfiles"
-mirrorfiles
+run_argument_help() {
+  print_help
+}
 
-# Update OS X system settings
-title_info "Updating OS X system settings"
-source ./osx/system
+## Install
+install_cli_tools() {
+  if ! type_exists "gcc"; then
+    ## Credit: https://github.com/boxen/boxen-web/blob/master/app/views/splash/script.sh.erb#L42-L63
+    print_status_secondary "WARN" "Installing CLI tools for OS X"
+    VAR_PLACEHOLDER=/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+    touch $VAR_PLACEHOLDER
+    PROD=$(softwareupdate -l | \
+      grep -B 1 "Command Line Tools" | \
+      awk -F"*" '/^ +\*/ {print $2}' | \
+      sed 's/^ *//' | \
+      head -n 1)
+    softwareupdate -i "${PROD}"
+    [[ -f $VAR_PLACEHOLDER ]] && rm $VAR_PLACEHOLDER
+  fi
+  VAR_RECAP_ARRAY+=("${FUNCNAME}")
+}
 
-# Update app settings
-title_info "Updating application settings"
-source ./osx/apps
+install_homebrew() {
+  if ! type_exists "brew"; then
+    print_status_secondary "WARN" "Installing homebrew"
+    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  fi
+  VAR_RECAP_ARRAY+=("${FUNCNAME}")
+}
 
-# Install licences
-if [[ -f ./conf/secret ]]; then
-  title_info "Installing licences"
-  source ./conf/secret
-fi
+install_git() {
+  if ! type_exists "git"; then
+    print_status_secondary "WARN" "Installing git"
+    brew install git
+  fi
+  VAR_RECAP_ARRAY+=("${FUNCNAME}")
+}
 
-# Set home directory if change detected
-set_home_directory
+install_ansible() {
+  if ! type_exists "ansible"; then
+    print_status_secondary "WARN" "Installing ansible"
+    brew install --HEAD ansible ## Running --HEAD until Ansible 2 reaches stable
+  fi
+  VAR_RECAP_ARRAY+=("${FUNCNAME}")
+}
 
-# Restart apps
-for app in "Dashboard" "Dock" "Finder" "SystemUIServer" "cfprefsd"; do
-  killall "$app" > /dev/null 2>&1
-done
-source ${HOME}/.bash_profile
+install_fresh() {
+  if [ ! -d "${VAR_DIR}" ]; then
+    print_status_secondary "WARN" "Cloning fresh"
+    git clone --quiet https://github.com/d3v1an7/fresh.git $VAR_DIR
+  fi
+  VAR_RECAP_ARRAY+=("${FUNCNAME}")
+}
 
-# Great job!
-title_pass "All done. Great sucess!"
+## Utilities
+ansible_playbook() {
+  print_status_secondary "WARN" "Running playbook"
+  if [ -n "$1" ]; then VAR_ANSIBLE_PATH="${1}"; fi
+  if [ -n "$2" ]; then VAR_ANSIBLE_EXTRAS="${2}"; fi
+  ansible-playbook \
+    "${VAR_ANSIBLE_PATH}" \
+    --inventory-file="${VAR_DIR}/ansible/inventory/hosts" \
+    ${VAR_ANSIBLE_EXTRAS}
+  VAR_RECAP_ARRAY+=("${FUNCNAME}")
+}
+
+type_exists() {
+  if [ $(type -P $1) ]; then
+    return 0
+  fi
+  return 1
+}
+
+confirm() {
+  # call with a prompt string or use a default
+  read -r -p "${1:-Are you sure?} [y/n] " response
+  echo
+  case $response in
+    [yY][eE][sS]|[yY])
+      true
+      ;;
+    *)
+      false
+      ;;
+  esac
+}
+
+## Output
+print_logo() {
+  VAR_COLOUR_LOGO="VAR_COLOUR_LOGO_${1}"
+  printf "${!VAR_COLOUR_LOGO}%s${VAR_COLOUR_RESET}\n" "${2}"
+}
+
+print_status_primary() {
+  VAR_COLOUR_PRIMARY="VAR_COLOUR_${1}"
+  VAR_MESSAGE_PRIMARY="${2} "
+  echo -en "${!VAR_COLOUR_PRIMARY}${VAR_MESSAGE_PRIMARY}"
+  ## Asterisk line to match ansible style
+  for ((i=0; i< (80 - ${#VAR_MESSAGE_PRIMARY}); i++)){
+    echo -n "*";
+  }
+  echo -e "${VAR_COLOUR_RESET}"
+  echo
+}
+
+print_status_secondary() {
+  VAR_SECONDARY_COLOUR="VAR_COLOUR_${1}"
+  VAR_SECONDARY_SYMBOL="VAR_SYMBOL_${1}"
+  VAR_MESSAGE_SECONDARY="${2}"
+  echo -e "${!VAR_SECONDARY_COLOUR}${!VAR_SECONDARY_SYMBOL}${VAR_COLOUR_RESET} ${VAR_MESSAGE_SECONDARY}"
+}
+
+print_status_recap() {
+  print_status_primary "${1}" "${2} RECAP"
+  for FUNCTION_NAME in ${VAR_RECAP_ARRAY[@]}; do
+    print_status_secondary "PASS" "${FUNCTION_NAME}"
+  done
+  ## Reset array
+  VAR_RECAP_ARRAY=()
+  echo
+}
+
+print_runtime() {
+  VAR_TIMER_END=$(date +%s)
+  echo "RUNTIME: $((VAR_TIMER_END - VAR_TIMER_START)) seconds"
+  echo
+}
+
+print_usage() {
+  echo "Usage: fresh [argument]"
+  echo
+}
+
+print_arguments() {
+  echo "Arguments:"
+  echo "   --first-run  Privision system"
+  echo "   --install    Install fresh (see ansible playbook)"
+  echo "   --update     Get the latest updates for fresh via git"
+  echo "   --clean      Fix and clean homebrew"
+  echo "   --help       Print this help message"
+  echo
+}
+
+print_help() {
+  print_usage
+  print_arguments
+  exit 1
+}
+
+## GLHF
+init_fresh $@ ## Send all arguments to function

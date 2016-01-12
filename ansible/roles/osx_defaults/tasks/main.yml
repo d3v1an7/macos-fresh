@@ -1,0 +1,37 @@
+---
+- name: write OSX defaults (user)
+  osx_defaults:
+    domain: "{{ item.0.domain }}"
+    key: "{{ item.1.key }}"
+    type: "{{ item.1.type }}"
+    array_add: "{{ item.1.array_add | default(false) }}"
+    value: "{{ item.1.value }}"
+  with_subelements:
+    - defaults
+    - settings
+
+- name: write OSX defaults (sudo)
+  become: yes
+  osx_defaults:
+    domain: "{{ item.0.domain }}"
+    key: "{{ item.1.key }}"
+    type: "{{ item.1.type }}"
+    array_add: "{{ item.1.array_add | default(false) }}"
+    value: "{{ item.1.value }}"
+  with_subelements:
+    - defaults_global
+    - settings
+
+- name: write OSX defaults (plistbuddy)
+  shell: "/usr/libexec/PlistBuddy -c 'Set :{{ item.1.name }} {{ item.1.value }}' {{ item.0.domain }}"
+  with_subelements:
+    - defaults_plistbuddy
+    - settings
+
+- name: change keyboard shortcuts
+  shell: /usr/libexec/PlistBuddy -c "{{ item }}" "{{ home }}/Library/Preferences/com.apple.symbolichotkeys.plist"
+  with_items:
+    # Uncheck `Show Spotlight search`
+    - "Set AppleSymbolicHotKeys:64:enabled bool false"
+    # Uncheck `Show Finder search window`
+    - "Set AppleSymbolicHotKeys:65:enabled bool false"
