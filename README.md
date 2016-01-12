@@ -1,42 +1,88 @@
 # Fresh
-Just a few super opinionated shell scripts that get me up and running after a fresh install of OS X. Projects like [Boxen](https://boxen.github.com/) are amazing, but a bit too heavy for what I'm trying to do.  
+A super opinionated Ansible playbook that gets me up and running after a fresh install of OS X :ok_hand:
 
-Be aware this will overwrite existing dotfiles (.bashrc, .bash_profile, etc), and also make loads of changes to the system without asking for your permission. It has been designed to be run right after a fresh install of OS X &mdash; mileage may vary on established machines.
+It's unlikely this will suit your purposes exactly, but hopefully you'll find it super easy to follow along and customise on your own fork.
 
-It's really unlikely this will suit your purposes exactly, but you should hopefully find it super easy to follow along and customise to fit your needs. Fork/clone away!
+[Pull requests](https://help.github.com/articles/creating-a-pull-request/) are very welcome!
 
-## Dependencies
-Homebrew requires Xcode, or at very least the Xcode Command Lines Tools. Thankfully, this is not such a pain in OS X 10.9 &mdash; you'll receive a prompt as part of the install process below.
+
+## Notes
+- [ ] Has only been tested on OS X 10.11
+- [ ] Many of the 10.11 updates were made on an established machine, so fresh installs may be bumpy
+- [ ] Have considered, but not tested zsh
+- [ ] Requires at least Ansible 2
+
+
+## WIP
+### Misc
+- Ansible organisation leaves a lot to be desired
+  - [ ] Variables and tags not consistent
+  - [ ] No link between applications and their configuration (if you remove iTerm from the homebrew cask array, the playbook will still try to configure it)
+- [ ] Various race conditions need to be addressed (licence files are not available on first run, etc)
+- [ ] Should detect if running script offline
+- [ ] Installation command is urgh
+- [ ] Update ~/.gitconfig
+
+### OSX defaults
+`System Preferences > Displays > Display`
+- Resolution
+  - [ ] Select `Scaled`
+  - [ ] Change scale to `More Space`
+    - Have tried `brew/screenresolution` and `brew/cask/cscreen`.
+    - Both seem to change the resolution for the current session only, and do not scale the screen properly (text and edges are blurry)
+
+`Finder > Preferences > Sidebar`
+- [ ] Uncheck all, except the following
+  - Favorites: iCloud Drive, AirDrop, Desktop, Home
+  - Shared: Connected servers
+  - Devices: Hard disks, External disks, CDs
+
+`[New Finder window]`
+- [ ] Add `~/Applications`
+- [ ] Set order of sidebar
+  - Desktop
+  - Home
+  - ~/Applications
+  - AirDrop
+
 
 ## Installation
-Open `terminal` and run `bash -c "$(curl -fsSL raw.github.com/d3v1an7/fresh/master/bin/fresh)"`
+Open terminal and run
+``` sh
+$ curl -L https://git.io/vzL6I | bash -s -- --first-run
+```
+If the Ansible playbook ends early, you can safely kick it off again with
+``` sh
+$ fresh --install
+```
 
-You'll be prompted for a few details before everything kicks off.  
-If the script ends early, you can safely start over with `bash ~/.fresh/bin/fresh`
+## FAQ
+### In summary, what does this actually do?
+##### 1. [`install`](install)
+- Ensure your system meets base requirements
+- Install
+  - [Xcode Command Line Tools](https://developer.apple.com/xcode/downloads/)
+  - [Homebrew](http://brew.sh/)
+  - [Git](http://git-scm.com/downloads/)
+  - [Ansible](http://docs.ansible.com/intro_installation.html)
+- Clone this repo into `~/.fresh/`
+- Run the Ansible playbook below
 
-Optional:
-- Update the default variables and packages in `~/.fresh/conf/variables`
-- Run `cp ~/.fresh/conf/secret.example ~/.fresh/conf/secret` and populate with your licences
+##### 2. [`ansible/playbook.yml`](ansible/playbook.yml)
+- Symlink `bin/fresh` to `/usr/local/bin/fresh`
+- Install tools and applications
+- Update system configuration files
+- Update application configuration files
 
-## Manual steps (for now)
-- Update .gitconfig
-- Move existing `~/.ssh` from secure source
-- Finder > Preferences > Sidebar > Favourites
-  - Leave checked: AirDrop, Desktop, User home, Connected Servers, Hard disks, External disks, CDs
-  - Manually add: `~/Applications`
-  - Order: Desktop, User home, Applications, AirDrop
-- iTerm > Preferences > Profiles > Color
-  - Load presets > Import > `~/Desktop/base16-ocean.dark.256`
-  - Remove `~/Desktop/base16-ocean.dark.256`
-- Install apps listed as 'Manual Install' in `conf/variables`
-- Install Microsoft Office
-- Install apps I stupidly bought from the App Store
+### I'm not sure piping a random script to shell is a [good idea](http://www.seancassidy.me/dont-pipe-to-your-shell.html)
+You're right, it is a horrible idea. But it is also super convenient! I _definitely_ recommend clicking on each of the headline links in the FAQ section above to check the code prior to installing.
 
 ## Contributing
 If you have any questions or suggestions, please either submit a pull request, create an issue ticket, or catch me on [Twitter](https://twitter.com/d3v1an7).
 
 ## Acknowledgements
 Hat tip to the many who have tread this ground before:
+- boxen [our-boxen](https://boxen.github.com/)
 - ptb [osx-setup](https://github.com/ptb/Mac-OS-X-Lion-Setup)
 - mathiasbynens [dotfiles](https://github.com/mathiasbynens/dotfiles)
 - necolas [dotfiles](https://github.com/necolas/dotfiles)
@@ -47,5 +93,4 @@ Hat tip to the many who have tread this ground before:
 And these are the bee's knees:
 - [homebrew](https://github.com/Homebrew/homebrew)
 - [homebrew-cask](https://github.com/caskroom/homebrew-cask)
-- [spacegray](https://github.com/kkga/spacegray)
 - [base16](https://github.com/chriskempson/base16)
