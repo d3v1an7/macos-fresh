@@ -6,10 +6,10 @@ It's unlikely that these scripts will suit your purposes exactly, but hopefully 
 [Pull requests](https://help.github.com/articles/creating-a-pull-request/) welcome!
 
 ## Notes
-- [ ] Has only been tested on OS X 10.11
-- [ ] Many of the 10.11 updates were made on an established machine, so fresh installs may be bumpy
-- [ ] Have considered (but not tested) zsh
-- [ ] Requires at least Ansible 2
+- Has only been tested on OS X 10.11
+- Many of the 10.11 updates were made on an established machine, so fresh installs may be bumpy
+- Have considered (but not tested) zsh
+- Requires at least Ansible 2
 
 ## Installation
 Open terminal and run
@@ -23,32 +23,32 @@ $ fresh --install
 
 ## WIP
 ### Misc
-- [ ] Check out https://github.com/guarinogabriel/Mac-CLI
-- [ ] Ansible organisation leaves a lot to be desired
-  - [ ] Variables and tags not consistent
-  - [ ] No link between applications and their configuration (if you remove iTerm from the homebrew cask array, the playbook will still try to configure it)
-- [ ] Various race conditions need to be addressed (licence files are not available on first run, etc)
-- [ ] Should detect if running script offline
-- [ ] Update ~/.gitconfig
-- [ ] Installation command is... not very pretty
-- 
+- Check out https://github.com/guarinogabriel/Mac-CLI
+- Ansible organisation leaves a lot to be desired
+  - Variables and tags not consistent
+  - No link between applications and their configuration (if you remove iTerm from the homebrew cask array, the playbook will still try to configure it)
+- Various race conditions need to be addressed (licence files are not available on first run, etc)
+- Should detect if running script offline
+- Update ~/.gitconfig
+- Installation command is... not very pretty
+
 ### Manual steps
 `System Preferences > Displays > Display`
 - Resolution
-  - [ ] Select `Scaled`
-  - [ ] Change scale to `More Space`
+  - Select `Scaled`
+  - Change scale to `More Space`
     - Have tried `brew/screenresolution` and `brew/cask/cscreen`.
     - Both seem to change the resolution for the current session only, and do not scale the screen properly (text and edges are blurry)
 
 `Finder > Preferences > Sidebar`
-- [ ] Uncheck all, except the following
+- Uncheck all, except the following
   - Favorites: iCloud Drive, AirDrop, Desktop, Home
   - Shared: Connected servers
   - Devices: Hard disks, External disks, CDs
 
 `[New Finder window]`
-- [ ] Add `~/Applications`
-- [ ] Set order of sidebar
+- Add `~/Applications`
+- Set order of sidebar
   - Desktop
   - Home
   - ~/Applications
