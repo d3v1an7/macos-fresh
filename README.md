@@ -1,29 +1,38 @@
 # Fresh
 A super opinionated Ansible playbook that gets me up and running after a fresh install of OS X :ok_hand:
 
-It's unlikely this will suit your purposes exactly, but hopefully you'll find it super easy to follow along and customise on your own fork.
+It's unlikely that these scripts will suit your purposes exactly, but hopefully you'll find it easy enough to follow along and customise on your own fork.
 
-[Pull requests](https://help.github.com/articles/creating-a-pull-request/) are very welcome!
-
+[Pull requests](https://help.github.com/articles/creating-a-pull-request/) welcome!
 
 ## Notes
 - [ ] Has only been tested on OS X 10.11
 - [ ] Many of the 10.11 updates were made on an established machine, so fresh installs may be bumpy
-- [ ] Have considered, but not tested zsh
+- [ ] Have considered (but not tested) zsh
 - [ ] Requires at least Ansible 2
 
+## Installation
+Open terminal and run
+``` sh
+$ curl -L https://git.io/vzL6I | bash -s -- --first-run
+```
+If the Ansible playbook ends early, you can safely kick it off again with
+``` sh
+$ fresh --install
+```
 
 ## WIP
 ### Misc
-- Ansible organisation leaves a lot to be desired
+- [ ] Check out https://github.com/guarinogabriel/Mac-CLI
+- [ ] Ansible organisation leaves a lot to be desired
   - [ ] Variables and tags not consistent
   - [ ] No link between applications and their configuration (if you remove iTerm from the homebrew cask array, the playbook will still try to configure it)
 - [ ] Various race conditions need to be addressed (licence files are not available on first run, etc)
 - [ ] Should detect if running script offline
-- [ ] Installation command is urgh
 - [ ] Update ~/.gitconfig
-
-### OSX defaults
+- [ ] Installation command is... not very pretty
+- 
+### Manual steps
 `System Preferences > Displays > Display`
 - Resolution
   - [ ] Select `Scaled`
@@ -44,17 +53,6 @@ It's unlikely this will suit your purposes exactly, but hopefully you'll find it
   - Home
   - ~/Applications
   - AirDrop
-
-
-## Installation
-Open terminal and run
-``` sh
-$ curl -L https://git.io/vzL6I | bash -s -- --first-run
-```
-If the Ansible playbook ends early, you can safely kick it off again with
-``` sh
-$ fresh --install
-```
 
 ## FAQ
 ### In summary, what does this actually do?
@@ -81,7 +79,7 @@ You're right, it is a horrible idea. But it is also super convenient! I _definit
 If you have any questions or suggestions, please either submit a pull request, create an issue ticket, or catch me on [Twitter](https://twitter.com/d3v1an7).
 
 ## Acknowledgements
-Hat tip to the many who have tread this ground before:
+Shout out to the many who have tread this ground before:
 - boxen [our-boxen](https://boxen.github.com/)
 - ptb [osx-setup](https://github.com/ptb/Mac-OS-X-Lion-Setup)
 - mathiasbynens [dotfiles](https://github.com/mathiasbynens/dotfiles)
