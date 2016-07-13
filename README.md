@@ -6,21 +6,28 @@ It's unlikely that these scripts will suit your purposes exactly, but hopefully 
 
 [Pull requests](https://help.github.com/articles/creating-a-pull-request/) welcome!
 
-## Notes
-- Has only been tested on OS X 10.11
-- Many of the 10.11 updates were made on an established machine, so fresh installs may be bumpy
-- Have considered (but not tested) zsh
-- Requires at least Ansible 2
-
 ## Installation
 Open terminal and run
 ``` sh
 $ curl -L https://git.io/vzL6I | bash -s -- --first-run
 ```
-If the Ansible playbook ends early, you can safely kick it off again with
+> Hold on... isn't piping to shell a super [bad idea](http://www.seancassidy.me/dont-pipe-to-your-shell.html)?
+
+Correct! But it is also pretty convenient :)  
+I highly recommend reading and understanding what these scripts do prior to installing.
+
+If the Ansible playbook ends early, you can safely kick it off again
 ``` sh
 $ fresh --install
 ```
+
+
+
+## Notes
+- Has only been tested on OS X 10.11
+- Many of the 10.11 updates were made on an established machine, so fresh installs may be bumpy
+- Have considered (but not tested) zsh
+- Requires at least Ansible 2
 
 ## WIP
 ### Misc
@@ -73,8 +80,7 @@ $ fresh --install
 - Update system configuration files
 - Update application configuration files
 
-### I'm not sure piping a random script to shell is a [good idea](http://www.seancassidy.me/dont-pipe-to-your-shell.html)
-You're right, it is a horrible idea. But it is also super convenient! I _definitely_ recommend clicking on each of the headline links in the FAQ section above to check the code prior to installing.
+
 
 ## Contributing
 If you have any questions or suggestions, please either submit a pull request, create an issue ticket, or catch me on [Twitter](https://twitter.com/d3v1an7).
