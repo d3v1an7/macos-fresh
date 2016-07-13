@@ -1,5 +1,6 @@
-# Fresh
-A super opinionated Ansible playbook that gets me up and running after a fresh install of OS X :ok_hand:
+# <img src="https://cdn.rawgit.com/d3v1an7/fresh/master/logo.svg" alt="fresh" width="30%" />
+
+A super opinionated Ansible playbook that gets me up and running after a fresh install of OS X (soon macOS!) :ok_hand:
 
 It's unlikely that these scripts will suit your purposes exactly, but hopefully you'll find it easy enough to follow along and customise on your own fork.
 
