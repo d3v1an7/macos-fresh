@@ -1,8 +1,8 @@
 # <img src="https://cdn.rawgit.com/d3v1an7/fresh/master/logo.svg" alt="fresh" width="30%" />
 
-A super opinionated Ansible playbook that gets me up and running after a fresh install of OS X (soon macOS!) :ok_hand:
+A super opinionated Ansible playbook (with bash bootstrap) that gets me up and running after a fresh install of OS X (and soon macOS!) :ok_hand:
 
-It's unlikely that these scripts will suit your purposes exactly, but hopefully you'll find it easy enough to follow along and customise on your own fork.
+It's unlikely that the applications and system defaults will suit your purposes exactly, but hopefully you'll find it easy enough to follow along and customise on your own fork.
 
 [Pull requests](https://help.github.com/articles/creating-a-pull-request/) welcome!
 
@@ -20,8 +20,6 @@ If the Ansible playbook ends early, you can safely kick it off again
 ``` sh
 $ fresh --install
 ```
-
-
 
 ## Notes
 - Has only been tested on OS X 10.11
