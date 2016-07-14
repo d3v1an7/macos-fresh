@@ -17,7 +17,8 @@ $ curl --progress-bar https://raw.githubusercontent.com/d3v1an7/fresh/master/bin
 ```
 > Hold on... isn't piping random scripts to shell a [really bad idea](http://www.seancassidy.me/dont-pipe-to-your-shell.html)?
 
-Correct! But it is also pretty convenient :) I would recommend having a general understanding of what the script does prior to installing.
+Correct! But it is also pretty convenient, so... :see_no_evil:  
+I would recommend having a general understanding of what the script does prior to installing.
 
 ## Usage
 ```
