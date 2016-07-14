@@ -8,9 +8,10 @@ if [ -z "${UUID}" ]; then
   exit 0
 fi
 
-cat << EOF
+## Ansible doesn't like new lines in the json, so make sure to strip those out with tr
+cat | tr '\n' ' ' << EOF
 {
-  "changed": true,
+  "changed": "true",
   "ansible_facts": {
     "uuid": "${UUID}"
   }

@@ -2,11 +2,9 @@
 
 USER_NAME="${USER}"
 
-## Currently unused...
 ## Credit: http://stackoverflow.com/a/11704652
 USER_NAME_FULL=$(osascript -e "long user name of (system info)")
 
-## Currently unused...
 ## Credit: http://stackoverflow.com/a/19878198
 USER_EMAIL=$(dscl . -read /Users/$(whoami) | grep '<string>.*@' | sed -e 's/<[^>]*>//g' | xargs)
 
@@ -22,9 +20,10 @@ if [ -z "${USER_EMAIL}" ]; then
   USER_EMAIL="null"
 fi
 
-cat << EOF
+## Ansible doesn't like new lines in the json, so make sure to strip those out with tr
+cat | tr '\n' ' ' << EOF
 {
-  "changed": true,
+  "changed": "true",
   "ansible_facts": {
     "user_name": "${USER_NAME}",
     "user_name_full": "${USER_NAME_FULL}",
