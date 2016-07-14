@@ -30,7 +30,7 @@ Available commands are:
     undo     Restores system to last known state
     init     Ensures system has tools and apps required
 
-Optional flags for the install and UNDO commands:
+Optional flags for the INSTALL and UNDO commands:
     --skip   Skips specified role [apps|defaults]
 ```
 
