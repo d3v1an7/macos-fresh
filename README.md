@@ -44,6 +44,7 @@ Arguments for the `install` and `undo` commands are all optional. The available 
 
 ### In summary, what does the install script actually do?
 When run with the `init` command, the script will:
+
 1. [`bin/fresh`](bin/fresh)
   - Ensure the following are available on system:
     - [Xcode Command Line Tools](https://developer.apple.com/xcode/downloads/)
