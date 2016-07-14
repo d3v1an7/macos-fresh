@@ -12,7 +12,7 @@ init_variables() {
   VAR_DIR="${HOME}/.fresh"
   VAR_VALID_COMMANDS="@(install|undo|init)"
   VAR_VALID_ARGUMENTS="@(version|help)"
-  VAR_VALID_COMMAND_ARGUMENTS="@(apps|defaults)"
+  VAR_VALID_COMMAND_ARGUMENTS="@(skip)"
   VAR_RECAP_ARRAY=()
 
   ## Symbols
@@ -64,8 +64,8 @@ init_fresh() {
     $VAR_VALID_COMMANDS)
     ## When $2 is a valid command argument or is not supplied...
     case "$2" in
-      "-"$VAR_VALID_COMMAND_ARGUMENTS|"")
-        run_command_$1 ${2#"-"}
+      "--"$VAR_VALID_COMMAND_ARGUMENTS|"")
+        run_command_$1 ${2#"--"} $3
       ;;
       *)
         print_input_error "$@"
@@ -96,21 +96,21 @@ run_command_init() {
   install_git
   install_ansible
   install_fresh
-  ansible_playbook "${VAR_DIR}/ansible/playbook.yml" "--tags=init ${1}"
+  ansible_playbook "playbook.yml" "--tags=init"
   print_status_recap "PASS" "init"
   print_help
 }
 
 run_command_install() {
-  print_status_primary "INFO" "INSTALL"
-  echo ansible_playbook "${VAR_DIR}/ansible/playbook.yml" "--ask-become-pass --tags=install ${1}"
-  print_status_recap "PASS" "INSTALL"
+  print_status_primary "INFO" "install"
+  ansible_playbook "playbook.yml" "--ask-become-pass --tags=install --skip-tags=${2}"
+  print_status_recap "PASS" "install"
 }
 
 run_command_undo() {
-  print_status_primary "INFO" "UPDATE"
-  ansible_playbook "${VAR_DIR}/ansible/playbook.yml" "--tags=undo ${1}"
-  print_status_recap "PASS" "UPDATE"
+  print_status_primary "INFO" "undo"
+  ansible_playbook "playbook.yml" "--tags=undo,${1}"
+  print_status_recap "PASS" "undo"
 }
 
 ## Install
@@ -168,9 +168,10 @@ ansible_playbook() {
   print_status_secondary "WARN" "Running playbook"
   if [ -n "$1" ]; then VAR_ANSIBLE_PATH="${1}"; fi
   if [ -n "$2" ]; then VAR_ANSIBLE_EXTRAS="${2}"; fi
+  cd ${VAR_DIR}/ansible && \
   ansible-playbook \
     "${VAR_ANSIBLE_PATH}" \
-    --inventory-file="${VAR_DIR}/ansible/inventory/hosts" \
+    --inventory-file="inventory/hosts" \
     ${VAR_ANSIBLE_EXTRAS}
   VAR_RECAP_ARRAY+=("${FUNCNAME}")
 }

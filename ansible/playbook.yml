@@ -1,6 +1,8 @@
 ---
-- hosts: workstation
-
+- hosts        : workstation
+  connection   : local
+  gather_facts : false
+  
   vars_files:
     - group_vars/apps
     - group_vars/system
@@ -9,17 +11,20 @@
   roles:
     # init
     - { role: init, tags: [ "init" ] }
-    
-    # Install
-    - { role: configure, tags: [ "install", "configure" ] }
-    - { role: homebrew, tags: ["install", "homebrew"] }
-    - { role: npm, tags: ["install", "npm"] }
-    - { role: rvm, tags: ["install", "rvm"] }
-    - { role: osx_defaults, tags: ["install", "osx_defaults"] }
-    - { role: osx_commands, tags: ["install", "osx_commands"] }
-    - { role: homebrew_caveats, tags: ["install", "homebrew_caveats"] }
-    - { role: osx_apps, tags: ["install", "osx_apps"] }
-    - { role: space_cowboy, tags: ["install", "space_cowboy"] }
+
+    # configure
+    - { role: configure }
+
+    # install apps
+    # - { role: homebrew, tags: [ "install", "apps" ] }
+    # - { role: npm, tags: [ "install", "apps" ] }
+    - { role: rvm, tags: [ "install", "apps" ] }
+
+    # - { role: osx_defaults, tags: ["defaults", "osx_defaults"] }
+    # - { role: osx_commands, tags: ["install", "osx_commands"] }
+    # - { role: homebrew_caveats, tags: ["install", "homebrew_caveats"] }
+    # - { role: osx_apps, tags: ["install", "osx_apps"] }
+    # - { role: space_cowboy, tags: ["install", "space_cowboy"] }
 
     # Not implemented
-    - { role: not_implemented, tags: [ "update", "clean" ] }
+    # - { role: not_implemented, tags: [ "update", "clean" ] }

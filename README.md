@@ -33,8 +33,7 @@ Available commands are:
 
 Arguments for the `install` and `undo` commands are all optional. The available flags are:
 ```
--apps
--defaults
+--skip [apps|defaults]
 ```
 
 ## FAQ
