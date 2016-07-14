@@ -1,14 +1,14 @@
-# <img src="https://cdn.rawgit.com/d3v1an7/fresh/master/logo.svg" alt="fresh" width="30%" /><span style="display: none;">fresh</span>
+# <img src="https://cdn.rawgit.com/d3v1an7/fresh/master/logo.svg" alt="fresh" width="30%" />
 
-[![status](https://img.shields.io/badge/status-WIP-red.svg?maxAge=2592000)]()
-[![os_version](https://img.shields.io/badge/OS%20X-10.11-blue.svg?maxAge=2592000)]()
+![status](https://img.shields.io/badge/status-WIP-red.svg?maxAge=2592000)
+![os_version](https://img.shields.io/badge/OS%20X-10.11-blue.svg?maxAge=2592000)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](LICENSE.md)
 
-A super opinionated Ansible playbook (with bash bootstrap) that gets me up and running after a fresh install of OS X :ok_hand:
+A super opinionated Ansible playbook (with bash bootstrap) that gets me up and running after a fresh install of OS X.
 
 It's unlikely that the applications and system defaults I've chosen will suit your purposes exactly, but hopefully you'll find it easy enough to follow along and customise on your own fork.
 
-[Pull requests](https://help.github.com/articles/creating-a-pull-request/) are very welcome!
+[Pull requests](https://help.github.com/articles/creating-a-pull-request/) are very welcome :ok_hand:
 
 ## Installation
 Open terminal and run
