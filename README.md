@@ -29,11 +29,9 @@ Available commands are:
     install  Installs applications and makes changes to system defaults
     undo     Restores system to last known state
     init     Ensures system has tools and apps required
-```
 
-Arguments for the `install` and `undo` commands are all optional. The available flags are:
-```
---skip [apps|defaults]
+Optional flags for the install and UNDO commands:
+    --skip   Skips specified role [apps|defaults]
 ```
 
 ## FAQ
