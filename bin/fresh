@@ -109,7 +109,7 @@ run_command_install() {
 
 run_command_undo() {
   print_status_primary "INFO" "undo"
-  ansible_playbook "playbook.yml" "--tags=undo,${1}"
+  ansible_playbook "playbook.yml" "--tags=undo --skip-tags=${2}"
   print_status_recap "PASS" "undo"
 }
 
@@ -156,7 +156,7 @@ install_ansible() {
 }
 
 install_fresh() {
-  if [ ! -d "${VAR_DIR}" ]; then
+  if [ ! -d "${VAR_DIR}/.git" ]; then
     print_status_secondary "WARN" "Cloning fresh"
     git clone --quiet https://github.com/d3v1an7/fresh.git $VAR_DIR
   fi
@@ -181,20 +181,6 @@ type_exists() {
     return 0
   fi
   return 1
-}
-
-confirm() {
-  # call with a prompt string or use a default
-  read -r -p "${1:-Are you sure?} [y/n] " response
-  echo
-  case $response in
-    [yY][eE][sS]|[yY])
-      true
-      ;;
-    *)
-      false
-      ;;
-  esac
 }
 
 ## Output
