@@ -1,0 +1,12 @@
+---
+# Ensure bin/fresh is immediately accessible
+- name: ensure bin/fresh is executable
+  file:
+    path: "{{ home }}/.fresh/bin/fresh"
+    mode: 0755
+
+- name: ensure bin/fresh is accessible
+  file:
+    src: "{{ home }}/.fresh/bin/fresh"
+    dest: /usr/local/bin/fresh
+    state: link

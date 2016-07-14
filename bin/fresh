@@ -7,13 +7,12 @@ set -e
 ## Credit: http://stackoverflow.com/a/13254908
 shopt -s extglob
 
-## Run this function after exit
-trap print_runtime EXIT
-
+## Init
 init_variables() {
-  VAR_TIMER_START=$(date +%s)
   VAR_DIR="${HOME}/.fresh"
-  VAR_VALID_ARGUMENTS="@(first-run|install|update|clean|help)"
+  VAR_VALID_COMMANDS="@(install|undo|init)"
+  VAR_VALID_ARGUMENTS="@(version|help)"
+  VAR_VALID_COMMAND_ARGUMENTS="@(apps|defaults)"
   VAR_RECAP_ARRAY=()
 
   ## Symbols
@@ -58,56 +57,59 @@ init_fresh() {
   case "$1" in
     ## When $1 is a valid argument...
     "--"$VAR_VALID_ARGUMENTS)
-    run_argument_${1#"--"} $2
+      run_argument_${1#"--"}
     ;;
-    ## When $1 is anything else...
-    *)
+
+    ## When $1 is a valid command or argument...
+    $VAR_VALID_COMMANDS)
+    ## When $2 is a valid command argument or is not supplied...
     case "$2" in
+      $VAR_VALID_COMMAND_ARGUMENTS|"")
+        run_command_$1 $2
+      ;;
       *)
-      print_status_primary "ERROR" "ERROR"
-      print_status_secondary "ERROR" "Invalid argument: ${1-[null]}"
-      echo
-      print_help
+        print_input_error "$@"
       ;;
     esac
+    ;;
+
+    # When $1 is anything else...
+    *)
+      print_input_error "$@"
     ;;
   esac
 }
 
 ## Run
-run_argument_first-run() {
-  print_status_primary "INFO" "FIRST RUN"
+run_argument_version() {
+  print_version
+}
+
+run_argument_help() {
+  print_help
+}
+
+run_command_init() {
+  print_status_primary "INFO" "init"
   install_cli_tools
   install_homebrew
   install_git
   install_ansible
   install_fresh
-  print_status_recap "PASS" "FIRST RUN"
-  print_status_secondary "WARN" "About to run \`ansible/install.yml\`"
-  # confirm "Continue with the defaults in \`ansible/group_vars/all\`?"
-  run_argument_install
+  ansible_playbook "${VAR_DIR}/ansible/playbook.yml" "--tags=init ${1}"
+  print_status_recap "PASS" "init"
 }
 
-run_argument_install() {
+run_command_install() {
   print_status_primary "INFO" "INSTALL"
-  ansible_playbook "${VAR_DIR}/ansible/playbook.yml" "--ask-become-pass --tags=install ${1}"
+  echo ansible_playbook "${VAR_DIR}/ansible/playbook.yml" "--ask-become-pass --tags=install ${1}"
   print_status_recap "PASS" "INSTALL"
 }
 
-run_argument_update() {
+run_command_undo() {
   print_status_primary "INFO" "UPDATE"
-  ansible_playbook "${VAR_DIR}/ansible/playbook.yml" "--tags=update ${1}"
+  ansible_playbook "${VAR_DIR}/ansible/playbook.yml" "--tags=undo ${1}"
   print_status_recap "PASS" "UPDATE"
-}
-
-run_argument_clean() {
-  print_status_primary "INFO" "CLEAN"
-  ansible_playbook "${VAR_DIR}/ansible/playbook.yml" "--tags=clean ${1}"
-  print_status_recap "PASS" "CLEAN"
-}
-
-run_argument_help() {
-  print_help
 }
 
 ## Install
@@ -147,7 +149,7 @@ install_git() {
 install_ansible() {
   if ! type_exists "ansible"; then
     print_status_secondary "WARN" "Installing ansible"
-    brew install --HEAD ansible ## Running --HEAD until Ansible 2 reaches stable
+    brew install ansible
   fi
   VAR_RECAP_ARRAY+=("${FUNCNAME}")
 }
@@ -228,31 +230,37 @@ print_status_recap() {
   echo
 }
 
-print_runtime() {
-  VAR_TIMER_END=$(date +%s)
-  echo "RUNTIME: $((VAR_TIMER_END - VAR_TIMER_START)) seconds"
+print_input_error() {
+  print_status_primary "ERROR" "ERROR"
+  print_status_secondary "ERROR" "Invalid input: ${*-[null]}"
   echo
+  print_help
 }
 
-print_usage() {
-  echo "Usage: fresh [argument]"
+print_version() {
+  cd ${VAR_DIR}
+  echo -ne "fresh: " && git rev-parse --short HEAD
   echo
-}
-
-print_arguments() {
-  echo "Arguments:"
-  echo "   --first-run  Privision system"
-  echo "   --install    Install fresh (see ansible playbook)"
-  echo "   --update     Get the latest updates for fresh via git"
-  echo "   --clean      Fix and clean homebrew"
-  echo "   --help       Print this help message"
-  echo
+  exit 1
 }
 
 print_help() {
   print_usage
   print_arguments
   exit 1
+}
+
+print_usage() {
+  echo "usage: fresh [--version] [--help] <command> [<args>]"
+  echo
+}
+
+print_arguments() {
+  echo "Available commands are:"
+  echo "    install  Installs applications and makes changes to system defaults"
+  echo "    undo     Restores system to last known state"
+  echo "    init     Ensures system has tools and apps required"
+  echo
 }
 
 ## GLHF

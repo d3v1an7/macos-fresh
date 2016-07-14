@@ -7,6 +7,9 @@
     - group_vars/licences
 
   roles:
+    # init
+    - { role: init, tags: [ "init" ] }
+    
     # Install
     - { role: configure, tags: [ "install", "configure" ] }
     - { role: homebrew, tags: ["install", "homebrew"] }
