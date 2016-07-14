@@ -1,12 +1,11 @@
 ---
 - hosts        : workstation
   connection   : local
-  gather_facts : false
 
-  # vars_files:
-  #   - group_vars/apps
-  #   - group_vars/system
-  #   - group_vars/licences
+  vars_files:
+    - vars/apps.yml
+    - vars/system.yml
+    - vars/licences.yml
 
   roles:
     # init
