@@ -42,24 +42,24 @@ Arguments for the `install` and `undo` commands are all optional. The available 
 1. Rollbacks. Don't like what happened after `install`? The `undo` command will unset all changes, meaning you can return your system to the state before running, or even back to factory default (when using the example rollback config supplied).
 1. Ansible. Ansible has a trivial barrier to entry (in comparison to say, Puppet) and playbooks are cleaner and easier to configure than most bash scripts.
 
-### In summary, what does this actually do?
-##### 1. [`install`](install)
-- Ensure your system meets base requirements and install:
-  - [Xcode Command Line Tools](https://developer.apple.com/xcode/downloads/)
-  - [Homebrew](http://brew.sh/)
-  - [Git](http://git-scm.com/downloads/)
-  - [Ansible](http://docs.ansible.com/intro_installation.html)
-- Clone this repo into `~/.fresh/`
-- Run the Ansible playbook below
-
-##### 2. [`ansible/playbook.yml`](ansible/playbook.yml)
-- Symlink `bin/fresh` to `/usr/local/bin/fresh`
-- Install tools and applications
-- Update application configuration files
-- Update system configuration files
+### In summary, what does the install script actually do?
+When run with the `init` command, the script will:
+1. [`bin/fresh`](bin/fresh)
+  - Ensure the following are available on system:
+    - [Xcode Command Line Tools](https://developer.apple.com/xcode/downloads/)
+    - [Homebrew](http://brew.sh/)
+    - [Git](http://git-scm.com/downloads/)
+    - [Ansible](http://docs.ansible.com/intro_installation.html)
+  - Clone this repo into `~/.fresh/`
+  - Run the Ansible playbook below
+1. [`ansible/playbook.yml`](ansible/playbook.yml)
+  - Symlink `bin/fresh` to `/usr/local/bin/fresh`
 
 ## Contributing
-If you have any questions or suggestions, please either submit a pull request, create an issue ticket, or catch me on [Twitter](https://twitter.com/d3v1an7).
+If you have any questions or suggestions, you can:
+- Submit a [pull request](https://github.com/d3v1an7/fresh/pull/new/master)
+- Submit an [issue](https://github.com/d3v1an7/fresh/issues/new), or
+- Say hello on [Twitter](https://twitter.com/d3v1an7)
 
 ## Acknowledgements
 Shout out to the many who have tread this ground before:
