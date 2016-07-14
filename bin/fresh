@@ -64,8 +64,8 @@ init_fresh() {
     $VAR_VALID_COMMANDS)
     ## When $2 is a valid command argument or is not supplied...
     case "$2" in
-      $VAR_VALID_COMMAND_ARGUMENTS|"")
-        run_command_$1 $2
+      "-"$VAR_VALID_COMMAND_ARGUMENTS|"")
+        run_command_$1 ${2#"-"}
       ;;
       *)
         print_input_error "$@"
@@ -98,6 +98,7 @@ run_command_init() {
   install_fresh
   ansible_playbook "${VAR_DIR}/ansible/playbook.yml" "--tags=init ${1}"
   print_status_recap "PASS" "init"
+  print_help
 }
 
 run_command_install() {
