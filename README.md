@@ -1,8 +1,8 @@
 # <img src="https://cdn.rawgit.com/d3v1an7/fresh/master/logo.svg" alt="fresh" width="30%" />
 
-![status](https://img.shields.io/badge/status-WIP-red.svg?maxAge=2592000)
-![os_version](https://img.shields.io/badge/OS%20X-10.11-blue.svg?maxAge=2592000)
+[![os_version](https://img.shields.io/badge/OS%20X-10.11-blue.svg?maxAge=2592000)](https://itunes.apple.com/au/app/os-x-el-capitan/id1018109117)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](LICENSE.md)
+[![status](https://img.shields.io/badge/status-WIP-red.svg?maxAge=2592000)](WIP.md)
 
 A super opinionated Ansible playbook (with bash bootstrap) that gets me up and running after a fresh install of OS X.
 
@@ -18,7 +18,7 @@ $ curl --progress-bar https://raw.githubusercontent.com/d3v1an7/fresh/master/bin
 > Hold on... isn't piping random scripts to shell a [really bad idea](http://www.seancassidy.me/dont-pipe-to-your-shell.html)?
 
 Correct! But it is also pretty convenient, so... :see_no_evil:  
-I would recommend having a general understanding of what the script does prior to installing.
+I'd recommend having a general understanding of any script before installing, but I'll leave that up to you!
 
 ## Usage
 ```
@@ -37,46 +37,14 @@ Arguments for the `install` and `undo` commands are all optional. The available 
 -defaults
 ```
 
-## WIP
-### Misc
-- Ensure ansible version minimum is met
-- Ansible organisation leaves a lot to be desired
-  - Variables and tags not consistent
-  - No link between applications and their configuration (if you remove iTerm from the homebrew cask array, the playbook will still try to configure it)
-- Various race conditions need to be addressed (licence files are not available on first run, etc)
-- Should detect if running script offline
-- Update ~/.gitconfig
-- Move following manual steps to print at end of playbook
-
-`System Preferences > Displays > Display`
-- Resolution
-  - Select `Scaled`
-  - Change scale to `More Space`
-    - Have tried `brew/screenresolution` and `brew/cask/cscreen`.
-    - Both seem to change the resolution for the current session only, and do not scale the screen properly (text and edges are blurry)
-
-`Finder > Preferences > Sidebar`
-- Uncheck all, except the following
-  - Favorites: iCloud Drive, AirDrop, Desktop, Home
-  - Shared: Connected servers
-  - Devices: Hard disks, External disks, CDs
-
-`[New Finder window]`
-- Add `~/Applications`
-- Set order of sidebar
-  - Desktop
-  - Home
-  - ~/Applications
-  - AirDrop
-
 ## FAQ
-### Why this and not something else?
-Ok
+### Why this and not [something else]?
+1. Rollbacks. Don't like what happened after `install`? The `undo` command will unset all changes, meaning you can return your system to the state before running, or even back to factory default (when using the example rollback config supplied).
+1. Ansible. Ansible has a trivial barrier to entry (in comparison to say, Puppet) and playbooks are cleaner and easier to configure than most bash scripts.
 
 ### In summary, what does this actually do?
 ##### 1. [`install`](install)
-- Ensure your system meets base requirements
-- Install
+- Ensure your system meets base requirements and install:
   - [Xcode Command Line Tools](https://developer.apple.com/xcode/downloads/)
   - [Homebrew](http://brew.sh/)
   - [Git](http://git-scm.com/downloads/)
@@ -87,8 +55,8 @@ Ok
 ##### 2. [`ansible/playbook.yml`](ansible/playbook.yml)
 - Symlink `bin/fresh` to `/usr/local/bin/fresh`
 - Install tools and applications
-- Update system configuration files
 - Update application configuration files
+- Update system configuration files
 
 ## Contributing
 If you have any questions or suggestions, please either submit a pull request, create an issue ticket, or catch me on [Twitter](https://twitter.com/d3v1an7).
@@ -103,7 +71,11 @@ Shout out to the many who have tread this ground before:
 - pongstr [dotfiles](https://github.com/pongstr/dotfiles)
 - paularmstrong [dotfiles](https://github.com/paularmstrong/dotfiles)
 
-And these are the bee's knees:
+This would not be possible without:
 - [homebrew](https://github.com/Homebrew/homebrew)
 - [homebrew-cask](https://github.com/caskroom/homebrew-cask)
+- [ansible](https://github.com/ansible/ansible)
+
+And much :heart: to:
 - [base16](https://github.com/chriskempson/base16)
+- [source code pro](https://github.com/adobe-fonts/source-code-pro)
