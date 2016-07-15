@@ -22,16 +22,14 @@ homebrew_casks:
   - alfred
   - atom
   - beamer
-  - cakebrew
   - cloud
   - cyberduck
-  - dockertoolbox
+  - docker
   - dropbox
   - filebot
   - firefox
   - fliqlo
   - flux
-  - github-desktop
   - google-chrome
   - google-drive
   - istat-menus
@@ -43,7 +41,6 @@ homebrew_casks:
   - private-internet-access
   - sequel-pro
   - sketch
-  - skyfonts
   - skype
   - slack
   - spectacle
@@ -52,33 +49,10 @@ homebrew_casks:
   - teamviewer
   - the-unarchiver
   - transmission
-  - virtualbox
   - vlc
 
 npm_packages:
-  - grunt-cli
-  - grunt
   - bower
-
-chrome_default_browser: true
-
-atom_config_overwrite: true
-
-atom_config: |
-  "*":
-    welcome:
-      showOnStartup: false
-    editor:
-      invisibles: {}
-      fontFamily: "Source Code Pro"
-      fontSize: 13
-      showInvisibles: true
-      showIndentGuide: true
-      tabType: "soft"
-    core:
-      themes: [
-        "one-dark-ui"
-        "base16-eighties-one-dark"
-      ]
-
-iterm_config_overwrite: true
+  - grunt
+  - grunt-cli
+  - gulp-cli
