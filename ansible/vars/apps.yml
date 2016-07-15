@@ -5,7 +5,6 @@ homebrew_formulae:
   - ack
   - awscli
   - bash-completion
-  - brew-cask
   - coreutils
   - curl
   - git
