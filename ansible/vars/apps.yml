@@ -1,6 +1,8 @@
-homebrew_libraries:
+homebrew_taps:
+  - caskroom/cask
+
+homebrew_formulae:
   - ack
-  - ansible
   - awscli
   - bash-completion
   - brew-cask
@@ -15,9 +17,6 @@ homebrew_libraries:
   - thefuck
   - vim
   - wget
-
-homebrew_taps:
-  - caskroom/cask
 
 homebrew_casks:
   - adobe-creative-cloud
