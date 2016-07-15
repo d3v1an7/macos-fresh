@@ -1,4 +1,5 @@
 ---
+# homebrew
 - name: set current time and time allowed between updates
   set_fact:
    run_time: "{{ ansible_date_time.epoch }}"
@@ -21,17 +22,16 @@
   homebrew_tap:
     name: "{{ item }}"
     state: present
-  with_items: homebrew_taps
+  with_items: "{{ homebrew_taps }}"
 
 - name: install homebrew formulae
   homebrew:
     name: "{{ item }}"
     state: present
-  with_items: homebrew_libraries
+  with_items: homebrew_formulae
 
 - name: install homebrew casks
   homebrew_cask:
     name: "{{ item }}"
     state: present
   with_items: homebrew_casks
-  when: skip_casks is not defined # set true via command line if required

@@ -1,0 +1,14 @@
+last_homebrew_taps:
+{% for item in last_homebrew_taps.stdout_lines %}
+  - {{ item }}
+{% endfor %}
+
+last_homebrew_formulae:
+{% for item in last_homebrew_formulae.stdout_lines %}
+  - {{ item }}
+{% endfor %}
+
+last_homebrew_casks:
+{% for item in last_homebrew_casks.stdout_lines %}
+  - {{ item }}
+{% endfor %}

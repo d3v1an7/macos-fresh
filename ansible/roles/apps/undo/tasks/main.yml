@@ -1,0 +1,21 @@
+---
+- name: load backup file
+  include_vars: "{{ playbook_dir }}/vars/apps.backup.yml"
+
+- name: undo homebrew taps
+  homebrew_tap:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ homebrew_taps | difference(last_homebrew_taps) }}"
+
+- name: undo homebrew formulae
+  homebrew:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ homebrew_formulae | difference(last_homebrew_formulae) }}"
+
+- name: undo homebrew casks
+  homebrew:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ homebrew_casks | difference(last_homebrew_casks) }}"

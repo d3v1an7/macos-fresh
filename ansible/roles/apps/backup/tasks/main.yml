@@ -1,0 +1,18 @@
+---
+- name: show homebrew taps
+  shell: brew tap
+  register: last_homebrew_taps
+
+- name: show homebrew formulae
+  shell: brew list
+  register: last_homebrew_formulae
+
+- name: show homebrew casks
+  shell: brew cask list
+  register: last_homebrew_casks
+
+- name: create rollback.yml
+  template:
+    src: templates/apps.j2
+    dest: "{{ playbook_dir }}/vars/apps.backup.yml"
+    backup: yes
