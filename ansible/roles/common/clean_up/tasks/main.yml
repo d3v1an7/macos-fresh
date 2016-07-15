@@ -6,7 +6,6 @@
     - Dock
     - SystemUIServer
     - cfprefsd
-  tags: defaults
 
 - name: NOTE run these after playbook recap
   debug: var=run_later

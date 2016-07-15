@@ -252,7 +252,7 @@ print_arguments() {
   echo "    init     Ensures system has tools and apps required"
   echo
   echo "Optional flags for the INSTALL and UNDO commands:"
-  echo "    --skip   Skips specified role [apps|defaults]"
+  echo "    --skip   Skips specified role [apps|system|config]"
   echo
 }
 

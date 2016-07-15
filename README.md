@@ -31,7 +31,7 @@ Available commands are:
     init     Ensures system has tools and apps required
 
 Optional flags for the INSTALL and UNDO commands:
-    --skip   Skips specified role [apps|defaults]
+    --skip   Skips specified role [apps|system|config]
 ```
 
 ## FAQ
