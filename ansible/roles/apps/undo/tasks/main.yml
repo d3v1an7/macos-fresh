@@ -2,6 +2,7 @@
 - name: load backup file
   include_vars: "{{ playbook_dir }}/vars/apps.backup.yml"
 
+# homebrew
 - name: undo homebrew taps
   homebrew_tap:
     name: "{{ item }}"
@@ -19,3 +20,15 @@
     name: "{{ item }}"
     state: absent
   with_items: "{{ homebrew_casks | difference(last_homebrew_casks) }}"
+
+# npm
+- name: undo npm packages
+  npm:
+    global: yes
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ npm_packages | difference(last_npm_packages) }}"
+
+# rvm
+- name: undo ruby version
+  shell: rbenv global {{ last_ruby_version }}
