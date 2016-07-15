@@ -14,6 +14,16 @@
   register: last_homebrew_casks
   changed_when: false
 
+- name: list npm packages
+  shell: ls `npm root -g`
+  register: last_npm_packages
+  changed_when: false
+
+- name: check current ruby version
+  shell: echo $(rbenv version | sed 's/ (.*//')
+  register: current_ruby_version
+  changed_when: false
+
 - name: create rollback.yml
   template:
     src: templates/apps.j2
