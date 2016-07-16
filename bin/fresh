@@ -103,13 +103,13 @@ run_command_init() {
 
 run_command_install() {
   print_status_primary "INFO" "install"
-  ansible_playbook "playbook.yml" "--tags=install --skip-tags=${2}" "--ask-become-pass"
+  ansible_playbook "playbook.yml" "--ask-become-pass --tags=install --skip-tags=${2}"
   print_status_recap "PASS" "install"
 }
 
 run_command_undo() {
   print_status_primary "INFO" "undo"
-  ansible_playbook "playbook.yml" "--tags=undo --skip-tags=${2}" "--ask-become-pass"
+  ansible_playbook "playbook.yml" "--ask-become-pass --tags=undo --skip-tags=${2}"
   print_status_recap "PASS" "undo"
 }
 
@@ -167,14 +167,12 @@ install_fresh() {
 ansible_playbook() {
   print_status_secondary "WARN" "Running playbook"
   if [ -n "$1" ]; then VAR_ANSIBLE_PATH="${1}"; fi
-  if [ -n "$2" ]; then VAR_ANSIBLE_TAGS="${2}"; fi
-  if [ -n "$3" ]; then VAR_ANSIBLE_EXTRAS="${3}"; fi
+  if [ -n "$2" ]; then VAR_ANSIBLE_EXTRAS="${2}"; fi
   cd ${VAR_DIR}/ansible && \
   ansible-playbook \
     "${VAR_ANSIBLE_PATH}" \
     --inventory-file="inventory/hosts" \
-    ${VAR_ANSIBLE_TAGS} \
-    "${VAR_ANSIBLE_EXTRAS}"
+    ${VAR_ANSIBLE_EXTRAS}
   VAR_RECAP_ARRAY+=("${FUNCNAME}")
 }
 
