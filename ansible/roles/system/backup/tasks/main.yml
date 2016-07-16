@@ -1,31 +1,31 @@
 ---
-- name: list homebrew taps
-  shell: brew tap
-  register: last_homebrew_taps
+- name: read OSX defaults (user)
+  shell: defaults read "{{ item.0.domain }}" "{{ item.1.key }}"
+  with_subelements:
+    - "{{ defaults }}"
+    - settings
+  register: last_osx_defaults_user
   changed_when: false
 
-- name: list homebrew formulae
-  shell: brew list
-  register: last_homebrew_formulae
+- name: read OSX defaults (sudo)
+  become: yes
+  shell: defaults read "{{ item.0.domain }}" "{{ item.1.key }}"
+  with_subelements:
+    - "{{ defaults_global }}"
+    - settings
+  register: last_osx_defaults_sudo
   changed_when: false
 
-- name: list homebrew casks
-  shell: brew cask list
-  register: last_homebrew_casks
-  changed_when: false
-
-- name: list npm packages
-  shell: ls `npm root -g`
-  register: last_npm_packages
-  changed_when: false
-
-- name: check current ruby version
-  shell: echo $(rbenv version | sed 's/ (.*//')
-  register: current_ruby_version
+- name: read OSX defaults (plistbuddy)
+  shell: "/usr/libexec/PlistBuddy -c 'Print :{{ item.1.name }} {{ item.1.value }}' {{ item.0.domain }}"
+  with_subelements:
+    - "{{ defaults_plistbuddy }}"
+    - settings
+  register: last_osx_defaults_plistbuddy
   changed_when: false
 
 - name: create rollback.yml
   template:
-    src: templates/apps.j2
-    dest: "{{ playbook_dir }}/vars/apps.backup.yml"
+    src: templates/system.j2
+    dest: "{{ playbook_dir }}/vars/system.backup.yml"
     backup: yes

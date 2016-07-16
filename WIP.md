@@ -1,13 +1,9 @@
 # WIP
-- Update bash commands based on readme
-- Add rollback config file
-  - Created on first run
-  - For defaults, this_thing: did_not_exist
+- Write undo playbook for /system
+  - Ensure that we store 'missing' attributes in backup yml (`this_thing: did_not_exist`)
+- Update everything in /config
 - Ensure Ansible version minimum is met
-- Ansible organisation leaves a lot to be desired
-  - Variables and tags not consistent
-  - No link between applications and their configuration (if you remove iTerm from the homebrew cask array, the playbook will still try to configure it)
-- Various race conditions need to be addressed (licence files are not available on first run, etc)
+- Various race conditions need to be addressed (license files are not available on first run, etc)
 - Should detect if running script offline
 - Update ~/.gitconfig
 - Move following manual steps to print at end of playbook

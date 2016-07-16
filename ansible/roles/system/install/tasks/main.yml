@@ -7,7 +7,7 @@
     array_add: "{{ item.1.array_add | default(false) }}"
     value: "{{ item.1.value }}"
   with_subelements:
-    - defaults
+    - "{{ defaults }}"
     - settings
 
 - name: write OSX defaults (sudo)
@@ -19,40 +19,40 @@
     array_add: "{{ item.1.array_add | default(false) }}"
     value: "{{ item.1.value }}"
   with_subelements:
-    - defaults_global
+    - "{{ defaults_global }}"
     - settings
 
 - name: write OSX defaults (plistbuddy)
   shell: "/usr/libexec/PlistBuddy -c 'Set :{{ item.1.name }} {{ item.1.value }}' {{ item.0.domain }}"
   with_subelements:
-    - defaults_plistbuddy
+    - "{{ defaults_plistbuddy }}"
     - settings
 
-- name: change keyboard shortcuts
-  shell: /usr/libexec/PlistBuddy -c "{{ item }}" "{{ home }}/Library/Preferences/com.apple.symbolichotkeys.plist"
-  with_items:
-    # Uncheck `Show Spotlight search`
-    - "Set AppleSymbolicHotKeys:64:enabled bool false"
-    # Uncheck `Show Finder search window`
-    - "Set AppleSymbolicHotKeys:65:enabled bool false"
-
-- name: disable OS X Gatekeeper
-  become: yes
-  shell: "spctl --master-disable"
-  when: "{{ disable_gatekeeper }}"
-
-- name: set computer name
-  shell: "sudo scutil --set {{ item.name }} '{{ item.value }}'"
-  with_items: "{{ computer_names }}"
-
-- name: power settings (all)
-  shell: "sudo pmset -a {{ item.name }} {{ item.value }}"
-  with_items: "{{ power_settings_all }}"
-
-- name: power settings (battery)
-  shell: "sudo pmset -a {{ item.name }} {{ item.value }}"
-  with_items: "{{ power_settings_battery }}"
-
-- name: power settings (charger)
-  shell: "sudo pmset -a {{ item.name }} {{ item.value }}"
-  with_items: "{{ power_settings_charger }}"
+# - name: change keyboard shortcuts
+#   shell: /usr/libexec/PlistBuddy -c "{{ item }}" "{{ home }}/Library/Preferences/com.apple.symbolichotkeys.plist"
+#   with_items:
+#     # Uncheck `Show Spotlight search`
+#     - "Set AppleSymbolicHotKeys:64:enabled bool false"
+#     # Uncheck `Show Finder search window`
+#     - "Set AppleSymbolicHotKeys:65:enabled bool false"
+#
+# - name: disable OS X Gatekeeper
+#   become: yes
+#   shell: "spctl --master-disable"
+#   when: "{{ disable_gatekeeper }}"
+#
+# - name: set computer name
+#   shell: "sudo scutil --set {{ item.name }} '{{ item.value }}'"
+#   with_items: "{{ computer_names }}"
+#
+# - name: power settings (all)
+#   shell: "sudo pmset -a {{ item.name }} {{ item.value }}"
+#   with_items: "{{ power_settings_all }}"
+#
+# - name: power settings (battery)
+#   shell: "sudo pmset -a {{ item.name }} {{ item.value }}"
+#   with_items: "{{ power_settings_battery }}"
+#
+# - name: power settings (charger)
+#   shell: "sudo pmset -a {{ item.name }} {{ item.value }}"
+#   with_items: "{{ power_settings_charger }}"

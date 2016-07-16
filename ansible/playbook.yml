@@ -5,7 +5,6 @@
   vars_files:
     - vars/apps.yml
     - vars/system.yml
-    - vars/config.yml
 
   roles:
     # init
@@ -15,16 +14,16 @@
     - { role: common/shell_facts, tags: ["install"] }
 
     # apps
-    - { role: apps/backup, tags: [ "install", "apps" ] }
-    - { role: apps/install, tags: [ "install", "apps" ] }
-    - { role: apps/undo, tags: [ "undo", "apps" ] }
+    # - { role: apps/backup, tags: [ "install", "apps" ] }
+    # - { role: apps/install, tags: [ "install", "apps" ] }
+    # - { role: apps/undo, tags: [ "undo", "apps" ] }
 
     # system
     - { role: system/backup, tags: [ "install", "system" ] }
-    - { role: system/install, tags: [ "install", "system" ] }
-    - { role: system/undo, tags: [ "undo", "system" ] }
+    # - { role: system/install, tags: [ "install", "system" ] }
+    # - { role: system/undo, tags: [ "undo", "system" ] }
 
-    # preferences
+    # config
     # - { role: osx_commands, tags: ["install", "osx_commands"] }
     # - { role: homebrew_caveats, tags: ["install", "homebrew_caveats"] }
     # - { role: osx_apps, tags: ["install", "osx_apps"] }

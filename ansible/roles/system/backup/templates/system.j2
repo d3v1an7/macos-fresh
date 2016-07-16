@@ -1,21 +1,20 @@
-last_homebrew_taps:
-{% for item in last_homebrew_taps.stdout_lines %}
-  - {{ item }}
+last_defaults:
+{% for item in last_osx_defaults_user.results %}
+  - domain: "{{ item.item[0].domain }}"
+    settings:
+      - { key: "{{ item.item[1].key }}", type: "{{ item.item[1].type }}", value: "{{ item.item[1].value }}" }
 {% endfor %}
 
-last_homebrew_formulae:
-{% for item in last_homebrew_formulae.stdout_lines %}
-  - {{ item }}
+last_defaults_global:
+{% for item in last_osx_defaults_sudo.results %}
+  - domain: "{{ item.item[0].domain }}"
+    settings:
+      - { key: "{{ item.item[1].key }}", type: "{{ item.item[1].type }}", value: "{{ item.item[1].value }}" }
 {% endfor %}
 
-last_homebrew_casks:
-{% for item in last_homebrew_casks.stdout_lines %}
-  - {{ item }}
+last_defaults_plistbuddy:
+{% for item in last_osx_defaults_plistbuddy.results %}
+  - domain: "{{ item.item[0].domain }}"
+    settings:
+      - { name: "{{ item.item[1].name }}", value: "{{ item.item[1].value }}" }
 {% endfor %}
-
-last_npm_packages:
-{% for item in last_npm_packages.stdout_lines %}
-  - {{ item }}
-{% endfor %}
-
-last_ruby_version: "{{ current_ruby_version.stdout }}"
