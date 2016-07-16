@@ -5,6 +5,7 @@
     - "{{ defaults }}"
     - settings
   register: last_osx_defaults_user
+  failed_when: false
   changed_when: false
 
 - name: read OSX defaults (sudo)
@@ -14,6 +15,7 @@
     - "{{ defaults_global }}"
     - settings
   register: last_osx_defaults_sudo
+  failed_when: false
   changed_when: false
 
 - name: read OSX defaults (plistbuddy)
@@ -22,6 +24,7 @@
     - "{{ defaults_plistbuddy }}"
     - settings
   register: last_osx_defaults_plistbuddy
+  failed_when: false
   changed_when: false
 
 - name: create rollback.yml

@@ -2,19 +2,19 @@ last_defaults:
 {% for item in last_osx_defaults_user.results %}
   - domain: "{{ item.item[0].domain }}"
     settings:
-      - { key: "{{ item.item[1].key }}", type: "{{ item.item[1].type }}", value: "{{ item.item[1].value }}" }
+      - { key: "{{ item.item[1].key }}", type: "{{ item.item[1].type }}", value: "{{ item.stdout | default('did_not_exist', true) }}" }
 {% endfor %}
 
 last_defaults_global:
 {% for item in last_osx_defaults_sudo.results %}
   - domain: "{{ item.item[0].domain }}"
     settings:
-      - { key: "{{ item.item[1].key }}", type: "{{ item.item[1].type }}", value: "{{ item.item[1].value }}" }
+      - { key: "{{ item.item[1].key }}", type: "{{ item.item[1].type }}", value: "{{ item.stdout | default('did_not_exist', true) }}" }
 {% endfor %}
 
 last_defaults_plistbuddy:
 {% for item in last_osx_defaults_plistbuddy.results %}
   - domain: "{{ item.item[0].domain }}"
     settings:
-      - { name: "{{ item.item[1].name }}", value: "{{ item.item[1].value }}" }
+      - { name: "{{ item.item[1].name }}", value: "{{ item.stdout | default('did_not_exist', true) }}" }
 {% endfor %}
