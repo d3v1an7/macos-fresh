@@ -10,3 +10,8 @@
     src: "{{ home }}/.fresh/bin/fresh"
     dest: /usr/local/bin/fresh
     state: link
+
+- name: check ansible version
+  assert:
+    that: ansible_version.major <= 2
+    msg: fresh requires at least Ansible 2.0, please update!
