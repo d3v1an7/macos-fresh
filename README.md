@@ -1,4 +1,4 @@
-# <img src="https://cdn.rawgit.com/d3v1an7/fresh/master/logo.svg" alt="fresh" width="30%" />
+# <img src="https://cdn.rawgit.com/d3v1an7/fresh/1285b4998e99232cfe70b8a11c3782f4943dcd91/logo.svg" alt="fresh" width="30%" />
 
 [![os_version](https://img.shields.io/badge/OS%20X-10.11-blue.svg?maxAge=2592000)](https://itunes.apple.com/au/app/os-x-el-capitan/id1018109117)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](LICENSE.md)
