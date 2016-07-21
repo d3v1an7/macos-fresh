@@ -1,11 +1,12 @@
 defaults:
-  # System Preferences > General
   - domain: "NSGlobalDomain"
     settings:
-      # Appearance (dropdown)
+      # System Preferences > General > Appearance (dropdown)
       - { key: "AppleAquaColorVariant", type: "int", value: "6" } # Default: key absent
-      # Use dark menu bar and Dock (checkbox)
+      # System Preferences > General > Use dark menu bar and Dock (checkbox)
       - { key: "AppleInterfaceStyle", type: "string", value: "Dark" } # Default: key absent
+      # System Preferences > Acessibility > Display > Shake mouse pointer to locate (uncheck)
+      - { key: "CGDisableCursorLocationMagnification", type: "bool", value: "true" } # Default: key absent
 
   # System Preferences > Desktop & Screen Saver
   - domain: "ByHost/com.apple.screensaver.{{ uuid }}"
