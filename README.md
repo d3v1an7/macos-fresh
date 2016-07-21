@@ -34,13 +34,19 @@ Optional flags for the INSTALL and UNDO commands:
     --skip   Skips specified role [apps|system|config]
 ```
 
+## Known issues
+1. **IMPORTANT:** At this time, `undo` will NOT rollback the following settings:  
+  - OS X Energy Saver settings
+    - Previous settings are saved as raw output in `ansible/vars/system.backup.yml`
+  - All application config in `ansible/roles/config`, including Atom, iTerm, Google Chrome, etc...
+    - You can avoid this for now by running `install` with `--skip config`
+1. Cannot modify dock/menubar using the osx_defaults module: https://github.com/ansible/ansible-modules-extras/issues/2610
+
 ## FAQ
 ### Why this and not [something else]?
-1. Rollbacks. A backup variable file is created on each run of `install`. The `undo` command will unset all changes, meaning you can return your system to the state before running, or even back to factory default (when using the example rollback config supplied).
-  - IMPORTANT: `undo` will NOT rollback the following settings at this time:
-    - Power settings (Previous settings are saved as raw output in `ansible/vars/system.backup.yml`)
-    - Everything in `ansible/roles/config`, including Atom, iTerm, Google Chrome, etc...
-1. Ansible. Ansible has a trivial barrier to entry (in comparison to say, Puppet) and playbooks are cleaner and easier to configure than most bash scripts.
+1. Rollbacks. A backup variable file is created on each run of `install`. The `undo` command will unset _most_ changes (see known issues above), meaning you can return your system very closely to the state before running.
+<!-- drop this line back in when the example files have been made: or even back to factory default (when using the example rollback config supplied).  -->
+1. Ansible. Ansible has a trivial learning curve (in comparison to say, Puppet) and Ansible Playbooks are cleaner and easier to configure than most bash scripts.
 
 ### In summary, what does the install script actually do?
 When run with the `init` command, the script will:
@@ -55,9 +61,6 @@ When run with the `init` command, the script will:
   - Run the Ansible playbook below
 1. [`ansible/playbook.yml`](ansible/playbook.yml)
   - Symlink `bin/fresh` to `/usr/local/bin/fresh`
-
-## Known issues
-  - Currently unable to modify dock/menubar using the osx_defaults module: https://github.com/ansible/ansible-modules-extras/issues/2610
 
 ## Contributing
 If you have any questions or suggestions, you can:
