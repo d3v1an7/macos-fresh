@@ -1,0 +1,40 @@
+---
+- name: check if atom theme exists
+  stat:
+    path: "{{ home }}/.atom/packages/base16-eighties-one-dark"
+  register: atom_theme
+
+- name: download and unzip atom theme
+  unarchive:
+    src: https://github.com/robneu/base16-eighties-one-dark/archive/master.zip
+    dest: /tmp
+    copy: no
+    creates: /tmp/base16-eighties-one-dark-master
+  when: atom_theme.stat.exists == false
+
+- name: copy theme to atom
+  become: yes
+  synchronize:
+    src: /tmp/base16-eighties-one-dark-master/
+    dest: "{{ home }}/.atom/packages/base16-eighties-one-dark/"
+  when: atom_theme.stat.exists == false
+
+- name: overwite atom config
+  copy:
+    content: |
+      "*":
+        welcome:
+          showOnStartup: false
+        editor:
+          invisibles: {}
+          fontFamily: "Source Code Pro"
+          fontSize: 13
+          showInvisibles: true
+          showIndentGuide: true
+          tabType: "soft"
+        core:
+          themes: [
+            "one-dark-ui"
+            "base16-eighties-one-dark"
+          ]
+    dest: "~/.atom/config.cson"

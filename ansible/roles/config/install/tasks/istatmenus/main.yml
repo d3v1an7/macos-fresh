@@ -1,0 +1,62 @@
+---
+- name: include licence
+  include_vars: licence.yml
+  when: vault_pass.stat.exists
+
+- name: write istat licence
+  osx_defaults:
+    domain: com.bjango.istatmenus
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { key: "license5", type: "string", value: "{{ licence_istat | default }}" }
+  when: vault_pass.stat.exists
+
+- name: write istat defaults
+  osx_defaults:
+    domain: com.bjango.istatmenus5.extras
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+  with_items:
+    # Disable diagnostics
+    - { key: "Diagnostics_Enabled", type: "int", value: "0" } # Default: key absent
+    # CPU bar graph
+    - { key: "CPU_MenubarMode", type: "string", value: "1" } # Default: key absent
+    # Memory pie graph
+    - { key: "Memory_MenubarMode", type: "string", value: "6" } # Default: key absent
+    # Network no decimals
+    - { key: "Network_DecimalLevel", type: "int", value: "0" } # Default: key absent
+    # Sensors display
+    - { key: "Sensors_MenubarMode", type: "string", value: "0" } # Default: key absent
+    # Array interaction is currently broken :(
+    # See: https://github.com/ansible/ansible-modules-extras/issues/2610
+    # Time / Date format
+    # - { key: "Time_MenubarFormat", type: "array", value: "[ 'EE', '\" \"', 'hh', '\":\"', 'mm', '\" \"', 'a' ]" } # Default: key absent
+    # Time / Date hide moon
+    - { key: "Time_DropdownShowMoon", type: "int", value: "0" } # Default: key absent
+    # Array interaction is currently broken :(
+    # See: https://github.com/ansible/ansible-modules-extras/issues/2610
+    # Time / Date cities
+    # - { key: "Time_Cities", type: "array", value: "[ '5128581.0000000000000000', '1566083.0000000000000000' ]" } # Default: key absent
+    # Opacity
+    - { key: "MenubarGraphOpacity-DarkMode", type: "float", value: "0.4418902099132540" } # Default: key absent
+    # Skin colour white
+    - { key: "MenubarSkinColor", type: "int", value: "8" } # Default: key absent
+    # Set order
+    # - { key: "StatusItems-Order", type: "array", value: "[ '4', '2', '1', '5', '-1', '7' ]" } # Default: key absent [ '1', '2', '3', '4', '5', '6' ]
+
+- name: write istat defaults (plistbuddy)
+  shell: /usr/libexec/PlistBuddy -c "{{ item }}" "{{ home }}/Library/Preferences/com.bjango.istatmenus5.extras.plist"
+  with_items:
+    # Set order
+    # Can't do this with osx_defaults module above, as the array is populated with strings, not integers, which crashes istat -- badly
+    - "Delete StatusItems-Order"
+    - "Add StatusItems-Order array"
+    - "Add StatusItems-Order:0 integer 4"
+    - "Add StatusItems-Order:1 integer 2"
+    - "Add StatusItems-Order:2 integer 1"
+    - "Add StatusItems-Order:3 integer -1"
+    - "Add StatusItems-Order:4 integer 5"
+    - "Add StatusItems-Order:5 integer 7"

@@ -1,0 +1,18 @@
+---
+- name: write transmission defaults
+  osx_defaults:
+    domain: org.m0k.transmission
+    key: "{{ item.key }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+  with_items:
+    # Use `~/Downloads/Torrents` to store incomplete downloads
+    - { key: "UseIncompleteDownloadFolder", type: "bool", value: "true" } # Default: key absent
+    - { key: "IncompleteDownloadFolder", type: "string", value: "{{ home }}/Downloads/Torrents" } # Default: key absent
+    # Don't prompt for confirmation before downloading
+    - { key: "DownloadAsk", type: "bool", value: "false" } # Default: key absent
+    # Trash original torrent files
+    - { key: "DeleteOriginalTorrent", type: "bool", value: "true" } # Default: key absent
+    # Hide the donate message
+    - { key: "WarningDonate", type: "bool", value: "false" } # Default: key absent
+    - { key: "WarningLegal", type: "bool", value: "false" } # Default: key absent

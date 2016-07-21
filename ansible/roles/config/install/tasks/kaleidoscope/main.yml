@@ -1,0 +1,20 @@
+---
+- name: include licence
+  include_vars: licence.yml
+  when: vault_pass.stat.exists
+
+- name: make licence file
+  copy:
+    content: "{{ licence_kaleidoscope | default }}"
+    dest: /tmp/license.KaleidoscopeLicense
+  when: vault_pass.stat.exists
+
+- name: open licence file
+  shell: "open -a 'Kaleidoscope' '/tmp/license.KaleidoscopeLicense'"
+  when: vault_pass.stat.exists
+
+- name: clean up licence file
+  file:
+    path: /tmp/license.KaleidoscopeLicense
+    state: absent
+  when: vault_pass.stat.exists

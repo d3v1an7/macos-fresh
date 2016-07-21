@@ -8,7 +8,7 @@
 
   roles:
     # init
-    - { role: common/init, tags: [ "init" ] }
+    - { role: common/init, tags: [ "install", "init" ] }
 
     # get facts from shell
     - { role: common/shell_facts, tags: ["install"] }
@@ -24,9 +24,7 @@
     - { role: system/undo, tags: [ "undo", "system" ] }
 
     # config
-    # - { role: osx_commands, tags: ["install", "osx_commands"] }
-    # - { role: homebrew_caveats, tags: ["install", "homebrew_caveats"] }
-    # - { role: osx_apps, tags: ["install", "osx_apps"] }
+    - { role: config/install, tags: [ "install", "config" ] }
 
     # clean up
     - { role: common/clean_up, tags: ["install"] }

@@ -1,0 +1,19 @@
+---
+- name: check if font exists
+  stat:
+    path: "{{ home }}/Library/Fonts/SourceCodePro-Regular.otf"
+  register: font
+
+- name: download and unzip font
+  unarchive:
+    src: https://github.com/adobe-fonts/source-code-pro/archive/release.zip
+    dest: /tmp
+    copy: no
+    creates: /tmp/source-code-pro-release
+  when: font.stat.exists == false
+
+- name: copy fonts to library
+  synchronize:
+    src: /tmp/source-code-pro-release/OTF/
+    dest: "{{ home }}/Library/Fonts"
+  when: font.stat.exists == false
