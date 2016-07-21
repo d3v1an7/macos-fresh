@@ -1,5 +1,4 @@
 # WIP
-- Update everything in /config
 - Various race conditions need to be addressed (license files are not available on first run, etc)
 - Should detect if running script offline
 - Update ~/.gitconfig
