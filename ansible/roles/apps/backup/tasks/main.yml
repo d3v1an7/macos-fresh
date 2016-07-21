@@ -26,6 +26,6 @@
 
 - name: create rollback.yml
   template:
-    src: templates/apps.j2
+    src: apps.j2
     dest: "{{ playbook_dir }}/vars/apps.backup.yml"
     backup: yes

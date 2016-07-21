@@ -1,6 +1,4 @@
 # WIP
-- Write undo playbook for /system
-  - Ensure that we store 'missing' attributes in backup yml (`this_thing: did_not_exist`)
 - Update everything in /config
 - Ensure Ansible version minimum is met
 - Various race conditions need to be addressed (license files are not available on first run, etc)

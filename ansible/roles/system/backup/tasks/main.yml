@@ -1,5 +1,5 @@
 ---
-- name: read OSX defaults (user)
+- name: check OSX defaults (user)
   shell: defaults read "{{ item.0.domain }}" "{{ item.1.key }}"
   with_subelements:
     - "{{ defaults }}"
@@ -8,7 +8,7 @@
   failed_when: false
   changed_when: false
 
-- name: read OSX defaults (sudo)
+- name: check OSX defaults (sudo)
   become: yes
   shell: defaults read "{{ item.0.domain }}" "{{ item.1.key }}"
   with_subelements:
@@ -18,7 +18,7 @@
   failed_when: false
   changed_when: false
 
-- name: read OSX defaults (plistbuddy)
+- name: check OSX defaults (plistbuddy)
   shell: "/usr/libexec/PlistBuddy -c 'Print :{{ item.1.name }} {{ item.1.value }}' {{ item.0.domain }}"
   with_subelements:
     - "{{ defaults_plistbuddy }}"
@@ -27,8 +27,27 @@
   failed_when: false
   changed_when: false
 
+- name: check spctl status
+  shell: "spctl --status"
+  register: last_osx_spctl_status
+  failed_when: false
+  changed_when: false
+
+- name: check computer name
+  shell: "scutil --get {{ item.name }}"
+  with_items: "{{ computer_names }}"
+  register: last_osx_computer_names
+  failed_when: false
+  changed_when: false
+
+- name: check power settings
+  shell: "pmset -g custom"
+  register: last_osx_power_settings
+  failed_when: false
+  changed_when: false
+
 - name: create rollback.yml
   template:
-    src: templates/system.j2
+    src: system.j2
     dest: "{{ playbook_dir }}/vars/system.backup.yml"
     backup: yes

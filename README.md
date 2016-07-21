@@ -53,6 +53,10 @@ When run with the `init` command, the script will:
 1. [`ansible/playbook.yml`](ansible/playbook.yml)
   - Symlink `bin/fresh` to `/usr/local/bin/fresh`
 
+## Known issues
+  - `undo` will not rollback power settings at this point in time. Previous settings are saved as raw output in `ansible/vars/system.backup.yml`.
+  - Currently unable to modify dock/menubar using the osx_defaults module: https://github.com/ansible/ansible-modules-extras/issues/2610
+
 ## Contributing
 If you have any questions or suggestions, you can:
 - Submit a [pull request](https://github.com/d3v1an7/fresh/pull/new/master)

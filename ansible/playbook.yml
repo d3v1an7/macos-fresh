@@ -14,14 +14,14 @@
     - { role: common/shell_facts, tags: ["install"] }
 
     # apps
-    # - { role: apps/backup, tags: [ "install", "apps" ] }
-    # - { role: apps/install, tags: [ "install", "apps" ] }
-    # - { role: apps/undo, tags: [ "undo", "apps" ] }
+    - { role: apps/backup, tags: [ "install", "apps" ] }
+    - { role: apps/install, tags: [ "install", "apps" ] }
+    - { role: apps/undo, tags: [ "undo", "apps" ] }
 
     # system
     - { role: system/backup, tags: [ "install", "system" ] }
-    # - { role: system/install, tags: [ "install", "system" ] }
-    # - { role: system/undo, tags: [ "undo", "system" ] }
+    - { role: system/install, tags: [ "install", "system" ] }
+    - { role: system/undo, tags: [ "undo", "system" ] }
 
     # config
     # - { role: osx_commands, tags: ["install", "osx_commands"] }
@@ -29,5 +29,5 @@
     # - { role: osx_apps, tags: ["install", "osx_apps"] }
 
     # clean up
-    # - { role: common/clean_up, tags: ["install"] }
-    # - { role: common/space_cowboy, tags: ["install"] }
+    - { role: common/clean_up, tags: ["install"] }
+    - { role: common/space_cowboy, tags: ["install"] }

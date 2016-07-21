@@ -1,34 +1,70 @@
 ---
-# - name: load backup file
-#   include_vars: "{{ playbook_dir }}/vars/apps.backup.yml"
-#
-# # homebrew
-# - name: undo homebrew taps
-#   homebrew_tap:
-#     name: "{{ item }}"
-#     state: absent
-#   with_items: "{{ homebrew_taps | difference(last_homebrew_taps) }}"
-#
-# - name: undo homebrew formulae
-#   homebrew:
-#     name: "{{ item }}"
-#     state: absent
-#   with_items: "{{ homebrew_formulae | difference(last_homebrew_formulae) }}"
-#
-# - name: undo homebrew casks
-#   homebrew:
-#     name: "{{ item }}"
-#     state: absent
-#   with_items: "{{ homebrew_casks | difference(last_homebrew_casks) }}"
-#
-# # npm
-# - name: undo npm packages
-#   npm:
-#     global: yes
-#     name: "{{ item }}"
-#     state: absent
-#   with_items: "{{ npm_packages | difference(last_npm_packages) }}"
-#
-# # rvm
-# - name: undo ruby version
-#   shell: rbenv global {{ last_ruby_version }}
+- name: load backup file
+  include_vars: "{{ playbook_dir }}/vars/system.backup.yml"
+
+- name: undo (modify) OSX defaults (user)
+  osx_defaults:
+    domain: "{{ item.0.domain }}"
+    key: "{{ item.1.key }}"
+    type: "{{ item.1.type }}"
+    array_add: "{{ item.1.array_add | default(false) }}"
+    value: "{{ item.1.value }}"
+  with_subelements:
+    - "{{ last_defaults }}"
+    - settings
+  when: item.1.value != "did_not_exist"
+
+- name: undo (modify) OSX defaults (sudo)
+  become: yes
+  osx_defaults:
+    domain: "{{ item.0.domain }}"
+    key: "{{ item.1.key }}"
+    type: "{{ item.1.type }}"
+    array_add: "{{ item.1.array_add | default(false) }}"
+    value: "{{ item.1.value }}"
+  with_subelements:
+    - "{{ last_defaults_global }}"
+    - settings
+  when: item.1.value != "did_not_exist"
+
+- name: undo (modify) OSX defaults (plistbuddy)
+  shell: "/usr/libexec/PlistBuddy -c 'Set :{{ item.1.name }} {{ item.1.value }}' {{ item.0.domain }}"
+  with_subelements:
+    - "{{ last_defaults_plistbuddy }}"
+    - settings
+  when: item.1.value != "did_not_exist"
+
+- name: undo (remove) OSX defaults (user)
+  osx_defaults:
+    domain: "{{ item.0.domain }}"
+    key: "{{ item.1.key }}"
+    state: absent
+  with_subelements:
+    - "{{ last_defaults }}"
+    - settings
+  when: item.1.value == "did_not_exist"
+
+- name: undo (remove) OSX defaults (sudo)
+  osx_defaults:
+    domain: "{{ item.0.domain }}"
+    key: "{{ item.1.key }}"
+    state: absent
+  with_subelements:
+    - "{{ last_defaults_global }}"
+    - settings
+  when: item.1.value == "did_not_exist"
+
+- name: undo (remove) OSX defaults (plistbuddy)
+  shell: "/usr/libexec/PlistBuddy -c 'Delete :{{ item.1.name }}' {{ item.0.domain }}"
+  with_subelements:
+    - "{{ last_defaults_plistbuddy }}"
+    - settings
+  when: item.1.value == "did_not_exist"
+
+- name: undo OS X Gatekeeper setting
+  become: yes
+  shell: "spctl --master-{{ last_spctl_status }}"
+
+- name: undo computer name
+  shell: "sudo scutil --set {{ item.name }} '{{ item.value }}'"
+  with_items: "{{ last_computer_names }}"
