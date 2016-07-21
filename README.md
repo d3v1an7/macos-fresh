@@ -37,6 +37,9 @@ Optional flags for the INSTALL and UNDO commands:
 ## FAQ
 ### Why this and not [something else]?
 1. Rollbacks. A backup variable file is created on each run of `install`. The `undo` command will unset all changes, meaning you can return your system to the state before running, or even back to factory default (when using the example rollback config supplied).
+  - IMPORTANT: `undo` will NOT rollback the following settings at this time:
+    - Power settings (Previous settings are saved as raw output in `ansible/vars/system.backup.yml`)
+    - Everything in `ansible/roles/config`, including Atom, iTerm, Google Chrome, etc...
 1. Ansible. Ansible has a trivial barrier to entry (in comparison to say, Puppet) and playbooks are cleaner and easier to configure than most bash scripts.
 
 ### In summary, what does the install script actually do?
@@ -54,7 +57,6 @@ When run with the `init` command, the script will:
   - Symlink `bin/fresh` to `/usr/local/bin/fresh`
 
 ## Known issues
-  - `undo` will not rollback power settings at this point in time. Previous settings are saved as raw output in `ansible/vars/system.backup.yml`.
   - Currently unable to modify dock/menubar using the osx_defaults module: https://github.com/ansible/ansible-modules-extras/issues/2610
 
 ## Contributing
