@@ -166,12 +166,15 @@ install_fresh() {
 ## Utilities
 ansible_playbook() {
   print_status_secondary "WARN" "Running playbook"
+  VAR_VAULT_FILE="${VAR_DIR}/ansible/.vault_pass"
   if [ -n "$1" ]; then VAR_ANSIBLE_PATH="${1}"; fi
   if [ -n "$2" ]; then VAR_ANSIBLE_EXTRAS="${2}"; fi
+  if [ -f "$VAR_VAULT_FILE" ]; then VAR_ANSIBLE_VAULT="--vault-password-file=${VAR_VAULT_FILE}"; fi
   cd ${VAR_DIR}/ansible && \
   ansible-playbook \
     "${VAR_ANSIBLE_PATH}" \
     --inventory-file="inventory/hosts" \
+    ${VAR_ANSIBLE_VAULT} \
     ${VAR_ANSIBLE_EXTRAS}
   VAR_RECAP_ARRAY+=("${FUNCNAME}")
 }
