@@ -4,11 +4,11 @@
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](LICENSE.md)
 [![status](https://img.shields.io/badge/status-WIP-red.svg?maxAge=2592000)](WIP.md)
 
-A super opinionated Ansible playbook (with bash bootstrap) that gets me up and running after a fresh install of OS X.
+A super opinionated Ansible playbook (with bash bootstrap) that will provision a local workstation after a fresh install of OS X. Can be run safely on established machines too!
 
-It's unlikely that the applications and system defaults I've chosen will suit your purposes exactly, but hopefully you'll find it easy enough to follow along and customise on your own fork.
+It's unlikely that the chosen applications and system defaults will suit your purposes exactly, but you should find it easy enough to customise on your own fork.
 
-[Pull requests](https://help.github.com/articles/creating-a-pull-request/) are very welcome :ok_hand:
+[Pull requests](https://help.github.com/articles/creating-a-pull-request/) are welcome! :ok_hand:
 
 ## Installation
 Open terminal and run
@@ -17,7 +17,7 @@ $ curl --progress-bar https://raw.githubusercontent.com/d3v1an7/fresh/master/bin
 ```
 > Hold on... isn't piping random scripts to shell a [really bad idea](http://www.seancassidy.me/dont-pipe-to-your-shell.html)?
 
-Correct! But it is also pretty convenient, so... :see_no_evil:  
+Yep! But it is also pretty convenient, so... :see_no_evil:  
 I'd recommend having a general understanding of any script before installing, but I'll leave that up to you!
 
 ## Usage
