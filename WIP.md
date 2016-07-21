@@ -26,3 +26,16 @@
   - Home
   - ~/Applications
   - AirDrop
+
+- Write configs for
+  - PIA
+  - awscli
+  - keybase
+  - git
+  - adobe-creative-cloud
+  - alfred
+  - beamer
+  - cloud
+  - dropbox
+  - sketch
+  - slack
