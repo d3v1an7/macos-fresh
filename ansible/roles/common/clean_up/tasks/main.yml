@@ -11,6 +11,6 @@
   debug: var=run_later
   tags: apps
 
-- name: NOTE open these after playbook recap
-  debug: var=open_later
-  tags: apps
+# - name: NOTE open these after playbook recap
+#   debug: var=open_later
+#   tags: apps
