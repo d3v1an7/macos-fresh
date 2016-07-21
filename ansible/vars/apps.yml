@@ -19,6 +19,7 @@ homebrew_formulae:
 
 homebrew_casks:
   - adobe-creative-cloud
+  - aerial
   - alfred
   - atom
   - beamer
@@ -28,7 +29,6 @@ homebrew_casks:
   - dropbox
   - filebot
   - firefox
-  - fliqlo
   - flux
   - google-chrome
   - google-drive

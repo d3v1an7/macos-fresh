@@ -180,9 +180,9 @@ defaults_plistbuddy:
   - domain: "{{ home }}/Library/Preferences/ByHost/com.apple.screensaver.{{ uuid }}.plist"
     settings:
       # Arrange by
-      - { name: "moduleDict:displayName", value: "Fliqlo" } # Default: `Computer Name`
-      - { name: "moduleDict:moduleName", value: "Fliqlo" } # Default: `Computer Name`
-      - { name: "moduleDict:path", value: "{{ home }}/Library/Screen Savers/Fliqlo.saver" } # Default: `/System/Library/Frameworks/ScreenSaver.framework/Resources/Computer Name.saver`
+      - { name: "moduleDict:displayName", value: "Aerial" } # Default: `Computer Name`
+      - { name: "moduleDict:moduleName", value: "Aerial" } # Default: `Computer Name`
+      - { name: "moduleDict:path", value: "{{ home }}/Library/Screen Savers/Aerial.saver" } # Default: `/System/Library/Frameworks/ScreenSaver.framework/Resources/Computer Name.saver`
 
   # System Preferences > Keyboard > Shortcuts > Spotlight
   - domain: "{{ home }}/Library/Preferences/com.apple.symbolichotkeys.plist"
