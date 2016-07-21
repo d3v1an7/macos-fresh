@@ -27,6 +27,7 @@
   - ~/Applications
   - AirDrop
 
+- Create example backup files from clean run on 10.11
 - Write configs for
   - PIA
   - awscli
