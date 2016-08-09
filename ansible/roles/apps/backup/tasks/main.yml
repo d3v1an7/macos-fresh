@@ -24,7 +24,7 @@
   register: current_ruby_version
   changed_when: false
 
-- name: create rollback.yml
+- name: create apps.backup.yml
   template:
     src: apps.j2
     dest: "{{ playbook_dir }}/vars/apps.backup.yml"

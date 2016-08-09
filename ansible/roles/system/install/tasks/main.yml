@@ -22,8 +22,17 @@
     - "{{ defaults_global }}"
     - settings
 
-- name: write OSX defaults (plistbuddy)
-  shell: "/usr/libexec/PlistBuddy -c 'Set :{{ item.1.name }} {{ item.1.value }}' {{ item.0.domain }}"
+# Using `Delete` then `Add` with plistbuddy, as `Set` will fail if the key doesn't exist
+- name: clear OSX defaults (plistbuddy)
+  shell: "/usr/libexec/PlistBuddy -c 'Delete :{{ item.1.key }}' {{ item.0.domain }}"
+  with_subelements:
+    - "{{ defaults_plistbuddy }}"
+    - settings
+  register: plistbuddy_result
+  failed_when: "plistbuddy_result.stderr and 'Does Not Exist' not in plistbuddy_result.stderr"
+
+- name: set OSX defaults (plistbuddy)
+  shell: "/usr/libexec/PlistBuddy -c 'Add :{{ item.1.key }} {{ item.1.type }} {{ item.1.value }}' {{ item.0.domain }}"
   with_subelements:
     - "{{ defaults_plistbuddy }}"
     - settings

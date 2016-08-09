@@ -1,17 +1,13 @@
 {#- macros ***************************************************************** -#}
 
-{% macro display_list(list_items, list_type) %}
+{% macro display_list(list_items) %}
 {% for item in list_items %}
 {# only re-write domain/settings if the domain is not the same as the last iteration #}
 {% if loop.first or list_items[loop.index0-1].item[0].domain != item.item[0].domain %}
   - domain: "{{ item.item[0].domain }}"
     settings:
 {% endif %}
-{% if list_type == "defaults" %}
-      - { key: "{{ item.item[1].key }}", type: "{{ item.item[1].type }}", value: "{{ item.stdout | default('did_not_exist', true) | e }}" }
-{% elif list_type == "plistbuddy" %}
-      - { name: "{{ item.item[1].name }}", value: "{{ item.stdout | default('did_not_exist', true) }}" }
-{% endif %}
+      - { key: "{{ item.item[1].key }}", type: "{{ item.item[1].type }}", value: "{{ item.stdout | default('did_not_exist', true) }}" }
 {% endfor %}
 {% endmacro -%}
 
@@ -41,11 +37,11 @@
 {#- template *************************************************************** -#}
 
 last_defaults:
-{{ display_list(last_osx_defaults_user.results, "defaults") }}
+{{ display_list(last_osx_defaults_user.results) }}
 last_defaults_global:
-{{ display_list(last_osx_defaults_sudo.results, "defaults") }}
+{{ display_list(last_osx_defaults_sudo.results) }}
 last_defaults_plistbuddy:
-{{ display_list(last_osx_defaults_plistbuddy.results, "plistbuddy") }}
+{{ display_list(last_osx_defaults_plistbuddy.results) }}
 last_spctl_status: {{ display_spctl_status(last_osx_spctl_status.stdout) }}
 last_computer_names:
 {{ display_computer_names(last_osx_computer_names.results) }}

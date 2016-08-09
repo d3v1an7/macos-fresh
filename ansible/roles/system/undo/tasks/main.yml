@@ -28,7 +28,7 @@
   when: item.1.value != "did_not_exist"
 
 - name: undo (modify) OSX defaults (plistbuddy)
-  shell: "/usr/libexec/PlistBuddy -c 'Set :{{ item.1.name }} {{ item.1.value }}' {{ item.0.domain }}"
+  shell: "/usr/libexec/PlistBuddy -c 'Set :{{ item.1.key }} {{ item.1.value }}' {{ item.0.domain }}"
   with_subelements:
     - "{{ last_defaults_plistbuddy }}"
     - settings
@@ -55,7 +55,7 @@
   when: item.1.value == "did_not_exist"
 
 - name: undo (remove) OSX defaults (plistbuddy)
-  shell: "/usr/libexec/PlistBuddy -c 'Delete :{{ item.1.name }}' {{ item.0.domain }}"
+  shell: "/usr/libexec/PlistBuddy -c 'Delete :{{ item.1.key }}' {{ item.0.domain }}"
   with_subelements:
     - "{{ last_defaults_plistbuddy }}"
     - settings

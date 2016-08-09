@@ -19,7 +19,7 @@
   changed_when: false
 
 - name: check OSX defaults (plistbuddy)
-  shell: "/usr/libexec/PlistBuddy -c 'Print :{{ item.1.name }} {{ item.1.value }}' {{ item.0.domain }}"
+  shell: "/usr/libexec/PlistBuddy -c 'Print :{{ item.1.key }}' {{ item.0.domain }}"
   with_subelements:
     - "{{ defaults_plistbuddy }}"
     - settings
@@ -46,7 +46,7 @@
   failed_when: false
   changed_when: false
 
-- name: create rollback.yml
+- name: create system.backup.yml
   template:
     src: system.j2
     dest: "{{ playbook_dir }}/vars/system.backup.yml"
