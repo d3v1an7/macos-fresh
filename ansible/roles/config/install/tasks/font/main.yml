@@ -4,11 +4,17 @@
     path: "{{ home }}/Library/Fonts/SourceCodePro-Regular.otf"
   register: font
 
-- name: download and unzip font
-  unarchive:
-    src: https://github.com/adobe-fonts/source-code-pro/archive/release.zip
-    dest: /tmp
-    copy: no
+# Using `get_url` and `shell` unzip for now, as there seems to be issues with `unarchive` on 2.1.1.0
+# "Unexpected error when accessing exploded file: [Errno 2] No such file or directory: '/tmp/source-code-pro-release/'"
+- name: download font
+  get_url:
+    url: https://github.com/adobe-fonts/source-code-pro/archive/release.zip
+    dest: /tmp/source-code-pro-release.zip
+  when: font.stat.exists == false
+
+- name: unzip font
+  shell: unzip -o /tmp/source-code-pro-release.zip -d /tmp
+  args:
     creates: /tmp/source-code-pro-release
   when: font.stat.exists == false
 
