@@ -1,24 +1,23 @@
 ---
-- name: check if iterm theme exists
-  stat:
-    path: "/tmp/base16-eighties.dark.256.itermcolors"
-  register: iterm_theme
-
 - name: check if iterm settings exists
   stat:
     path: "{{ home }}/Library/Preferences/com.googlecode.iTerm2.plist"
   register: iterm_settings
 
-- name: download iterm theme
-  get_url:
-    validate_certs: False
-    url: https://raw.githubusercontent.com/chriskempson/base16-iterm2/master/base16-eighties.dark.256.itermcolors
-    dest: /tmp
-  when: iterm_theme.stat.exists == false
+- name: check if style.json exists
+  stat:
+    path: "{{ home }}/Library/Application Support/iTerm2/DynamicProfiles/style.json"
+  register: iterm_style
 
 - name: open iterm to init preference files
-  shell: open -a iTerm && sleep 2 && killall iTerm
+  shell: open -a iTerm && sleep 2 && killall iTerm2
   when: iterm_settings.stat.exists == false
+
+- name: copy style.json to dynamic profile folder
+  copy:
+    src: iterm/files/style.json
+    dest: "{{ home }}/Library/Application Support/iTerm2/DynamicProfiles/style.json"
+  when: iterm_style.stat.exists == false
 
 - name: write iterm defaults
   osx_defaults:
@@ -31,47 +30,8 @@
     - { key: "PromptOnQuit", type: "bool", value: "false" }
     # Don’t display the annoying update prompt
     - { key: "SUEnableAutomaticChecks", type: "bool", value: "false" }
+    # Set default profile (GUID found in iterm/files/style.json)
+    - { key: "Default Bookmark Guid", type: "string", value: "ba19744f-6af3-434d-aaa6-0a48e0969958" }
 
-- name: open iterm again to complete preference files
-  # We can close nicely without prompt now
-  shell: open -a iTerm && sleep 2 && osascript -e 'quit app "iTerm"'
-  when: iterm_settings.stat.exists == false
-
-- name: wait for iterm preference file to populate
-  wait_for:
-    path: "{{ home }}/Library/Preferences/com.googlecode.iTerm2.plist"
-    search_regex: "New Bookmarks"
-
-- name: write iterm defaults (plistbuddy)
-  shell: /usr/libexec/PlistBuddy -c "{{ item }}" "{{ home }}/Library/Preferences/com.googlecode.iTerm2.plist"
-  with_items:
-    # Set font
-    - "Set 'New Bookmarks':0:'Normal Font' 'SourceCodePro-Regular 13'"
-    # Enable forever scroll
-    - "Set 'New Bookmarks':0:'Unlimited Scrollback' true"
-    # Remove default colour settings
-    - "Delete 'New Bookmarks':0:'Ansi 0 Color'"
-    - "Delete 'New Bookmarks':0:'Ansi 1 Color'"
-    - "Delete 'New Bookmarks':0:'Ansi 2 Color'"
-    - "Delete 'New Bookmarks':0:'Ansi 3 Color'"
-    - "Delete 'New Bookmarks':0:'Ansi 4 Color'"
-    - "Delete 'New Bookmarks':0:'Ansi 5 Color'"
-    - "Delete 'New Bookmarks':0:'Ansi 6 Color'"
-    - "Delete 'New Bookmarks':0:'Ansi 7 Color'"
-    - "Delete 'New Bookmarks':0:'Ansi 8 Color'"
-    - "Delete 'New Bookmarks':0:'Ansi 9 Color'"
-    - "Delete 'New Bookmarks':0:'Ansi 10 Color'"
-    - "Delete 'New Bookmarks':0:'Ansi 11 Color'"
-    - "Delete 'New Bookmarks':0:'Ansi 12 Color'"
-    - "Delete 'New Bookmarks':0:'Ansi 13 Color'"
-    - "Delete 'New Bookmarks':0:'Ansi 14 Color'"
-    - "Delete 'New Bookmarks':0:'Ansi 15 Color'"
-    - "Delete 'New Bookmarks':0:'Background Color'"
-    - "Delete 'New Bookmarks':0:'Bold Color'"
-    - "Delete 'New Bookmarks':0:'Cursor Color'"
-    - "Delete 'New Bookmarks':0:'Cursor Text Color'"
-    - "Delete 'New Bookmarks':0:'Foreground Color'"
-    - "Delete 'New Bookmarks':0:'Selected Text Color'"
-    - "Delete 'New Bookmarks':0:'Selection Color'"
-    # Merge new colour settings from file
-    - "Merge /tmp/base16-eighties.dark.256.itermcolors 'New Bookmarks':0"
+# - name: install shell integration
+#   shell: curl -L https://iterm2.com/misc/install_shell_integration.sh | bash
