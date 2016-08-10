@@ -47,16 +47,17 @@
     # Set order
     # - { key: "StatusItems-Order", type: "array", value: "[ '4', '2', '1', '5', '-1', '7' ]" } # Default: key absent [ '1', '2', '3', '4', '5', '6' ]
 
-- name: write istat defaults (plistbuddy)
-  shell: /usr/libexec/PlistBuddy -c "{{ item }}" "{{ home }}/Library/Preferences/com.bjango.istatmenus5.extras.plist"
-  with_items:
-    # Set order
-    # Can't do this with osx_defaults module above, as the array is populated with strings, not integers, which crashes istat -- badly
-    - "Delete StatusItems-Order"
-    - "Add StatusItems-Order array"
-    - "Add StatusItems-Order:0 integer 4"
-    - "Add StatusItems-Order:1 integer 2"
-    - "Add StatusItems-Order:2 integer 1"
-    - "Add StatusItems-Order:3 integer -1"
-    - "Add StatusItems-Order:4 integer 5"
-    - "Add StatusItems-Order:5 integer 7"
+# Can't do this on fresh installs, StatusItems-Order doesn't exist yet. #!# fix later
+# - name: write istat defaults (plistbuddy)
+#   shell: /usr/libexec/PlistBuddy -c "{{ item }}" "{{ home }}/Library/Preferences/com.bjango.istatmenus5.extras.plist"
+#   with_items:
+#     # Set order
+#     # Can't do this with osx_defaults module above, as the array is populated with strings, not integers, which crashes istat -- badly
+#     - "Delete StatusItems-Order"
+#     - "Add StatusItems-Order array"
+#     - "Add StatusItems-Order:0 integer 4"
+#     - "Add StatusItems-Order:1 integer 2"
+#     - "Add StatusItems-Order:2 integer 1"
+#     - "Add StatusItems-Order:3 integer -1"
+#     - "Add StatusItems-Order:4 integer 5"
+#     - "Add StatusItems-Order:5 integer 7"
