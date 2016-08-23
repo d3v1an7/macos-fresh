@@ -17,6 +17,12 @@
     creates: /tmp/base16-eighties-one-dark-master
   when: atom_theme.stat.exists == false
 
+- name: ensure atom preference dir exists
+  file:
+    path: "{{ home }}/.atom/packages/"
+    recurse: yes
+    state: directory
+
 - name: copy theme to atom
   become: yes
   synchronize:
