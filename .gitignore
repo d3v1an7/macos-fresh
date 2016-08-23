@@ -1,2 +1,3 @@
+.DS_Store
 ansible/.vault_pass
 ansible/vars/*backup.yml*
