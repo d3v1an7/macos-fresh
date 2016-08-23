@@ -10,12 +10,6 @@
     dest: /usr/local/bin/fresh
     state: link
 
-# Fail early if incorrect sudo password supplied
-- name: check sudo password
-  become: yes
-  shell: whoami
-  changed_when: false
-
 - name: check ansible version
   assert:
     that: ansible_version.major <= 2
