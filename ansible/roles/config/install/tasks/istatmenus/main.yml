@@ -1,6 +1,6 @@
 ---
 - name: include licence
-  include_vars: licence.yml
+  include_vars: "{{ playbook_dir }}/roles/config/install/tasks/istatmenus/vars/licence.yml"
   when: vault_pass.stat.exists
 
 - name: write istat licence
