@@ -2,20 +2,17 @@ homebrew_taps:
   - caskroom/cask
 
 homebrew_formulae:
-  - ack
   - awscli
   - bash-completion
   - coreutils
   - curl
   - git
   - keybase
-  - mysql
   - node
   - openssl
-  - rbenv
-  - thefuck
   - vim
   - wget
+  - yarn
 
 homebrew_casks:
   - adobe-creative-cloud
@@ -23,36 +20,24 @@ homebrew_casks:
   - alfred
   - atom
   - beamer
-  - cloud
-  - cyberduck
   - docker
   - dropbox
   - filebot
-  - firefox
   - flux
   - google-chrome
-  - google-drive
+  - hyper
   - istat-menus
-  - iterm2
   - kaleidoscope
   - lastpass
   - mpeg-streamclip
   - mplayerx
   - private-internet-access
-  - sequel-pro
   - sketch
-  - skype
   - slack
   - spectacle
   - spotify
-  - steam
   - the-unarchiver
   - tower
-  - transmission
-  - vlc
 
 npm_packages:
-  - bower
-  - grunt
-  - grunt-cli
-  - gulp-cli
+  - webpack
