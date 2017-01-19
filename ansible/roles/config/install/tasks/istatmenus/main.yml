@@ -33,19 +33,19 @@
     # Array interaction is currently broken :(
     # See: https://github.com/ansible/ansible-modules-extras/issues/2610
     # Time / Date format
-    # - { key: "Time_MenubarFormat", type: "array", value: "[ 'EE', '\" \"', 'hh', '\":\"', 'mm', '\" \"', 'a' ]" } # Default: key absent
+    - { key: "Time_MenubarFormat", type: "array", value: "[ 'EE', '\" \"', 'hh', '\":\"', 'mm', '\" \"', 'a' ]" } # Default: key absent
     # Time / Date hide moon
     - { key: "Time_DropdownShowMoon", type: "int", value: "0" } # Default: key absent
     # Array interaction is currently broken :(
     # See: https://github.com/ansible/ansible-modules-extras/issues/2610
     # Time / Date cities
-    # - { key: "Time_Cities", type: "array", value: "[ '5128581.0000000000000000', '1566083.0000000000000000' ]" } # Default: key absent
+    - { key: "Time_Cities", type: "array", value: "[ '5128581.0000000000000000', '1566083.0000000000000000' ]" } # Default: key absent
     # Opacity
     - { key: "MenubarGraphOpacity-DarkMode", type: "float", value: "0.4418902099132540" } # Default: key absent
     # Skin colour white
     - { key: "MenubarSkinColor", type: "int", value: "8" } # Default: key absent
     # Set order
-    # - { key: "StatusItems-Order", type: "array", value: "[ '4', '2', '1', '5', '-1', '7' ]" } # Default: key absent [ '1', '2', '3', '4', '5', '6' ]
+    - { key: "StatusItems-Order", type: "array", value: "[ '4', '2', '1', '5', '-1', '7' ]" } # Default: key absent [ '1', '2', '3', '4', '5', '6' ]
 
 # Can't do this on fresh installs, StatusItems-Order doesn't exist yet. #!# fix later
 # - name: write istat defaults (plistbuddy)
