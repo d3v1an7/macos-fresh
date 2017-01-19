@@ -28,7 +28,3 @@
     name: "{{ item }}"
     state: absent
   with_items: "{{ npm_packages | difference(last_npm_packages) }}"
-
-# rvm
-- name: undo ruby version
-  shell: rbenv global {{ last_ruby_version }}

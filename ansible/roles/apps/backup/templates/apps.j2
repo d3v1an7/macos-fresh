@@ -17,5 +17,3 @@ last_npm_packages:
 {% for item in last_npm_packages.stdout_lines %}
   - {{ item }}
 {% endfor %}
-
-last_ruby_version: "{{ current_ruby_version.stdout }}"

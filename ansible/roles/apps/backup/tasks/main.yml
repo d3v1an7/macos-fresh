@@ -19,11 +19,6 @@
   register: last_npm_packages
   changed_when: false
 
-- name: check current ruby version
-  shell: echo $(rbenv version | sed 's/ (.*//')
-  register: current_ruby_version
-  changed_when: false
-
 - name: create apps.backup.yml
   template:
     src: apps.j2

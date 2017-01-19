@@ -42,22 +42,3 @@
     global: yes
     name: "{{ item }}"
   with_items: "{{ npm_packages }}"
-
-# rvm
-- name: check latest ruby version
-  shell: echo $(rbenv install -l | grep -v - | tail -1)
-  register: latest_ruby_version
-  changed_when: false
-
-- name: install latest ruby version
-  shell: rbenv install --force {{ latest_ruby_version.stdout }}
-  when: latest_ruby_version.stdout is defined and latest_ruby_version.stdout != current_ruby_version.stdout
-
-- name: set latest ruby version
-  shell: rbenv global {{ latest_ruby_version.stdout }}
-  when: latest_ruby_version.stdout is defined and latest_ruby_version.stdout != current_ruby_version.stdout
-
-- name: update rubygems
-  become: yes
-  command: gem update --system
-  when: latest_ruby_version.stdout is defined and latest_ruby_version.stdout != current_ruby_version.stdout
