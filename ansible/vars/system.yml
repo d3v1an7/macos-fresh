@@ -223,7 +223,7 @@ spctl_status: disable
 computer_names:
   - { name: "ComputerName", value: "{{ user_name }}-macbook" }
   - { name: "LocalHostName", value: "{{ user_name }}-macbook" }
-  - { name: "HostName", value: "{{ user_name }}-macbook" }
+  - { name: "HostName", value: "{{ user_name }}-macbook.local" }
 
 # System Preferences > Energy Saver
 power_settings_all:
