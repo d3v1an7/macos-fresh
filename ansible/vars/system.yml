@@ -142,7 +142,7 @@ defaults:
   - domain: "com.apple.finder"
     settings:
       # Show hidden files
-      - { key: "AppleShowAllFiles", type: "bool", value: "true" } # Default: [unknown]
+      - { key: "AppleShowAllFiles", type: "string", value: "YES" } # Default: [unknown]
       # Show status bar
       - { key: "NewWindowTarget", type: "string", value: "PfHm" } # Default: key absent
       # Show status bar
