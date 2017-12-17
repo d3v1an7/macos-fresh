@@ -7,7 +7,6 @@ homebrew_formulae:
   - coreutils
   - curl
   - git
-  - keybase
   - node
   - openssl
   - vim
@@ -25,8 +24,8 @@ homebrew_casks:
   - filebot
   - flux
   - google-chrome
-  - hyper
   - istat-menus
+  - iterm2
   - kaleidoscope
   - lastpass
   - mpeg-streamclip

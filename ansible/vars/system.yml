@@ -62,7 +62,7 @@ defaults:
     # Disable press-and-hold for keys in favor of key repeat (hidden)
     - { key: "ApplePressAndHoldEnabled", type: "bool", value: "false" } # Default: key absent
     # Set a blazingly fast keyboard repeat rate (hidden)
-    - { key: "KeyRepeat", type: "int", value: "0" } # Default: key absent
+    - { key: "KeyRepeat", type: "int", value: "2" } # Default: key absent
 
   # System Preferences > Mouse
   - domain: "NSGlobalDomain"

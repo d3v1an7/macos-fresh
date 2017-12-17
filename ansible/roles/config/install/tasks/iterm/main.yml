@@ -15,7 +15,7 @@
 
 - name: copy style.json to dynamic profile folder
   copy:
-    src: iterm/files/style.json
+    src: style.json
     dest: "{{ home }}/Library/Application Support/iTerm2/DynamicProfiles/style.json"
   when: iterm_style.stat.exists == false
 

@@ -12,7 +12,7 @@
 
     # check sudo
     - { role: common/check_sudo, tags: [ "install" ] }
-    
+
     # get facts from shell
     - { role: common/shell_facts, tags: [ "install" ] }
 
