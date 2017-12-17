@@ -1,4 +1,17 @@
 # WIP
+- Make pipeline with Travis or Circle that will push to homebrew, docker and npm when changes are made
+- Make 'dev mode' for local dev/changes
+
+
+
+
+
+
+
+
+
+
+
 - Various race conditions need to be addressed (license files are not available on first run, etc)
 - Should detect if running script offline
 - Update ~/.gitconfig

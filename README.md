@@ -1,14 +1,170 @@
 # <img src="https://cdn.rawgit.com/d3v1an7/fresh/1285b4998e99232cfe70b8a11c3782f4943dcd91/logo.svg" alt="fresh" width="30%" />
 
-[![os_version](https://img.shields.io/badge/OS%20X-10.11-blue.svg?maxAge=2592000)](https://itunes.apple.com/au/app/os-x-el-capitan/id1018109117)
+[![os_version](https://img.shields.io/badge/macOS-10.13-blue.svg?maxAge=2592000)](https://www.apple.com/macos/high-sierra/)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](LICENSE.md)
 [![status](https://img.shields.io/badge/status-WIP-red.svg?maxAge=2592000)](WIP.md)
 
-A super opinionated Ansible playbook (with bash bootstrap) that will provision a local workstation after a fresh install of OS X. Can be run safely on established machines too!
+Super opinionated and wildly over-engineered macOS bootstrap. Intended to be run after a fresh install of macOS, but can be run safely on established machines too!
+
+The `fresh` Node CLI tool (and subsequent Ansible playbook) are run from a Docker container on demand to minimise local dependencies and keep your filesystem nice and tidy :ok_hand:
 
 It's unlikely that the chosen applications and system defaults will suit your purposes exactly, but you should find it easy enough to customise on your own fork.
 
-[Pull requests](https://help.github.com/articles/creating-a-pull-request/) are welcome! :ok_hand:
+[Pull requests](https://help.github.com/articles/creating-a-pull-request/) are welcome!
+
+> Wait. So a homebrew app starts a docker container which starts a node app which starts an Ansible playbook to just change a few settings?
+
+Yes.
+
+> That is insanely over-engineered.
+
+Yes.
+
+> Why?
+
+It's experiments like this that help me learn things! Also, using just Homebrew and Docker as a general rule keeps things pretty tidy on the host machine.
+
+## Pre-installation checklist
+
+- [ ] You have [Homebrew](https://brew.sh/) installed
+- [ ] Your `$SHELL` is either `bash` or `zsh`
+
+## Installation
+
+### Setup
+
+```sh
+bash <(curl -s https://raw.githubusercontent.com/d3v1an7/fresh/master/bin/setup.sh)
+
+# This script will do the following:
+# - Install Docker for Mac, along with other tools required for setup
+# - Create a SSH key for this project (for Ansible)
+# - Enable remote login (for Ansible)
+```
+
+### Install
+
+```sh
+brew tap d3v1an7/tap
+brew install macos-fresh --verbose
+
+# This will add our custom homebrew tap and install `macos-fresh`
+# The install may take some time on first run!
+```
+
+### Setup env vars
+
+```sh
+bs provision
+
+# This will add `~/.bluestrap` and make sure that file is sourced by your $SHELL
+# This is what sets up `goenv`, `nodenv`, our npm token and `BitBar`
+# You should only need to do this once
+```
+
+### Ensure env vars are available
+
+```sh
+echo $GOPATH
+
+# If nothing is returned, open a new terminal window or tab and try again
+# If $GOPATH is still empty, try `bs provision -vvv` and troubleshoot errors
+```
+
+### Init
+
+```sh
+bs init
+
+# This will run the following for for all your selected group in
+# `cli-bluestrap/groups.yml`:
+# - `git clone`
+# - `docker-compose pull`
+# - `goenv install` (as required)
+```
+
+### Start
+
+```sh
+bs start
+
+# `bs start` will run `docker-compose up` for all your selected group in
+# `cli-bluestrap/groups.yml`
+```
+
+### Hosts
+
+```sh
+bs hosts
+
+# `bs hosts` will check which containers have a host set and will add them
+# to your /etc/hosts file
+```
+
+## Updating
+
+```sh
+brew upgrade cli-bluestrap --verbose
+bs update
+```
+
+
+
+## General usage
+
+### Available commands and arguments
+
+```console
+usage: bs [--version] [--help] <command> [args]
+
+Available commands:
+    init           Initialise local development environment
+    update         Alias for init
+    start          Start local development environment
+    stop           Stop local development environment
+    restart        Restart local development environment
+    down           Destroy local development environment
+    pull-git       Run git pull for all repos
+    pull-docker    Run docker pull for all repos
+    provision      Setup dotfiles and bitbar
+    hosts          Update hosts file
+
+Available arguments:
+    shared
+    audience
+    audience-lite
+    cms
+    cms-lite
+    editorial
+
+Additional Ansible arguments:
+    --verbose      Enable verbose mode
+```
+
+## Links
+
+- [Troubleshooting](https://bitbucket.org/ffxblue/cli-bluestrap/wiki/Troubleshooting)
+- [Contributing](https://bitbucket.org/ffxblue/cli-bluestrap/wiki/Contributing)
+- [Reporting issues](https://bitbucket.org/ffxblue/cli-bluestrap/issues/new)
+
+## Acknowledgements
+
+[Code Climate CLI](https://github.com/codeclimate/codeclimate) was a huge inspiration for containerisation effort
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Installation
 Open terminal and run
@@ -86,3 +242,143 @@ This would not be possible without:
 And much :heart: to:
 - [base16](https://github.com/chriskempson/base16)
 - [source code pro](https://github.com/adobe-fonts/source-code-pro)
+
+
+
+
+
+![cli-bluestrap-logo](https://static.ffx.io/images/w_120,h_137,c_fill,fl_apng/l_logo-cli-bluestrap,fl_cutter,w_120/mindblown)
+# cli-bluestrap
+
+## Overview
+
+`cli-bluestrap` exists to assist in standardising our local development environment and process. The `bs` cli tool (and subsequent Ansible playbook) are run from a Docker container on demand to minimise local dependencies and keep your filesystem nice and tidy :ok_hand:
+
+## Pre-installation checklist
+
+- You have [Homebrew](https://brew.sh/) installed
+- You have generated a [personal access key/secret](https://ffxblue.atlassian.net/wiki/display/TECH/AWS+Credentials) for the Product and Tech AWS account
+- You have added an SSH key to your [Bitbucket account](https://bitbucket.org/account/ssh-keys/)
+- Your `$SHELL` is either `bash` or `zsh`
+
+## Installation
+
+### Setup
+
+```sh
+bash <(curl -s https://s3-ap-southeast-2.amazonaws.com/cli-bluestrap.ffxblue.com.au/setup)
+
+# This script will do the following:
+# - Install Docker for Mac, along with other tools required for setup
+# - Update Docker settings
+# - Configure AWS credentials
+# - Create a SSH key for this project (for Ansible)
+# - Enable remote login (for Ansible)
+```
+
+### Install
+
+```sh
+brew tap ffxblue/custom
+brew install cli-bluestrap --verbose
+
+# This will add our custom homebrew tap and install `cli-bluestrap`
+# The install may take some time on first run!
+```
+
+### Setup env vars
+
+```sh
+bs provision
+
+# This will add `~/.bluestrap` and make sure that file is sourced by your $SHELL
+# This is what sets up `goenv`, `nodenv`, our npm token and `BitBar`
+# You should only need to do this once
+```
+
+### Ensure env vars are available
+
+```sh
+echo $GOPATH
+
+# If nothing is returned, open a new terminal window or tab and try again
+# If $GOPATH is still empty, try `bs provision -vvv` and troubleshoot errors
+```
+
+### Init
+
+```sh
+bs init
+
+# This will run the following for for all your selected group in
+# `cli-bluestrap/groups.yml`:
+# - `git clone`
+# - `docker-compose pull`
+# - `goenv install` (as required)
+```
+
+### Start
+
+```sh
+bs start
+
+# `bs start` will run `docker-compose up` for all your selected group in
+# `cli-bluestrap/groups.yml`
+```
+
+### Hosts
+
+```sh
+bs hosts
+
+# `bs hosts` will check which containers have a host set and will add them
+# to your /etc/hosts file
+```
+
+## Updating
+
+```sh
+brew upgrade cli-bluestrap --verbose
+bs update
+```
+
+## General usage
+
+### Available commands and arguments
+
+```console
+usage: bs [--version] [--help] <command> [args]
+
+Available commands:
+    init           Initialise local development environment
+    update         Alias for init
+    start          Start local development environment
+    stop           Stop local development environment
+    restart        Restart local development environment
+    down           Destroy local development environment
+    pull-git       Run git pull for all repos
+    pull-docker    Run docker pull for all repos
+    provision      Setup dotfiles and bitbar
+    hosts          Update hosts file
+
+Available arguments:
+    shared
+    audience
+    audience-lite
+    cms
+    cms-lite
+    editorial
+
+Additional Ansible arguments:
+    --verbose      Enable verbose mode
+```
+
+## Links
+
+- [Troubleshooting](https://bitbucket.org/ffxblue/cli-bluestrap/wiki/Troubleshooting)
+- [Contributing](https://bitbucket.org/ffxblue/cli-bluestrap/wiki/Contributing)
+- [Reporting issues](https://bitbucket.org/ffxblue/cli-bluestrap/issues/new)
+
+## Acknowledgements
+
+[Code Climate CLI](https://github.com/codeclimate/codeclimate) was a huge inspiration for containerisation effort
