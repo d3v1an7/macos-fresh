@@ -36,11 +36,16 @@ $ ~/.fresh/make
 - Wild json config shit
 
 ## Uninstall
+```
+# Manually remove stuff in [Brewfile](Brewfile)
 
-- Manually remove stuff in [Brewfile](Brewfile)
-- Run `mackup uninstall`
-- Manually update the [JSON FILE] with original values, which was stored [HERE]
-- Run `rm ~/.fresh`
+$ mackup uninstall
+$ rm ~/.mackup.cfg
+
+# Manually update the [JSON FILE] with original values, which was stored [HERE]
+
+$ rm ~/.fresh
+```
 
 ## Q&A
 

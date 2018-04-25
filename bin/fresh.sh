@@ -20,14 +20,19 @@ create_brewfile() {
 }
 
 create_mackupcfg() {
-  echo "mackup config"
+  jq -r \
+    '.mackup | to_entries[] |
+    if .key == "storage" then
+      (.value | to_entries[]) as $item | "[\(.key)]","\($item.key)=\($item.value)"
+    else
+      "[\(.key)]","\(.value[])"
+    end' ~/.fresh/config.json \
+  > ~/.mackup.cfg
 }
 
 create_sysbackup() {
   echo "make backup of system config"
 }
-
-
 
 brew_bundle_install() {
   brew bundle install --file=~/.fresh/Brewfile
@@ -45,10 +50,10 @@ run_sysconfig() {
 }
 
 
-create_brewfile
-create_mackupcfg
+# create_brewfile #done
+# create_mackupcfg #done
 create_sysbackup
-brew_bundle_install
+# brew_bundle_install #done
 
 
 

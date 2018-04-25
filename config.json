@@ -53,5 +53,28 @@
 				"id": 424389933
 			}
 		]
-	}
+	},
+  "mackup": {
+    "storage": {
+      "engine": "dropbox"
+    },
+    "applications_to_sync": [
+      "1password-4",
+      "atom",
+      "aws",
+      "bash",
+      "daisydisk",
+      "docker",
+      "flux",
+      "git",
+      "istat-menus-5",
+      "iterm2",
+      "kaleidoscope",
+      "sketch",
+      "spotify",
+      "ssh",
+      "tower-2",
+      "vlc"
+    ]
+  }
 }
