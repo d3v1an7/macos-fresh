@@ -1,3 +1,129 @@
+CREATE backup
+---
+- name: check OSX defaults (user)
+  shell: defaults read "{{ item.0.domain }}" "{{ item.1.key }}"
+  with_subelements:
+    - "{{ defaults }}"
+    - settings
+  register: last_osx_defaults_user
+  failed_when: false
+  changed_when: false
+
+- name: check OSX defaults (sudo)
+  become: yes
+  shell: defaults read "{{ item.0.domain }}" "{{ item.1.key }}"
+  with_subelements:
+    - "{{ defaults_global }}"
+    - settings
+  register: last_osx_defaults_sudo
+  failed_when: false
+  changed_when: false
+
+- name: check OSX defaults (plistbuddy)
+  shell: "/usr/libexec/PlistBuddy -c 'Print :{{ item.1.key }}' {{ item.0.domain }}"
+  with_subelements:
+    - "{{ defaults_plistbuddy }}"
+    - settings
+  register: last_osx_defaults_plistbuddy
+  failed_when: false
+  changed_when: false
+
+- name: check spctl status
+  shell: "spctl --status"
+  register: last_osx_spctl_status
+  failed_when: false
+  changed_when: false
+
+- name: check computer name
+  shell: "scutil --get {{ item.name }}"
+  with_items: "{{ computer_names }}"
+  register: last_osx_computer_names
+  failed_when: false
+  changed_when: false
+
+- name: check power settings
+  shell: "pmset -g custom"
+  register: last_osx_power_settings
+  failed_when: false
+  changed_when: false
+
+- name: create system.backup.yml
+  template:
+    src: system.j2
+    dest: "{{ playbook_dir }}/vars/system.backup.yml"
+    backup: yes
+
+
+WRITE NEW
+
+---
+- name: write OSX defaults (user)
+  osx_defaults:
+    domain: "{{ item.0.domain }}"
+    key: "{{ item.1.key }}"
+    type: "{{ item.1.type }}"
+    array_add: "{{ item.1.array_add | default(false) }}"
+    value: "{{ item.1.value }}"
+  with_subelements:
+    - "{{ defaults }}"
+    - settings
+
+- name: write OSX defaults (sudo)
+  become: yes
+  osx_defaults:
+    domain: "{{ item.0.domain }}"
+    key: "{{ item.1.key }}"
+    type: "{{ item.1.type }}"
+    array_add: "{{ item.1.array_add | default(false) }}"
+    value: "{{ item.1.value }}"
+  with_subelements:
+    - "{{ defaults_global }}"
+    - settings
+
+# Using `Delete` then `Add` with plistbuddy, as `Set` will fail if the key doesn't exist
+- name: clear OSX defaults (plistbuddy)
+  shell: "/usr/libexec/PlistBuddy -c 'Delete :{{ item.1.key }}' {{ item.0.domain }}"
+  with_subelements:
+    - "{{ defaults_plistbuddy }}"
+    - settings
+  register: plistbuddy_result
+  failed_when: "plistbuddy_result.stderr and 'Does Not Exist' not in plistbuddy_result.stderr"
+
+- name: set OSX defaults (plistbuddy)
+  shell: "/usr/libexec/PlistBuddy -c 'Add :{{ item.1.key }} {{ item.1.type }} {{ item.1.value }}' {{ item.0.domain }}"
+  with_subelements:
+    - "{{ defaults_plistbuddy }}"
+    - settings
+
+- name: set OS X Gatekeeper
+  become: yes
+  shell: "spctl --master-{{ spctl_status }}"
+
+- name: set computer name
+  shell: "sudo scutil --set {{ item.name }} '{{ item.value }}'"
+  with_items: "{{ computer_names }}"
+
+- name: power settings (all)
+  shell: "sudo pmset -a {{ item.name }} {{ item.value }}"
+  with_items: "{{ power_settings_all }}"
+
+- name: power settings (battery)
+  shell: "sudo pmset -b {{ item.name }} {{ item.value }}"
+  with_items: "{{ power_settings_battery }}"
+
+- name: power settings (charger)
+  shell: "sudo pmset -c {{ item.name }} {{ item.value }}"
+  with_items: "{{ power_settings_charger }}"
+
+
+
+
+
+
+
+
+
+
 defaults:
   - domain: "NSGlobalDomain"
     settings:

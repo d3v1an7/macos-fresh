@@ -1,0 +1,57 @@
+{
+	"brew": {
+		"tap": [
+			"caskroom/cask"
+		],
+		"brew": [
+			"awscli",
+			"bash-completion",
+			"coreutils",
+			"curl",
+			"git",
+			"jq",
+			"mackup",
+			"openssh",
+			"vim",
+			"wget"
+		],
+		"cask": [
+			"1password",
+			"adobe-creative-cloud",
+			"aerial",
+			"atom",
+			"beamer",
+			"daisydisk",
+			"docker",
+			"dropbox",
+			"firefox",
+			"flux",
+			"google-chrome",
+			"google-drive-file-stream",
+			"handbrake",
+			"istat-menus",
+			"iterm2",
+			"kaleidoscope",
+			"keybase",
+			"muzzle",
+			"private-internet-access",
+			"sketch",
+			"slack",
+			"spectacle",
+			"spotify",
+			"steam",
+			"the-unarchiver",
+			"tower",
+			"vlc"
+		],
+		"mas": [{
+				"name": "iMovie",
+				"id": 408981434
+			},
+			{
+				"name": "Final Cut Pro",
+				"id": 424389933
+			}
+		]
+	}
+}

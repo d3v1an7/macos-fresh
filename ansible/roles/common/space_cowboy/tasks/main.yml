@@ -1,5 +1,0 @@
----
-- name: see you space cowboy
-  osx_say:
-    msg: "See you, Space Cowboy"
-    voice: "Fred"
