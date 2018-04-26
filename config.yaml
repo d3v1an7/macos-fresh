@@ -43,8 +43,9 @@ brew:
     - tower
     - vlc
   mas:
-    - { name: iMovie, id: 408981434 }
     - { name: Final Cut Pro, id: 424389933 }
+    - { name: iMovie, id: 408981434 }
+    - { name: Magnet, id: 441258766 }
 
 mackup:
   storage:
