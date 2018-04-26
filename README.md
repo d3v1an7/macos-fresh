@@ -33,7 +33,7 @@ $ ~/.fresh/make
 - Clone this repo into `~/.fresh/`
 - Use [Homebrew](https://github.com/Homebrew/brew) to install everything in [Brewfile](Brewfile) (`brew bundle install`)
 - Use [Mackup](https://github.com/lra/mackup) to restores .dotfiles, app config & licences (`mackup restore`)
-- Wild json config shit
+- Use [Bork](https://github.com/mattly/bork) to assert changes to system defaults (`bork do ok defaults`)
 
 ## Uninstall
 ```

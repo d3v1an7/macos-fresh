@@ -1,0 +1,98 @@
+---
+brew:
+  tap:
+    - caskroom/cask
+  brew:
+    - awscli
+    - bash-completion
+    - bork
+    - coreutils
+    - curl
+    - git
+    - jq
+    - mackup
+    - openssh
+    - vim
+    - wget
+  cask:
+    - 1password
+    - adobe-creative-cloud
+    - aerial
+    - atom
+    - beamer
+    - daisydisk
+    - docker
+    - dropbox
+    - firefox
+    - flux
+    - google-chrome
+    - google-drive-file-stream
+    - handbrake
+    - istat-menus
+    - iterm2
+    - kaleidoscope
+    - keybase
+    - muzzle
+    - private-internet-access
+    - sketch
+    - slack
+    - spectacle
+    - spotify
+    - steam
+    - the-unarchiver
+    - tower
+    - vlc
+  mas:
+    - { name: iMovie, id: 408981434 }
+    - { name: Final Cut Pro, id: 424389933 }
+
+mackup:
+  storage:
+    engine: dropbox
+  applications_to_sync:
+    - 1password-4
+    - atom
+    - aws
+    - bash
+    - daisydisk
+    - docker
+    - flux
+    - git
+    - istat-menus-5
+    - iterm2
+    - kaleidoscope
+    - sketch
+    - spotify
+    - ssh
+    - tower-2
+    - vlc
+
+system:
+  defaults:
+    NSGlobalDomain:
+      - { key: AppleAquaColorVariant, type: int, value: 6 }
+      - { key: AppleInterfaceStyle, type: string, value: Dark }
+      - { key: CGDisableCursorLocationMagnification, type: bool, value: true }
+      - { key: AppleKeyboardUIMode, type: int, value: 3 }
+      - { key: NSAutomaticQuoteSubstitutionEnabled, type: bool, value: false }
+      - { key: NSAutomaticDashSubstitutionEnabled, type: bool, value: false }
+      - { key: NSAutomaticSpellingCorrectionEnabled, type: bool, value: false }
+      - { key: ApplePressAndHoldEnabled, type: bool, value: false }
+      - { key: KeyRepeat, type: int, value: 2 }
+      - { key: com.apple.swipescrolldirection, type: bool, value: false }
+      - { key: NSWindowResizeTime, type: float, value: 0.001 }
+      - { key: NSNavPanelExpandedStateForSaveMode, type: bool, value: true }
+      - { key: NSNavPanelExpandedStateForSaveMode2, type: bool, value: true }
+      - { key: PMPrintingExpandedStateForPrint, type: bool, value: true }
+      - { key: PMPrintingExpandedStateForPrint2, type: bool, value: true }
+      - { key: NSDocumentSaveNewDocumentsToCloud, type: bool, value: false }
+    com.apple.dock:
+      - { key: tilesize, type: float, value: 43 }
+      - { key: largesize, type: int, value: 48 }
+      - { key: magnification, type: bool, value: true }
+      - { key: autohide, type: bool, value: true }
+      - { key: autohide-delay, type: int, value: 0 }
+      - { key: showhidden, type: bool, value: true }
+    com.apple.screensaver:
+      - { key: askForPassword, type: int, value: 1 }
+      - { key: askForPasswordDelay, type: float, value: 60 }
