@@ -33,49 +33,57 @@ create_mackupcfg() {
 
 update_defaults() {
   defaults=$(yq -r '.system.defaults | to_entries[]' ~/.fresh/config.yaml)
-  echo $defaults | jq -r '(.value[]) as $item | "\(.key) \($item.key) \($item.type) \($item.value)"' | while read item; do
+  echo $defaults | jq -r '(.value[]) as $item | "\(.key) \"\($item.key)\" \($item.type) \($item.value)"' | while read item; do
     bork do ok defaults "${item}"
     echo
   done
 }
 
+update_defaults_global() {
+  defaults=$(yq -r '.system.defaults_global | to_entries[]' ~/.fresh/config.yaml)
+  echo $defaults | jq -r '(.value[]) as $item | "\(.key) \"\($item.key)\" \($item.type) \($item.value)"' | while read item; do
+    # sudo???
+    bork do ok defaults "${item}"
+    echo
+  done
+}
 
+update_defaults_plistbuddy() {
+  # Check
+  defaults=$(yq -r '.system.defaults_plistbuddy | to_entries[]' ~/.fresh/config.yaml)
+  echo $defaults | jq -r '(.value[]) as $item | "\"Print :\($item.key)\" \(.key)"' | while read item; do
+    echo "${item}"
+    echo "/usr/libexec/PlistBuddy -c ${item}" | sh
+    echo
+  done
 
-  # jq -r '.system.defaults | to_entries[] | "defaults read \(.key) \(.value[].key)"' ~/.fresh/config.json | sh
+  # Delete
+  defaults=$(yq -r '.system.defaults_plistbuddy | to_entries[]' ~/.fresh/config.yaml)
+  echo $defaults | jq -r '(.value[]) as $item | "\"Delete :\($item.key)\" \(.key)"' | while read item; do
+    echo "${item}"
+    echo "/usr/libexec/PlistBuddy -c ${item}" | sh
+    echo
+  done
 
-  # - name: check OSX defaults (user)
-  #   shell: defaults read "{{ item.0.domain }}" "{{ item.1.key }}"
-  #   with_subelements:
-  #     - "{{ defaults }}"
-  #     - settings
-  #   register: last_osx_defaults_user
-  #   failed_when: false
-  #   changed_when: false
+  # Add
+  defaults=$(yq -r '.system.defaults_plistbuddy | to_entries[]' ~/.fresh/config.yaml)
+  echo $defaults | jq -r '(.value[]) as $item | "\"Add :\($item.key) \($item.type) \($item.value)\" \(.key)"' | while read item; do
+    echo "${item}"
+    echo "/usr/libexec/PlistBuddy -c ${item}" | sh
+    echo
+  done
+}
 
-  # - name: check OSX defaults (sudo)
-  #   become: yes
-  #   shell: defaults read "{{ item.0.domain }}" "{{ item.1.key }}"
-  #   with_subelements:
-  #     - "{{ defaults_global }}"
-  #     - settings
-  #   register: last_osx_defaults_sudo
-  #   failed_when: false
-  #   changed_when: false
-  #
-  # - name: check OSX defaults (plistbuddy)
-  #   shell: "/usr/libexec/PlistBuddy -c 'Print :{{ item.1.key }}' {{ item.0.domain }}"
-  #   with_subelements:
-  #     - "{{ defaults_plistbuddy }}"
-  #     - settings
-  #   register: last_osx_defaults_plistbuddy
-  #   failed_when: false
-  #   changed_when: false
   #
   # - name: check spctl status
   #   shell: "spctl --status"
   #   register: last_osx_spctl_status
   #   failed_when: false
   #   changed_when: false
+  # - name: set OS X Gatekeeper
+  #   become: yes
+  #   shell: "spctl --master-{{ spctl_status }}"
+
   #
   # - name: check computer name
   #   shell: "scutil --get {{ item.name }}"
@@ -83,18 +91,26 @@ update_defaults() {
   #   register: last_osx_computer_names
   #   failed_when: false
   #   changed_when: false
-  #
+  # - name: set computer name
+  #   shell: "sudo scutil --set {{ item.name }} '{{ item.value }}'"
+  #   with_items: "{{ computer_names }}"
+
   # - name: check power settings
   #   shell: "pmset -g custom"
   #   register: last_osx_power_settings
   #   failed_when: false
   #   changed_when: false
+  # - name: power settings (all)
+  #   shell: "sudo pmset -a {{ item.name }} {{ item.value }}"
+  #   with_items: "{{ power_settings_all }}"
   #
-  # - name: create system.backup.yml
-  #   template:
-  #     src: system.j2
-  #     dest: "{{ playbook_dir }}/vars/system.backup.yml"
-  #     backup: yes
+  # - name: power settings (battery)
+  #   shell: "sudo pmset -b {{ item.name }} {{ item.value }}"
+  #   with_items: "{{ power_settings_battery }}"
+  #
+  # - name: power settings (charger)
+  #   shell: "sudo pmset -c {{ item.name }} {{ item.value }}"
+  #   with_items: "{{ power_settings_charger }}"
 
 
 brew_bundle_install() {
@@ -116,8 +132,9 @@ run_sysconfig() {
 # create_brewfile #done
 # create_mackupcfg #done
 # brew_bundle_install #done
-update_defaults
-
+# update_defaults
+# update_defaults_global
+update_defaults_plistbuddy
 
 
 
