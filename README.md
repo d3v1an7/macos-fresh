@@ -16,7 +16,11 @@ It's unlikely that the chosen applications and system defaults will suit your pu
 
 Open a terminal window and run
 ``` sh
-[script here]
+# temp while on branch
+git clone https://github.com/d3v1an7/macos-fresh.git ~/.fresh
+cd ~/.fresh
+git checkout branch pivot
+~/.fresh/bin/setup.sh
 ```
 
 If you want to re-run this script for whatever reason, you should be able to run locally with
