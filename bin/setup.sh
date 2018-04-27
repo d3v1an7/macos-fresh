@@ -52,7 +52,7 @@ install_cli_tools() {
 }
 
 install_homebrew() {
-  if ! type_exists "brew1"; then
+  if ! type_exists "brew"; then
     heading "Installing homebrew"
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   fi

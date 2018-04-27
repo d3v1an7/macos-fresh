@@ -19,7 +19,7 @@ Open a terminal window and run
 # temp while on branch
 git clone https://github.com/d3v1an7/macos-fresh.git ~/.fresh
 cd ~/.fresh
-git checkout branch pivot
+git checkout pivot
 ~/.fresh/bin/setup.sh
 ```
 
