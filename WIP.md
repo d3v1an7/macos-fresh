@@ -1,6 +1,7 @@
 # Todo
 - [ ] Move app definitions into config, then create Makefile that will build both brewfile AND mackup config file
 - [ ] Should detect if running script offline
+- [ ] Find/replace all instances of 'pivot', switch to master
 
 # Testing
 - What happens if mackup backup hasn't been run?

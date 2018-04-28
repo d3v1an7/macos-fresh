@@ -3,6 +3,7 @@
 set -e
 
 dir="${HOME}/.fresh"
+config="${HOME}/.fresh/config.yaml"
 symbol_pass="✓"
 symbol_info="*"
 symbol_warn="!"
@@ -37,6 +38,7 @@ utils_sudo_keep_alive() {
   # Credit: https://github.com/mathiasbynens/dotfiles/blob/master/.macos
   sudo -v
   while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+  utils_print_status "pass" "Passed"
 }
 
 utils_error_exit() {

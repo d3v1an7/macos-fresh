@@ -10,34 +10,56 @@ source_utils() {
 }
 
 create_brewfile() {
-  ~/Library/Python/2.7/bin/yq -r \
+  thing="${HOME}/.fresh/Brewfile"
+  yq -r \
     '.brew | to_entries[] |
     if .key == "mas" then
       (.value[]) as $item | "\(.key) \"\($item.name)\", id: \($item.id)"
     else
       "\(.key) \"\(.value[])\""
-    end' ~/.fresh/config.yaml \
-  > ~/.fresh/Brewfile
+    end' "${config}" \
+  > "${thing}"
+  utils_print_status "pass" "${thing}"
 }
 
 create_mackupcfg() {
-  ~/Library/Python/2.7/bin/yq -r \
+  thing="${HOME}/.mackup.cfg"
+  yq -r \
     '.mackup | to_entries[] |
     if .key == "storage" then
       (.value | to_entries[]) as $item | "[\(.key)]","\($item.key)=\($item.value)"
     else
       "[\(.key)]","\(.value[])"
-    end' ~/.fresh/config.yaml \
-  > ~/.mackup.cfg
+    end' "${config}" \
+  > "${thing}"
+  utils_print_status "pass" "${thing}"
 }
 
 run_brew_bundle_install() {
+  thing="brew bundle install"
+  utils_print_heading "Run ${thing}"
   brew bundle install --file=~/.fresh/Brewfile
+  echo
+  utils_print_status "pass" "${thing}"
+}
+
+open_dropbox() {
+  thing="Dropbox setup"
+  utils_print_heading "Run ${thing}"
+  open -a "Dropbox"
+  echo "Dropbox will open shortly, please complete the setup and first sync before proceeding."
+  echo
+  read -n 1 -s -p "When Dropbox has finished sync, press any key to continue..."
+  echo
+  utils_print_status "pass" "${thing}"
 }
 
 run_mackup_restore() {
-  #    ... wait until dropbox configured?
+  thing="brew mackup restore"
+  utils_print_heading "Run ${thing}"
   mackup restore
+  echo
+  utils_print_status "pass" "${thing}"
 }
 
 update_defaults() {
@@ -84,11 +106,17 @@ update_defaults_plistbuddy() {
 }
 
 source_utils
-# utils_sudo_keep_alive
-# create_brewfile
-# create_mackupcfg
-# run_brew_bundle_install
-# run_mackup_restore
+utils_sudo_keep_alive
+utils_print_heading "Creating config files"
+create_brewfile
+create_mackupcfg
+run_brew_bundle_install
+open_dropbox
+run_mackup_restore
+
+#fonts!
+
 # update_defaults
 # update_defaults_global
 # update_defaults_plistbuddy
+utils_print_heading "Fresh complete!"

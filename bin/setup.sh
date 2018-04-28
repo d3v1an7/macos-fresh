@@ -35,6 +35,8 @@ install_homebrew() {
   if ! type_exists "brew"; then
     utils_print_heading "Installing ${thing}"
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    echo 'export PATH="/usr/local/sbin:$PATH"' >> "${HOME}/.bash_profile"
+    source "${HOME}/.bash_profile"
     echo
     utils_print_status "pass" "${thing} installed"
   else
@@ -63,7 +65,7 @@ install_pip() {
     # Find and add pybin to PATH
     pip install pybin
     pybin put
-    source "${HOME}/.profile"
+    source "${HOME}/.bash_profile"
     echo
     utils_print_status "pass" "${thing} installed"
   else
@@ -110,6 +112,4 @@ install_git
 install_pip
 install_yq
 install_fresh
-
 utils_print_heading "Setup complete!"
-echo
