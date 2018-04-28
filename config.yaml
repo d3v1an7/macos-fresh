@@ -68,6 +68,12 @@ mackup:
     - tower-2
     - vlc
 
+misc:
+  font:
+    name: SourceCodePro-Regular.otf
+    download: https://github.com/adobe-fonts/source-code-pro/archive/release.zip
+    path: source-code-pro-release/OTF/
+
 system:
   defaults:
     NSGlobalDomain:

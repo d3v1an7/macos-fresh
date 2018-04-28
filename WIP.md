@@ -1,11 +1,9 @@
 # Todo
-- [ ] Move app definitions into config, then create Makefile that will build both brewfile AND mackup config file
-- [ ] Should detect if running script offline
-- [ ] Find/replace all instances of 'pivot', switch to master
+- [ ] create `fresh.log`
+- Install https://github.com/siong1987/shortcuts
 
 # Testing
 - What happens if mackup backup hasn't been run?
-- What happens if dropbox not setup/logged in?
 
 
 
@@ -23,31 +21,7 @@
 
 
 
-vi ~/.mackup.cfg
 
-[configuration_files]
-# anything extra here (fresh itself???)
-
-[storage]
-engine = dropbox
-
-[applications_to_sync]
-ssh
-adium
-
-
-Want to create your own Brewfile? Run `brew bundle dump`
-
-
-1. homebrew: Apps (brewfile)
-brew bundle install
-
-2. mackup: Settings, licences ()
-mackup restore
-
-3. Ansible madness (install random stuff, computer settings)
-
-https://github.com/siong1987/shortcuts
 
 
 

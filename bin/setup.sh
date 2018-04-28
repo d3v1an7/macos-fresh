@@ -1,9 +1,9 @@
 #!/bin/bash
 
 source_utils() {
-  util_source="${HOME}/.fresh/bin/utils.sh"
+  util_source="${HOME}/.fresh/bin/utils"
   if [ ! -f "${util_source}" ]; then
-    source /dev/stdin <<< "$(curl --insecure --location --silent https://github.com/d3v1an7/macos-fresh/raw/pivot/bin/utils.sh)"
+    source /dev/stdin <<< "$(curl --insecure --location --silent https://github.com/d3v1an7/macos-fresh/raw/master/bin/utils)"
   else
     source "${util_source}"
   fi

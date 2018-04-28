@@ -1,9 +1,9 @@
 #!/bin/bash
 
 source_utils() {
-  util_source="${HOME}/.fresh/bin/utils.sh"
+  util_source="${HOME}/.fresh/bin/utils"
   if [ ! -f "${util_source}" ]; then
-    source /dev/stdin <<< "$(curl --insecure --location --silent https://github.com/d3v1an7/macos-fresh/raw/pivot/bin/utils.sh)"
+    source /dev/stdin <<< "$(curl --insecure --location --silent https://github.com/d3v1an7/macos-fresh/raw/master/bin/utils)"
   else
     source "${util_source}"
   fi
@@ -105,18 +105,35 @@ update_defaults_plistbuddy() {
   done
 }
 
+misc_install_font() {
+  thing="System font"
+  utils_print_heading "Install ${thing}"
+  font=$(yq -r '.misc.font' ~/.fresh/config.yaml)
+  font_name=$(echo $font | jq -r '.name')
+  font_download=$(echo $font | jq -r '.download')
+  font_path=$(echo $font | jq -r '.path')
+  if [ ! -f "${HOME}/Library/Fonts/${font_name}" ]; then
+    curl -o /tmp/font.zip ${font_download}
+    unzip -o /tmp/font.zip -d /tmp
+    # cp ${font_path} ${ HOME }/Library/Fonts
+  fi
+  utils_print_status "pass" "${thing} installed"
+  #     src: /tmp/source-code-pro-release/OTF/
+  #     dest: "{{ home }}/Library/Fonts"
+  #   when: font.stat.exists == false
+
+}
+
 source_utils
-utils_sudo_keep_alive
-utils_print_heading "Creating config files"
-create_brewfile
-create_mackupcfg
-run_brew_bundle_install
-open_dropbox
-run_mackup_restore
-
-#fonts!
-
+# utils_sudo_keep_alive
+# utils_print_heading "Creating config files"
+# create_brewfile
+# create_mackupcfg
+# run_brew_bundle_install
+# open_dropbox
+# run_mackup_restore
 # update_defaults
 # update_defaults_global
 # update_defaults_plistbuddy
+misc_install_font
 utils_print_heading "Fresh complete!"
