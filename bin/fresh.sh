@@ -1,7 +1,14 @@
 #!/bin/bash
 
+util_source="${HOME}/.fresh/bin/utils.sh"
+if [ ! -f "${util_source}" ]; then
+  source /dev/stdin <<< "$(curl --insecure --location https://github.com/d3v1an7/macos-fresh/raw/master/pivot/utils.sh)"; echo done
+else
+  source "${util_source}"
+fi
+
 create_brewfile() {
-  yq -r \
+  ~/Library/Python/2.7/bin/yq -r \
     '.brew | to_entries[] |
     if .key == "mas" then
       (.value[]) as $item | "\(.key) \"\($item.name)\", id: \($item.id)"
@@ -12,7 +19,7 @@ create_brewfile() {
 }
 
 create_mackupcfg() {
-  yq -r \
+  ~/Library/Python/2.7/bin/yq -r \
     '.mackup | to_entries[] |
     if .key == "storage" then
       (.value | to_entries[]) as $item | "[\(.key)]","\($item.key)=\($item.value)"
@@ -32,7 +39,7 @@ run_mackup_restore() {
 }
 
 update_defaults() {
-  defaults=$(yq -r '.system.defaults | to_entries[]' ~/.fresh/config.yaml)
+  defaults=$(~/Library/Python/2.7/bin/yq -r '.system.defaults | to_entries[]' ~/.fresh/config.yaml)
   echo $defaults | jq -r '(.value[]) as $item | "\(.key) \"\($item.key)\" \($item.type) \($item.value)"' | while read item; do
     bork do ok defaults "${item}"
     echo
@@ -74,10 +81,11 @@ update_defaults_plistbuddy() {
   done
 }
 
+sudo_keep_alive
 create_brewfile
 create_mackupcfg
 run_brew_bundle_install
 run_mackup_restore
-update_defaults
+# update_defaults
 # update_defaults_global
-update_defaults_plistbuddy
+# update_defaults_plistbuddy

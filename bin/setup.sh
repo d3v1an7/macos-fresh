@@ -1,39 +1,11 @@
 #!/bin/bash
 
-set -e
-
-error_exit() {
-  heading "${1}"
-  echo "${@:2}"
-  echo
-  exit 1
-}
-
-trap "error_exit 'Setup did not complete!' 'Received signal SIGHUP.'" SIGHUP
-trap "error_exit 'Setup did not complete!' 'Received signal SIGINT.'" SIGINT
-trap "error_exit 'Setup did not complete!' 'Received signal SIGTERM.'" SIGTERM
-trap "error_exit 'Setup did not complete!' 'Scroll up for more details about what went wrong.'" ERR
-
-dir="${HOME}/.fresh"
-
-heading() {
-  # credit: http://wiki.bash-hackers.org/snipplets/print_horizontal_line
-  local start=$'\e(0' end=$'\e(B' line='qqqqqqqqqqqqqqqq'
-  local cols="${COLUMNS:-$(tput cols)}"
-  while (("${#line}" < cols)); do line+="${line}"; done
-  echo
-  printf '%s%s%s\n' "${start}" "${line:0:cols}" "${end}"
-  echo "  ${1}"
-  printf '%s%s%s\n' "${start}" "${line:0:cols}" "${end}"
-  echo
-}
-
-finish() {
-  echo
-  echo "Done!"
-  echo
-  sleep 1
-}
+util_source="${HOME}/.fresh/bin/utils.sh"
+if [ ! -f "${util_source}" ]; then
+  source /dev/stdin <<< "$(curl --insecure --location https://github.com/d3v1an7/macos-fresh/raw/master/pivot/utils.sh)"; echo done
+else
+  source "${util_source}"
+fi
 
 install_cli_tools() {
   if ! type_exists "gcc"; then
@@ -65,6 +37,13 @@ install_git() {
   fi
 }
 
+install_pip() {
+  if ! type_exists "pip"; then
+    heading "Installing pip"
+    sudo easy_install pip
+  fi
+}
+
 install_yq() {
   if ! type_exists "yq"; then
     heading "Installing yq"
@@ -86,6 +65,7 @@ type_exists() {
   return 1
 }
 
+sudo_keep_alive
 install_cli_tools
 install_homebrew
 install_git
