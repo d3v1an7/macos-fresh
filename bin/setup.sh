@@ -1,16 +1,19 @@
 #!/bin/bash
 
-util_source="${HOME}/.fresh/bin/utils.sh"
-if [ ! -f "${util_source}" ]; then
-  source /dev/stdin <<< "$(curl --insecure --location https://github.com/d3v1an7/macos-fresh/raw/master/pivot/utils.sh)"; echo done
-else
-  source "${util_source}"
-fi
+source_utils() {
+  util_source="${HOME}/.fresh/bin/utils.sh"
+  if [ ! -f "${util_source}" ]; then
+    source /dev/stdin <<< "$(curl --insecure --location --silent https://github.com/d3v1an7/macos-fresh/raw/pivot/bin/utils.sh)"
+  else
+    source "${util_source}"
+  fi
+}
 
 install_cli_tools() {
+  thing="CLI tools for macOS"
   if ! type_exists "gcc"; then
-    ## Credit: https://github.com/boxen/boxen-web/blob/master/app/views/splash/script.sh.erb#L42-L63
-    heading "Installing CLI tools for macOS"
+    # Credit: https://github.com/boxen/boxen-web/blob/master/app/views/splash/script.sh.erb#L42-L63
+    utils_print_heading "Installing ${thing}"
     placeholder="/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress"
     touch "${placeholder}"
     prod=$(softwareupdate -l | \
@@ -20,41 +23,75 @@ install_cli_tools() {
       head -n 1)
     softwareupdate -i "${prod}"
     [[ -f "${placeholder}" ]] && rm "${placeholder}"
+    echo
+    utils_print_status "pass" "${thing} installed"
+  else
+    utils_print_status "pass" "${thing} already installed"
   fi
 }
 
 install_homebrew() {
+  thing="Homebrew"
   if ! type_exists "brew"; then
-    heading "Installing homebrew"
+    utils_print_heading "Installing ${thing}"
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    echo
+    utils_print_status "pass" "${thing} installed"
+  else
+    utils_print_status "pass" "${thing} already installed"
   fi
 }
 
 install_git() {
+  thing="git"
   if ! type_exists "git"; then
-    heading "Installing git"
+    utils_print_heading "Installing ${thing}"
     brew install git
+    echo
+    utils_print_status "pass" "${thing} installed"
+  else
+    utils_print_status "pass" "${thing} already installed"
   fi
 }
 
 install_pip() {
+  thing="pip"
   if ! type_exists "pip"; then
-    heading "Installing pip"
-    sudo easy_install pip
+    utils_print_heading "Installing ${thing}"
+    # Pip comes with Homebrew Python
+    brew install python@2
+    # Find and add pybin to PATH
+    pip install pybin
+    pybin put
+    source "${HOME}/.profile"
+    echo
+    utils_print_status "pass" "${thing} installed"
+  else
+    utils_print_status "pass" "${thing} already installed"
   fi
 }
 
 install_yq() {
+  thing="yq"
   if ! type_exists "yq"; then
-    heading "Installing yq"
+    utils_print_heading "Installing ${thing}"
     pip install yq
+    echo
+    utils_print_status "pass" "${thing} installed"
+  else
+    utils_print_status "pass" "${thing} already installed"
   fi
 }
 
 install_fresh() {
+  thing="macos-fresh"
   if [ ! -d "${dir}/.git" ]; then
-    heading "Cloning fresh"
+    utils_print_heading "Installing ${thing}"
     git clone --quiet https://github.com/d3v1an7/fresh.git "${dir}"
+    echo
+    utils_print_status "pass" "${thing} installed"
+  else
+    utils_print_status "pass" "${thing} already installed"
   fi
 }
 
@@ -65,13 +102,14 @@ type_exists() {
   return 1
 }
 
-sudo_keep_alive
+source_utils
+utils_sudo_keep_alive
 install_cli_tools
 install_homebrew
 install_git
+install_pip
 install_yq
 install_fresh
 
-heading "Setup complete!"
-echo
+utils_print_heading "Setup complete!"
 echo

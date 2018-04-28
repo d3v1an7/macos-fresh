@@ -1,11 +1,13 @@
 #!/bin/bash
 
-util_source="${HOME}/.fresh/bin/utils.sh"
-if [ ! -f "${util_source}" ]; then
-  source /dev/stdin <<< "$(curl --insecure --location https://github.com/d3v1an7/macos-fresh/raw/master/pivot/utils.sh)"; echo done
-else
-  source "${util_source}"
-fi
+source_utils() {
+  util_source="${HOME}/.fresh/bin/utils.sh"
+  if [ ! -f "${util_source}" ]; then
+    source /dev/stdin <<< "$(curl --insecure --location --silent https://github.com/d3v1an7/macos-fresh/raw/pivot/bin/utils.sh)"
+  else
+    source "${util_source}"
+  fi
+}
 
 create_brewfile() {
   ~/Library/Python/2.7/bin/yq -r \
@@ -81,11 +83,12 @@ update_defaults_plistbuddy() {
   done
 }
 
-sudo_keep_alive
-create_brewfile
-create_mackupcfg
-run_brew_bundle_install
-run_mackup_restore
+source_utils
+# utils_sudo_keep_alive
+# create_brewfile
+# create_mackupcfg
+# run_brew_bundle_install
+# run_mackup_restore
 # update_defaults
 # update_defaults_global
 # update_defaults_plistbuddy
