@@ -4,6 +4,7 @@ set -e
 
 dir="${HOME}/.fresh"
 config="${HOME}/.fresh/config.yaml"
+log="${HOME}/.fresh/fresh.log"
 symbol_pass="✓"
 symbol_info="*"
 symbol_warn="!"
@@ -71,8 +72,9 @@ utils_defaults() {
       bork do ok defaults "${domain} ${item_key} ${item_type} ${item_value}" || true
     elif [ "${1}" == "defaults" ]; then
       echo "${item_key}"
-      echo "Previous value:"
-      defaults read "${domain}" "${item_key}" || true
+      # Too noisy when outputting the whole array
+      # echo "Previous value:"
+      # defaults read "${domain}" "${item_key}" || true
       echo "New value:"
       defaults write "${domain}" "${item_key}" "-${item_type}" "${item_value}"
       echo "${item_value}"

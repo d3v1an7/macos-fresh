@@ -64,19 +64,25 @@ run_mackup_restore() {
 
 update_defaults() {
   thing="system.defaults"
-  utils_defaults "bork" ".system.defaults"
+  utils_defaults "bork" ".system.defaults" | tee -a "${log}"
   utils_print_status "pass" "${thing}"
 }
 
 update_defaults_global() {
   thing="system.defaults"
-  utils_defaults "global" ".system.defaults_global"
+  utils_defaults "global" ".system.defaults_global" | tee -a "${log}"
+  utils_print_status "pass" "${thing}"
+}
+
+update_defaults_arrays() {
+  thing="system.defaults_arrays"
+  utils_defaults "defaults" ".system.defaults_arrays" | tee -a "${log}"
   utils_print_status "pass" "${thing}"
 }
 
 update_defaults_plistbuddy() {
   thing="system.defaults_plistbuddy"
-  utils_defaults "plistbuddy" ".system.defaults_plistbuddy"
+  utils_defaults "plistbuddy" ".system.defaults_plistbuddy" | tee -a "${log}"
   utils_print_status "pass" "${thing}"
 }
 
@@ -100,7 +106,7 @@ misc_screensaver_name() {
   query=$(yq -r '.misc.screensaver.name' ~/.fresh/config.yaml)
   if [ "${query}" != "null" ]; then
     utils_print_heading "${thing}"
-    utils_defaults "plistbuddy" ".misc.screensaver.name.defaults"
+    utils_defaults "plistbuddy" ".misc.screensaver.name.defaults" | tee -a "${log}"
     utils_print_status "pass" "${thing}"
   fi
 }
@@ -110,7 +116,7 @@ misc_screensaver_idle_time() {
   query=$(yq -r '.misc.screensaver.idle_time' ~/.fresh/config.yaml)
   if [ "${query}" != "null" ]; then
     utils_print_heading "${thing}"
-    utils_defaults "plistbuddy" ".misc.screensaver.idle_time.defaults"
+    utils_defaults "plistbuddy" ".misc.screensaver.idle_time.defaults" | tee -a "${log}"
     utils_print_status "pass" "${thing}"
   fi
 }
@@ -128,7 +134,7 @@ misc_chrome_set_as_default() {
 misc_chrome_preferences() {
   thing="Set Chrome preferences"
   utils_print_heading "${thing}"
-  utils_defaults "bork" ".misc.chrome.defaults"
+  utils_defaults "bork" ".misc.chrome.defaults" | tee -a "${log}"
   echo
   utils_print_status "pass" "${thing}"
 }
@@ -146,7 +152,7 @@ misc_iterm2_import_style() {
     if [ ! -f "${HOME}/Library/Preferences/com.googlecode.iTerm2.plist" ]; then
       open -a iTerm && sleep 2 && killall iTerm2
     fi
-    defaults write com.googlecode.iterm2 "Default Bookmark Guid" -string "ba19744f-6af3-434d-aaa6-0a48e0969958"
+    defaults write com.googlecode.iterm2 "Default Bookmark Guid" -string "ba19744f-6af3-434d-aaa6-0a48e0969958" | tee -a "${log}"
     utils_print_status "pass" "${thing}"
   fi
 }
@@ -165,7 +171,7 @@ misc_iterm2_shell_integration() {
 misc_iterm2_preferences() {
   thing="Set iTerm2 preferences"
   utils_print_heading "${thing}"
-  utils_defaults "bork" ".misc.iterm2.defaults"
+  utils_defaults "bork" ".misc.iterm2.defaults" | tee -a "${log}"
   echo
   utils_print_status "pass" "${thing}"
 }
@@ -198,8 +204,10 @@ run_brew_bundle_install
 open_dropbox
 run_mackup_restore
 utils_print_heading "Updating system defaults"
+osascript -e 'tell application "System Preferences" to quit'
 update_defaults
 update_defaults_global
+update_defaults_arrays
 update_defaults_plistbuddy
 misc_install_font
 misc_screensaver_name
