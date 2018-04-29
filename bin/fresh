@@ -63,77 +63,152 @@ run_mackup_restore() {
 }
 
 update_defaults() {
-  defaults=$(~/Library/Python/2.7/bin/yq -r '.system.defaults | to_entries[]' ~/.fresh/config.yaml)
-  echo $defaults | jq -r '(.value[]) as $item | "\(.key) \"\($item.key)\" \($item.type) \($item.value)"' | while read item; do
-    bork do ok defaults "${item}"
-    echo
-  done
+  thing="system.defaults"
+  utils_defaults "bork" ".system.defaults"
+  utils_print_status "pass" "${thing}"
 }
 
-# update_defaults_global() {
-#   defaults=$(yq -r '.system.defaults_global | to_entries[]' ~/.fresh/config.yaml)
-#   echo $defaults | jq -r '(.value[]) as $item | "\(.key) \"\($item.key)\" \($item.type) \($item.value)"' | while read item; do
-#     # sudo???
-#     bork do ok defaults "${item}"
-#     echo
-#   done
-# }
+update_defaults_global() {
+  thing="system.defaults"
+  utils_defaults "global" ".system.defaults_global"
+  utils_print_status "pass" "${thing}"
+}
 
 update_defaults_plistbuddy() {
-  # Check
-  defaults=$(yq -r '.system.defaults_plistbuddy | to_entries[]' ~/.fresh/config.yaml)
-  echo $defaults | jq -r '(.value[]) as $item | "\"Print :\($item.key)\" \(.key)"' | while read item; do
-    echo "${item}"
-    echo "/usr/libexec/PlistBuddy -c ${item}" | sh
-    echo
-  done
-
-  # Delete
-  defaults=$(yq -r '.system.defaults_plistbuddy | to_entries[]' ~/.fresh/config.yaml)
-  echo $defaults | jq -r '(.value[]) as $item | "\"Delete :\($item.key)\" \(.key)"' | while read item; do
-    echo "${item}"
-    echo "/usr/libexec/PlistBuddy -c ${item}" | sh
-    echo
-  done
-
-  # Add
-  defaults=$(yq -r '.system.defaults_plistbuddy | to_entries[]' ~/.fresh/config.yaml)
-  echo $defaults | jq -r '(.value[]) as $item | "\"Add :\($item.key) \($item.type) \($item.value)\" \(.key)"' | while read item; do
-    echo "${item}"
-    echo "/usr/libexec/PlistBuddy -c ${item}" | sh
-    echo
-  done
+  thing="system.defaults_plistbuddy"
+  utils_defaults "plistbuddy" ".system.defaults_plistbuddy"
+  utils_print_status "pass" "${thing}"
 }
 
 misc_install_font() {
   thing="System font"
   utils_print_heading "Install ${thing}"
-  font=$(yq -r '.misc.font' ~/.fresh/config.yaml)
-  font_name=$(echo $font | jq -r '.name')
-  font_download=$(echo $font | jq -r '.download')
-  font_path=$(echo $font | jq -r '.path')
+  query=$(yq -r '.misc.font' ~/.fresh/config.yaml)
+  font_name=$(echo $query | jq -r '.name')
+  font_download=$(echo $query | jq -r '.download')
+  font_path=$(echo $query | jq -r '.path')
   if [ ! -f "${HOME}/Library/Fonts/${font_name}" ]; then
-    curl -o /tmp/font.zip ${font_download}
-    unzip -o /tmp/font.zip -d /tmp
-    # cp ${font_path} ${ HOME }/Library/Fonts
+    curl --location --silent --output /tmp/font.zip "${font_download}"
+    unzip -q -o /tmp/font.zip -d /tmp
+    cp -R "/tmp/${font_path}/." "${HOME}/Library/Fonts"
   fi
   utils_print_status "pass" "${thing} installed"
-  #     src: /tmp/source-code-pro-release/OTF/
-  #     dest: "{{ home }}/Library/Fonts"
-  #   when: font.stat.exists == false
-
 }
 
+misc_screensaver_name() {
+  thing="Set screensaver name"
+  query=$(yq -r '.misc.screensaver.name' ~/.fresh/config.yaml)
+  if [ "${query}" != "null" ]; then
+    utils_print_heading "${thing}"
+    utils_defaults "plistbuddy" ".misc.screensaver.name.defaults"
+    utils_print_status "pass" "${thing}"
+  fi
+}
+
+misc_screensaver_idle_time() {
+  thing="Set screensaver idle time"
+  query=$(yq -r '.misc.screensaver.idle_time' ~/.fresh/config.yaml)
+  if [ "${query}" != "null" ]; then
+    utils_print_heading "${thing}"
+    utils_defaults "plistbuddy" ".misc.screensaver.idle_time.defaults"
+    utils_print_status "pass" "${thing}"
+  fi
+}
+
+misc_chrome_set_as_default() {
+  thing="Set Chrome as default"
+  query=$(yq -r '.misc.chrome.default' ~/.fresh/config.yaml)
+  if [[ "${query}" == "true" ]]; then
+    utils_print_heading "${thing}"
+    open --new -a 'Google Chrome' --args --make-default-browser
+    utils_print_status "pass" "${thing}"
+  fi
+}
+
+misc_chrome_preferences() {
+  thing="Set Chrome preferences"
+  utils_print_heading "${thing}"
+  utils_defaults "bork" ".misc.chrome.defaults"
+  echo
+  utils_print_status "pass" "${thing}"
+}
+
+misc_iterm2_import_style() {
+  thing="Import iTerm2 style"
+  query=$(yq -r '.misc.iterm2.import_style' ~/.fresh/config.yaml)
+  if [[ "${query}" == "true" ]]; then
+    utils_print_heading "${thing}"
+    style_src="${HOME}/.fresh/misc/iTerm2/style.json"
+    style_dest="${HOME}/Library/Application Support/iTerm2/DynamicProfiles/style.json"
+    if [ ! -f "${style_dest}" ]; then
+      cp "${style_src}" "${style_dest}"
+    fi
+    if [ ! -f "${HOME}/Library/Preferences/com.googlecode.iTerm2.plist" ]; then
+      open -a iTerm && sleep 2 && killall iTerm2
+    fi
+    defaults write com.googlecode.iterm2 "Default Bookmark Guid" -string "ba19744f-6af3-434d-aaa6-0a48e0969958"
+    utils_print_status "pass" "${thing}"
+  fi
+}
+
+misc_iterm2_shell_integration() {
+  thing="Enable iTerm2 shell integration"
+  query=$(yq -r '.misc.iterm2.shell_integration' ~/.fresh/config.yaml)
+  if [[ "${query}" == "true" ]]; then
+    utils_print_heading "${thing}"
+    curl --location --silent https://iterm2.com/misc/install_shell_integration.sh | bash
+    echo
+    utils_print_status "pass" "${thing}"
+  fi
+}
+
+misc_iterm2_preferences() {
+  thing="Set iTerm2 preferences"
+  utils_print_heading "${thing}"
+  utils_defaults "bork" ".misc.iterm2.defaults"
+  echo
+  utils_print_status "pass" "${thing}"
+}
+
+clear_preference_cache() {
+  thing="Clear preference cache"
+  utils_print_heading "${thing}"
+  array=(
+    Finder
+    Dock
+    SystemUIServer
+    cfprefsd
+  )
+  for item in "${array[@]}"; do
+    killall "${item}"
+  done
+  utils_print_status "pass" "${thing}"
+}
+
+see_you_space_cowboy(){
+  echo "See you, Space Cowboy"
+  # say --voice=fred --rate=250 "See you, Space Cowboy"
+}
 source_utils
-# utils_sudo_keep_alive
-# utils_print_heading "Creating config files"
-# create_brewfile
-# create_mackupcfg
-# run_brew_bundle_install
-# open_dropbox
-# run_mackup_restore
-# update_defaults
-# update_defaults_global
-# update_defaults_plistbuddy
+utils_sudo_keep_alive
+utils_print_heading "Creating config files"
+create_brewfile
+create_mackupcfg
+run_brew_bundle_install
+open_dropbox
+run_mackup_restore
+utils_print_heading "Updating system defaults"
+update_defaults
+update_defaults_global
+update_defaults_plistbuddy
 misc_install_font
+misc_screensaver_name
+misc_screensaver_idle_time
+misc_chrome_set_as_default
+misc_chrome_preferences
+misc_iterm2_import_style
+misc_iterm2_shell_integration
+misc_iterm2_preferences
+clear_preference_cache
+see_you_space_cowboy
 utils_print_heading "Fresh complete!"

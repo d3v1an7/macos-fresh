@@ -30,7 +30,10 @@ bash <(curl -s https://raw.githubusercontent.com/d3v1an7/fresh/master/bin/setup)
 ```
 
 This will install the tools required to run the script, and download this repo to `~/.fresh`.
-Once you're happy with what's in `~/.fresh/config.yaml`, run:
+
+I _highly_ recommend getting familiar with what's in `~/.fresh/config.yaml` before proceeding further. Feel free to remove chunks you aren't interested in (i.e. `.misc.font`) and update any values that aren't to your liking.
+
+Once you're happy, run:
 ``` sh
 ~/.fresh/bin/fresh
 ```
@@ -40,12 +43,14 @@ Once you're happy with what's in `~/.fresh/config.yaml`, run:
 - Use [homebrew](https://github.com/Homebrew/brew) to install everything in [Brewfile](Brewfile) (`brew bundle install`)
 - Use [mackup](https://github.com/lra/mackup) to restore .dotfiles, app config & licences (`mackup restore`)
 - Use [bork](https://github.com/mattly/bork) to assert changes to system defaults (`bork do ok defaults`)
+- Use a bunch of bash to configure `misc` settings
 
 ## Uninstall
 
 **Manual steps**
 - Manually remove taps, formulae and casks in the generated `~/.fresh/Brewfile`
 - Check the `fresh.log` for original system defaults, and either fix manually or update values in `~/.fresh/config.yaml`
+- Manually check all `misc_` named functions in `~/.fresh/bin/fresh` and clean up as required
 
 **Commands**
 ```

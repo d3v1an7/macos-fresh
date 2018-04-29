@@ -69,10 +69,41 @@ mackup:
     - vlc
 
 misc:
+  # System
   font:
     name: SourceCodePro-Regular.otf
     download: https://github.com/adobe-fonts/source-code-pro/archive/release.zip
-    path: source-code-pro-release/OTF/
+    path: source-code-pro-release/OTF
+  screensaver:
+    name:
+      defaults:
+        ~/Library/Preferences/ByHost/com.apple.screensaver.UUID.plist:
+          # Arrange by
+          - { key: "moduleDict:displayName", type: string, value: Aerial } # Default: `Computer Name`
+          - { key: "moduleDict:moduleName", type: string, value: Aerial } # Default: `Computer Name`
+          - { key: "moduleDict:path", type: string, value: "~/Library/Screen Savers/Aerial.saver" } # Default: `/System/Library/Frameworks/ScreenSaver.framework/Resources/Computer Name.saver`
+    idle_time:
+      defaults:
+        ~/Library/Preferences/ByHost/com.apple.screensaver.UUID.plist:
+          # Start after (dropdown)
+          - { key: idleTime, type: integer, value: 120 } # Default: key absent
+  # Apps
+  chrome:
+    set_as_default: true
+    defaults:
+      com.google.Chrome:
+        # Disable the all too sensitive backswipe on trackpads and Magic Mouse
+        - { key: AppleEnableSwipeNavigateWithScrolls, type: bool, value: false } # Default: key absent
+        - { key: AppleEnableMouseSwipeNavigateWithScrolls, type: bool, value: false } # Default: key absent
+  iterm2:
+    import_style: true
+    shell_integration: true
+    defaults:
+      com.googlecode.iterm2:
+        # Don’t display the annoying prompt when quitting iTerm
+        - { key: PromptOnQuit, type: bool, value: false }
+        # Don’t display the annoying update prompt
+        - { key: SUEnableAutomaticChecks, type: bool, value: false }
 
 system:
   defaults:
@@ -148,11 +179,10 @@ system:
       # Tap to click (checkbox)
       - { key: Clicking, type: int, value: 1 } # Default: `0`
 
-    # Not sure is bork can handle keys with spaces in the name...
-    # # System Preferences > Printers & Scanners
-    # com.apple.print.PrintingPrefs:
-    #   # Automatically quit printer app once the print jobs complete (hidden)
-    #   - { key: Quit When Finished, type: bool, value: true } # Default: file absent
+    # System Preferences > Printers & Scanners
+    com.apple.print.PrintingPrefs:
+      # Automatically quit printer app once the print jobs complete (hidden)
+      - { key: Quit When Finished, type: bool, value: true } # Default: file absent
 
     # System Preferences > Sharing
     com.apple.NetworkBrowser:
@@ -203,90 +233,64 @@ system:
       # Avoid creating .DS_Store files on network volumes
       - { key: DSDontWriteNetworkStores, type: bool, value: true } # Default: key absent
 
-  # Tricky
+    # System Preferences > Dock
+    com.apple.dock:
+      # Remove all apps (hidden)
+      - { key: persistent-apps, type: array, value: [] } # Default: [epic array]
+      # Add new apps (hidden)
+      - { key: persistent-apps, type: array-add, value: ['<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Google Chrome.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'] }
+      - { key: persistent-apps, type: array-add, value: ['<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Spotify.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'] }
+      - { key: persistent-apps, type: array-add, value: ['<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Slack.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'] }
+      - { key: persistent-apps, type: array-add, value: ['<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Atom.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'] }
+      - { key: persistent-apps, type: array-add, value: ['<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/iTerm.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'] }
 
-  # # System Preferences > Desktop & Screen Saver
-  # - domain: ByHost/com.apple.screensaver.{{ uuid }}
-  #   settings:
-  #     # Start after (dropdown)
-  #     - { key: idleTime, type: int, value: 120 } # Default: key absent
+    # Menu bar
+    com.apple.systemuiserver:
+      # Remove apps
+      - { key: menuExtras, type: array, value: [] } # Default: [epic array]
+      # Add apps
+      - { key: menuExtras, type: array-add, value: ['/System/Library/CoreServices/Menu Extras/Battery.menu'] }
+      - { key: menuExtras, type: array-add, value: ['/System/Library/CoreServices/Menu Extras/Bluetooth.menu'] }
+      - { key: menuExtras, type: array-add, value: ['/System/Library/CoreServices/Menu Extras/AirPort.menu'] }
+      - { key: menuExtras, type: array-add, value: ['/System/Library/CoreServices/Menu Extras/Volume.menu'] }
 
-  # # System Preferences > Dock
-  # - domain: com.apple.dock
-  #   settings:
-  #     # Array interaction is currently broken :(
-  #     # See: https://github.com/ansible/ansible-modules-extras/issues/2610
-  #     # # Remove all apps (hidden)
-  #     # - { key: persistent-apps, type: array, value: [] } # Default: [epic array]
-  #     # # Add new apps (hidden)
-  #     # - { key: persistent-apps, type: array, array_add: true, value: ['<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Google Chrome.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'] }
-  #     # - { key: persistent-apps, type: array, array_add: true, value: ['<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Spotify.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'] }
-  #     # - { key: persistent-apps, type: array, array_add: true, value: ['<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Slack.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'] }
-  #     # - { key: persistent-apps, type: array, array_add: true, value: ['<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Atom.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'] }
-  #     # - { key: persistent-apps, type: array, array_add: true, value: ['<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/iTerm.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'] }
+  defaults_global:
+    # Displays
+    /Library/Preferences/com.apple.iokit.AmbientLightSensor:
+      # Automatically adjust brightness
+      - { key: "Automatic Display Enabled", type: bool, value: false } # Default: [unknown]
 
-
-  # Array interaction is currently broken :(
-  # See: https://github.com/ansible/ansible-modules-extras/issues/2610
-  # Menu bar
-  # - domain: com.apple.systemuiserver
-  #   settings:
-  #     # Remove apps
-  #     - { key: menuExtras, type: array, value: [] } # Default: [epic array]
-  #     # Add apps
-  #     - { key: menuExtras, type: array, array_add: true, value: ['/System/Library/CoreServices/Menu Extras/Battery.menu'] }
-  #     - { key: menuExtras, type: array, array_add: true, value: ['/System/Library/CoreServices/Menu Extras/Bluetooth.menu'] }
-  #     - { key: menuExtras, type: array, array_add: true, value: ['/System/Library/CoreServices/Menu Extras/AirPort.menu'] }
-  #     - { key: menuExtras, type: array, array_add: true, value: ['/System/Library/CoreServices/Menu Extras/Volume.menu'] }
-
-
-  # defaults_global:
-  #   # Displays
-  #   /Library/Preferences/com.apple.iokit.AmbientLightSensor:
-  #     # Not sure is bork can handle keys with spaces in the name...
-  #     # Automatically adjust brightness
-  #     - { key: Automatic Display Enabled, type: bool, value: false } # Default: [unknown]
-#
   defaults_plistbuddy:
-    # # System Preferences > Desktop & Screen Saver
-    # - domain: {{ home }}/Library/Preferences/ByHost/com.apple.screensaver.{{ uuid }}.plist
-    #   settings:
-    #     # Arrange by
-    #     - { key: moduleDict:displayName, type: string, value: Aerial } # Default: `Computer Name`
-    #     - { key: moduleDict:moduleName, type: string, value: Aerial } # Default: `Computer Name`
-    #     - { key: moduleDict:path, type: string, value: {{ home }}/Library/Screen Savers/Aerial.saver } # Default: `/System/Library/Frameworks/ScreenSaver.framework/Resources/Computer Name.saver`
-
     # System Preferences > Keyboard > Shortcuts > Spotlight
     ~/Library/Preferences/com.apple.symbolichotkeys.plist:
       # Uncheck `Show Spotlight search`
       - { key: "AppleSymbolicHotKeys:64:enabled", type: bool, value: false }
       # Uncheck `Show Finder search window`
       - { key: "AppleSymbolicHotKeys:65:enabled", type: bool, value: false }
-#
-#   # Finder
-#   - domain: {{ home }}/Library/Preferences/com.apple.finder.plist
-#     settings:
-#       # Arrange by
-#       - { key: DesktopViewSettings:IconViewSettings:arrangeBy, type: string, value: grid } # Default: `none`
-#       - { key: FK_StandardViewSettings:IconViewSettings:arrangeBy, type: string, value: grid } # Default: `none`
-#       - { key: StandardViewSettings:IconViewSettings:arrangeBy, type: string, value: grid } # Default: `none`
-#       # Grid spacing
-#       - { key: DesktopViewSettings:IconViewSettings:gridSpacing, type: integer, value: 40 } # Default: `54`
-#       - { key: FK_StandardViewSettings:IconViewSettings:gridSpacing, type: integer, value: 40 } # Default: `54`
-#       - { key: StandardViewSettings:IconViewSettings:gridSpacing, type: integer, value: 40 } # Default: `54`
-#       # Icon size
-#       - { key: DesktopViewSettings:IconViewSettings:iconSize, type: integer, value: 44 } # Default: `64`
-#       - { key: FK_StandardViewSettings:IconViewSettings:iconSize, type: integer, value: 44 } # Default: `64`
-#       - { key: StandardViewSettings:IconViewSettings:iconSize, type: integer, value: 44 } # Default: `64`
-#       # Label on bottom
-#       - { key: DesktopViewSettings:IconViewSettings:labelOnBottom, type: bool, value: false } # Default: `1`
-#       - { key: FK_StandardViewSettings:IconViewSettings:labelOnBottom, type: bool, value: false } # Default: `1`
-#       - { key: StandardViewSettings:IconViewSettings:labelOnBottom, type: bool, value: false } # Default: `1`
-#       # Text size
-#       - { key: DesktopViewSettings:IconViewSettings:textSize, type: integer, value: 10 } # Default: `12`
-#       - { key: FK_StandardViewSettings:IconViewSettings:textSize, type: integer, value: 10 } # Default: `12`
-#       - { key: StandardViewSettings:IconViewSettings:textSize, type: integer, value: 10 } # Default: `12`
-#
+
+    # Finder
+    ~/Library/Preferences/com.apple.finder.plist:
+      # Arrange by
+      - { key: "DesktopViewSettings:IconViewSettings:arrangeBy", type: string, value: grid } # Default: `none`
+      - { key: "FK_StandardViewSettings:IconViewSettings:arrangeBy", type: string, value: grid } # Default: `none`
+      - { key: "StandardViewSettings:IconViewSettings:arrangeBy", type: string, value: grid } # Default: `none`
+      # Grid spacing
+      - { key: "DesktopViewSettings:IconViewSettings:gridSpacing", type: integer, value: 40 } # Default: `54`
+      - { key: "FK_StandardViewSettings:IconViewSettings:gridSpacing", type: integer, value: 40 } # Default: `54`
+      - { key: "StandardViewSettings:IconViewSettings:gridSpacing", type: integer, value: 40 } # Default: `54`
+      # Icon size
+      - { key: "DesktopViewSettings:IconViewSettings:iconSize", type: integer, value: 44 } # Default: `64`
+      - { key: "FK_StandardViewSettings:IconViewSettings:iconSize", type: integer, value: 44 } # Default: `64`
+      - { key: "StandardViewSettings:IconViewSettings:iconSize", type: integer, value: 44 } # Default: `64`
+      # Label on bottom
+      - { key: "DesktopViewSettings:IconViewSettings:labelOnBottom", type: bool, value: false } # Default: `1`
+      - { key: "FK_StandardViewSettings:IconViewSettings:labelOnBottom", type: bool, value: false } # Default: `1`
+      - { key: "StandardViewSettings:IconViewSettings:labelOnBottom", type: bool, value: false } # Default: `1`
+      # Text size
+      - { key: "DesktopViewSettings:IconViewSettings:textSize", type: integer, value: 10 } # Default: `12`
+      - { key: "FK_StandardViewSettings:IconViewSettings:textSize", type: integer, value: 10 } # Default: `12`
+      - { key: "StandardViewSettings:IconViewSettings:textSize", type: integer, value: 10 } # Default: `12`
+
 # # System Preferences > Security & Privacy > General > Allow apps downloaded from: Anywhere
 # spctl_status: disable
 #
