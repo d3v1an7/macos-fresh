@@ -12,6 +12,7 @@ brew:
     - jq
     - mackup
     - openssh
+    - shellcheck
     - vim
     - wget
   cask:

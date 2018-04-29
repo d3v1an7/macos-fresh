@@ -121,6 +121,13 @@ misc_screensaver_idle_time() {
   fi
 }
 
+misc_atom_packages() {
+  thing="Install starred Atom packages"
+  utils_print_heading "${thing}"
+  apm stars --install
+  utils_print_status "pass" "${thing}"
+}
+
 misc_chrome_set_as_default() {
   thing="Set Chrome as default"
   query=$(yq -r '.misc.chrome.default' ~/.fresh/config.yaml)
@@ -193,7 +200,7 @@ clear_preference_cache() {
 
 see_you_space_cowboy(){
   echo "See you, Space Cowboy"
-  # say --voice=fred --rate=250 "See you, Space Cowboy"
+  say --voice=fred --rate=250 "See you, Space Cowboy"
 }
 source_utils
 utils_sudo_keep_alive
@@ -212,6 +219,7 @@ update_defaults_plistbuddy
 misc_install_font
 misc_screensaver_name
 misc_screensaver_idle_time
+misc_atom_packages
 misc_chrome_set_as_default
 misc_chrome_preferences
 misc_iterm2_import_style

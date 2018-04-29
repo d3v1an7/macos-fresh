@@ -19,8 +19,8 @@ It's unlikely that the chosen applications and system defaults will suit your pu
 - Run `mackup --dry-run backup` to see which apps are compatible with mackup
   - If you'd like to backup everything listed, just run the command again without `--dry-run`
   - If you'd like to only backup selected apps, read more [here](https://github.com/lra/mackup/blob/master/doc/README.md#applications)
-
-You can use this information to start crafting your own [`config.yaml`](config.yaml)
+- You can use this information to start crafting your own [`config.yaml`](config.yaml)
+- Go through Atom packages and themes, and 'star' the ones you want to keep
 
 ## Installation
 
