@@ -21,6 +21,7 @@ brew:
     - aerial
     - atom
     - beamer
+    - d3v1an7/custom/spotlight-apps
     - daisydisk
     - docker
     - dropbox
@@ -69,51 +70,18 @@ mackup:
     - tower-2
     - vlc
 
-misc:
-  # System
-  font:
-    name: SourceCodePro-Regular.otf
-    download: https://github.com/adobe-fonts/source-code-pro/archive/release.zip
-    path: source-code-pro-release/OTF
-  screensaver:
-    name:
-      defaults:
-        ~/Library/Preferences/ByHost/com.apple.screensaver.UUID.plist:
-          # Arrange by
-          - { key: "moduleDict:displayName", type: string, value: Aerial }
-          - { key: "moduleDict:moduleName", type: string, value: Aerial }
-          - { key: "moduleDict:path", type: string, value: "~/Library/Screen Savers/Aerial.saver" }
-    idle_time:
-      defaults:
-        ~/Library/Preferences/ByHost/com.apple.screensaver.UUID.plist:
-          # Start after (dropdown)
-          - { key: idleTime, type: integer, value: 120 }
-  # Apps
-  chrome:
-    set_as_default: true
-    defaults:
-      com.google.Chrome:
-        # Disable the all too sensitive backswipe on trackpads and Magic Mouse
-        - { key: AppleEnableSwipeNavigateWithScrolls, type: bool, value: false }
-        - { key: AppleEnableMouseSwipeNavigateWithScrolls, type: bool, value: false }
-  iterm2:
-    import_style: true
-    shell_integration: true
-    defaults:
-      com.googlecode.iterm2:
-        # Don’t display the annoying prompt when quitting iTerm
-        - { key: PromptOnQuit, type: bool, value: false }
-        # Don’t display the annoying update prompt
-        - { key: SUEnableAutomaticChecks, type: bool, value: false }
-
 system:
   defaults:
-    NSGlobalDomain:
+    .GlobalPreferences:
       # System Preferences > General
-      # Appearance (dropdown)
-      - { key: AppleAquaColorVariant, type: int, value: 6 }
-      # Use dark menu bar and Dock (checkbox)
+      # Appearance (image selection)
       - { key: AppleInterfaceStyle, type: string, value: Dark }
+      # Accent colour (radio selection)
+      - { key: AppleAccentColor, type: integer, value: -1 }
+      # Close/minimise/expand button color (this is implied from accent color when using UI)
+      - { key: AppleAquaColorVariant, type: integer, value: 6 }
+      # Highlight colour (dropdown selection)
+      - { key: AppleHighlightColor, type: string, value: '0.847059 0.847059 0.862745 Gray' }
 
       # System Preferences > Acessibility
       # Display > Shake mouse pointer to locate (checkbox)
@@ -121,7 +89,7 @@ system:
 
       # System Preferences > Keyboard
       # Enable full keyboard access for all controls (e.g. enable Tab in modal dialogs)
-      - { key: AppleKeyboardUIMode, type: int, value: 3 }
+      - { key: AppleKeyboardUIMode, type: integer, value: 3 }
       # Disable smart quotes and dashes (hidden)
       - { key: NSAutomaticQuoteSubstitutionEnabled, type: bool, value: false }
       - { key: NSAutomaticDashSubstitutionEnabled, type: bool, value: false }
@@ -130,11 +98,11 @@ system:
       # Disable press-and-hold for keys in favor of key repeat (hidden)
       - { key: ApplePressAndHoldEnabled, type: bool, value: false }
       # Set a blazingly fast keyboard repeat rate (hidden)
-      - { key: KeyRepeat, type: int, value: 2 }
+      - { key: KeyRepeat, type: integer, value: 2 }
 
       # System Preferences > Mouse
       # Scroll direction: natural (checkbox)
-      - { key: com.apple.swipescrolldirection, type: bool, value: false }
+      - { key: com\\\\.apple\\\\.swipescrolldirection, type: bool, value: false }
 
       # Other hidden preferences
       # Speed up window resize animations
@@ -153,20 +121,43 @@ system:
       # Size (slider)
       - { key: tilesize, type: float, value: 43 }
       # Magnification (slider)
-      - { key: largesize, type: int, value: 48 }
+      - { key: largesize, type: integer, value: 48 }
       # Magnification (checkbox)
       - { key: magnification, type: bool, value: true }
       # Automatically hide and show the Dock (checkbox)
       - { key: autohide, type: bool, value: true }
+      # Show recents in Dock (checkbox)
+      - { key: show-recents, type: bool, value: false }
       # Delay (hidden)
-      - { key: autohide-delay, type: int, value: 0 }
+      - { key: autohide-delay, type: integer, value: 0 }
       # Semi transparent dock icons for hidden apps (hidden)
       - { key: showhidden, type: bool, value: true }
+      # Remove all apps (user action)
+      - { key: persistent-apps, type: json, value: "[]" }
+      # Add new apps (user action)
+      - { key: persistent-apps.0, type: json, value: { "tile-data": { "file-data": { "_CFURLString": "/Applications/Google Chrome.app", "_CFURLStringType": 0 } } } }
+      - { key: persistent-apps.1, type: json, value: { "tile-data": { "file-data": { "_CFURLString": "/Applications/Spotify.app", "_CFURLStringType": 0 } } } }
+      - { key: persistent-apps.2, type: json, value: { "tile-data": { "file-data": { "_CFURLString": "/Applications/Slack.app", "_CFURLStringType": 0 } } } }
+      - { key: persistent-apps.3, type: json, value: { "tile-data": { "file-data": { "_CFURLString": "/Applications/Atom.app", "_CFURLStringType": 0 } } } }
+      - { key: persistent-apps.4, type: json, value: { "tile-data": { "file-data": { "_CFURLString": "/Applications/iTerm.app", "_CFURLStringType": 0 } } } }
+
+    # Menu bar
+    com.apple.systemuiserver:
+      # Remove apps
+      - { key: menuExtras, type: json, value: [] }
+      # Add apps
+      - { key: menuExtras.0, type: string, value: /System/Library/CoreServices/Menu Extras/Battery.menu }
+      - { key: menuExtras.1, type: string, value: /System/Library/CoreServices/Menu Extras/Bluetooth.menu }
+      - { key: menuExtras.2, type: string, value: /System/Library/CoreServices/Menu Extras/AirPort.menu }
+      - { key: menuExtras.3, type: string, value: /System/Library/CoreServices/Menu Extras/Volume.menu }
+
+    ByHost/com.apple.systemuiserver.UUID:
+      - { key: dontAutoLoad, type: json, value: [ "/System/Library/CoreServices/Menu Extras/Clock.menu" ] }
 
     # System Preferences > Security & Privacy
     com.apple.screensaver:
       # Require password (checkbox)
-      - { key: askForPassword, type: int, value: 1 }
+      - { key: askForPassword, type: integer, value: 1 }
       # Require password (dropdown)
       - { key: askForPasswordDelay, type: float, value: 60 }
 
@@ -178,12 +169,7 @@ system:
     # System Preferences > Trackpad
     com.apple.driver.AppleBluetoothMultitouch.trackpad:
       # Tap to click (checkbox)
-      - { key: Clicking, type: int, value: 1 }
-
-    # System Preferences > Printers & Scanners
-    com.apple.print.PrintingPrefs:
-      # Automatically quit printer app once the print jobs complete (hidden)
-      - { key: Quit When Finished, type: bool, value: true }
+      - { key: Clicking, type: integer, value: 1 }
 
     # System Preferences > Sharing
     com.apple.NetworkBrowser:
@@ -229,96 +215,98 @@ system:
       - { key: ShowHardDrivesOnDesktop, type: bool, value: true }
       - { key: ShowMountedServersOnDesktop, type: bool, value: true }
       - { key: ShowRemovableMediaOnDesktop, type: bool, value: true }
+      # Arrange by
+      - { key: DesktopViewSettings.IconViewSettings.arrangeBy, type: string, value: grid }
+      - { key: FK_StandardViewSettings.IconViewSettings.arrangeBy, type: string, value: grid }
+      - { key: StandardViewSettings.IconViewSettings.arrangeBy, type: string, value: grid }
+      # Grid spacing
+      - { key: DesktopViewSettings.IconViewSettings.gridSpacing, type: integer, value: 40 }
+      - { key: FK_StandardViewSettings.IconViewSettings.gridSpacing, type: integer, value: 40 }
+      - { key: StandardViewSettings.IconViewSettings.gridSpacing, type: integer, value: 40 }
+      # Icon size
+      - { key: DesktopViewSettings.IconViewSettings.iconSize, type: integer, value: 44 }
+      - { key: FK_StandardViewSettings.IconViewSettings.iconSize, type: integer, value: 44 }
+      - { key: StandardViewSettings.IconViewSettings.iconSize, type: integer, value: 44 }
+      # Label on bottom
+      - { key: DesktopViewSettings.IconViewSettings.labelOnBottom, type: bool, value: false }
+      - { key: FK_StandardViewSettings.IconViewSettings.labelOnBottom, type: bool, value: false }
+      - { key: StandardViewSettings.IconViewSettings.labelOnBottom, type: bool, value: false }
+      # Text size
+      - { key: DesktopViewSettings.IconViewSettings.textSize, type: integer, value: 10 }
+      - { key: FK_StandardViewSettings.IconViewSettings.textSize, type: integer, value: 10 }
+      - { key: StandardViewSettings.IconViewSettings.textSize, type: integer, value: 10 }
 
     com.apple.desktopservices:
       # Avoid creating .DS_Store files on network volumes
       - { key: DSDontWriteNetworkStores, type: bool, value: true }
 
-  defaults_global:
-    # Displays
-    /Library/Preferences/com.apple.iokit.AmbientLightSensor:
-      # Automatically adjust brightness
-      - { key: "Automatic Display Enabled", type: bool, value: false }
+  security:
+    # System Preferences > Security & Privacy > General > Allow apps downloaded from: Anywhere
+    disable_gatekeeper: false
 
-  # Need manual commands for arrays, as they aren't well supported in bork or plistbuddy
-  defaults_arrays:
-    # System Preferences > Dock
-    com.apple.dock:
-      # Remove all apps (hidden)
-      - { key: persistent-apps, type: array, value: "" }
-      # Add new apps (hidden)
-      - { key: persistent-apps, type: array-add, value: "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Google Chrome.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>" }
-      - { key: persistent-apps, type: array-add, value: "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Spotify.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>" }
-      - { key: persistent-apps, type: array-add, value: "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Slack.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>" }
-      - { key: persistent-apps, type: array-add, value: "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Atom.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>" }
-      - { key: persistent-apps, type: array-add, value: "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/iTerm.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>" }
 
-    # Menu bar
-    com.apple.systemuiserver:
-      # Remove apps
-      - { key: menuExtras, type: array, value: "" }
-      # Add apps
-      - { key: menuExtras, type: array-add, value: "/System/Library/CoreServices/Menu Extras/Battery.menu" }
-      - { key: menuExtras, type: array-add, value: "/System/Library/CoreServices/Menu Extras/Bluetooth.menu" }
-      - { key: menuExtras, type: array-add, value: "/System/Library/CoreServices/Menu Extras/AirPort.menu" }
-      - { key: menuExtras, type: array-add, value: "/System/Library/CoreServices/Menu Extras/Volume.menu" }
+  labels:
+    # System Preferences > Sharing > Computer Name
+    computer_names:
+      - { key: ComputerName, value: USER-macbook }
+      - { key: LocalHostName, value: USER-macbook }
 
-  defaults_plistbuddy:
-    # System Preferences > Keyboard > Shortcuts > Spotlight
-    ~/Library/Preferences/com.apple.symbolichotkeys.plist:
-      # Uncheck `Show Finder search window`
-      - { key: "AppleSymbolicHotKeys:65:enabled", type: bool, value: false }
+  power:
+    # System Preferences > Energy Saver
+    power_settings_all:
+      - { key: disksleep, value: 10 }
+      - { key: womp, value: 0 }
+      - { key: autorestart, value: 0 }
+      - { key: halfdim, value: 0 }
+      - { key: sms, value: 0 }
 
-    # Finder
-    ~/Library/Preferences/com.apple.finder.plist:
-      # Arrange by
-      - { key: "DesktopViewSettings:IconViewSettings:arrangeBy", type: string, value: grid }
-      - { key: "FK_StandardViewSettings:IconViewSettings:arrangeBy", type: string, value: grid }
-      - { key: "StandardViewSettings:IconViewSettings:arrangeBy", type: string, value: grid }
-      # Grid spacing
-      - { key: "DesktopViewSettings:IconViewSettings:gridSpacing", type: integer, value: 40 }
-      - { key: "FK_StandardViewSettings:IconViewSettings:gridSpacing", type: integer, value: 40 }
-      - { key: "StandardViewSettings:IconViewSettings:gridSpacing", type: integer, value: 40 }
-      # Icon size
-      - { key: "DesktopViewSettings:IconViewSettings:iconSize", type: integer, value: 44 }
-      - { key: "FK_StandardViewSettings:IconViewSettings:iconSize", type: integer, value: 44 }
-      - { key: "StandardViewSettings:IconViewSettings:iconSize", type: integer, value: 44 }
-      # Label on bottom
-      - { key: "DesktopViewSettings:IconViewSettings:labelOnBottom", type: bool, value: false }
-      - { key: "FK_StandardViewSettings:IconViewSettings:labelOnBottom", type: bool, value: false }
-      - { key: "StandardViewSettings:IconViewSettings:labelOnBottom", type: bool, value: false }
-      # Text size
-      - { key: "DesktopViewSettings:IconViewSettings:textSize", type: integer, value: 10 }
-      - { key: "FK_StandardViewSettings:IconViewSettings:textSize", type: integer, value: 10 }
-      - { key: "StandardViewSettings:IconViewSettings:textSize", type: integer, value: 10 }
+    # System Preferences > Energy Saver > Battery
+    power_settings_battery:
+      - { key: displaysleep, value: 5 }
+      - { key: sleep, value: 10 }
+      - { key: powernap, value: 0 }
+      - { key: lessbright, value: 1 }
 
-# # System Preferences > Security & Privacy > General > Allow apps downloaded from: Anywhere
-# spctl_status: disable
-#
-# # System Preferences > Sharing > Computer Name
-# computer_names:
-#   - { name: ComputerName, value: {{ user_name }}-macbook }
-#   - { name: LocalHostName, value: {{ user_name }}-macbook }
-#   - { name: HostName, value: {{ user_name }}-macbook.local }
-#
-# # System Preferences > Energy Saver
-# power_settings_all:
-#   - { name: disksleep, value: 10 }
-#   - { name: womp, value: 0 }
-#   - { name: autorestart, value: 0 }
-#   - { name: halfdim, value: 0 }
-#   - { name: sms, value: 0 }
-#
-# # System Preferences > Energy Saver > Battery
-# power_settings_battery:
-#   - { name: displaysleep, value: 5 }
-#   - { name: sleep, value: 10 }
-#   - { name: powernap, value: 0 }
-#   - { name: lessbright, value: 1 }
-#
-# # System Preferences > Energy Saver > Power Adaptor
-# power_settings_charger:
-#   - { name: displaysleep, value: 10 }
-#   - { name: sleep, value: 0 }
-#   - { name: powernap, value: 1 }
-#   - { name: lessbright, value: 0 }
+    # System Preferences > Energy Saver > Power Adaptor
+    power_settings_charger:
+      - { key: displaysleep, value: 10 }
+      - { key: sleep, value: 0 }
+      - { key: powernap, value: 1 }
+      - { key: lessbright, value: 0 }
+
+misc:
+  font:
+    name: SourceCodePro-Regular.otf
+    download: https://github.com/adobe-fonts/source-code-pro/archive/release.zip
+    path: source-code-pro-release/OTF
+
+  screensaver:
+    defaults:
+      ByHost/com.apple.screensaver.UUID:
+        - { key: "moduleDict:displayName", type: string, value: Aerial }
+        - { key: "moduleDict:moduleName", type: string, value: Aerial }
+        - { key: "moduleDict:path", type: string, value: "~/Library/Screen Savers/Aerial.saver" }
+        # Start after (dropdown)
+        - { key: idleTime, type: integer, value: 120 }
+
+apps:
+  atom:
+    install_packages: true
+
+  chrome:
+    set_as_default: true
+    defaults:
+      com.google.Chrome:
+        # Disable the all too sensitive backswipe on trackpads and Magic Mouse
+        - { key: AppleEnableSwipeNavigateWithScrolls, type: bool, value: false }
+        - { key: AppleEnableMouseSwipeNavigateWithScrolls, type: bool, value: false }
+
+  iterm2:
+    import_style: true
+    shell_integration: true
+    defaults:
+      com.googlecode.iterm2:
+        # Don’t display the annoying prompt when quitting iTerm
+        - { key: PromptOnQuit, type: bool, value: false }
+        # Don’t display the annoying update prompt
+        - { key: SUEnableAutomaticChecks, type: bool, value: false }

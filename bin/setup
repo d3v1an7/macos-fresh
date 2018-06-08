@@ -3,17 +3,19 @@
 source_utils() {
   util_source="${HOME}/.fresh/bin/utils"
   if [ ! -f "${util_source}" ]; then
+    # shellcheck source=/dev/null
     source /dev/stdin <<< "$(curl --insecure --location --silent https://github.com/d3v1an7/macos-fresh/raw/master/bin/utils)"
   else
+    # shellcheck source=/dev/null
     source "${util_source}"
   fi
 }
 
 install_cli_tools() {
-  thing="CLI tools for macOS"
-  if ! type_exists "gcc"; then
+  local title="CLI tools for macOS"
+  if ! utils_type_exists "gcc"; then
     # Credit: https://github.com/boxen/boxen-web/blob/master/app/views/splash/script.sh.erb#L42-L63
-    utils_print_heading "Installing ${thing}"
+    utils_print_heading "Installing ${title}"
     placeholder="/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress"
     touch "${placeholder}"
     prod=$(softwareupdate -l | \
@@ -24,84 +26,80 @@ install_cli_tools() {
     softwareupdate -i "${prod}"
     [[ -f "${placeholder}" ]] && rm "${placeholder}"
     echo
-    utils_print_status "pass" "${thing} installed"
+    utils_print_status "pass" "${title} installed"
   else
-    utils_print_status "pass" "${thing} already installed"
+    utils_print_status "pass" "${title} already installed"
   fi
 }
 
 install_homebrew() {
-  thing="Homebrew"
-  if ! type_exists "brew"; then
-    utils_print_heading "Installing ${thing}"
+  local title="Homebrew"
+  if ! utils_type_exists "brew"; then
+    utils_print_heading "Installing ${title}"
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    # shellcheck disable=SC2016 # Not stressed about single quote usage
     echo 'export PATH="/usr/local/sbin:$PATH"' >> "${HOME}/.bash_profile"
+    # shellcheck source=/dev/null
     source "${HOME}/.bash_profile"
     echo
-    utils_print_status "pass" "${thing} installed"
+    utils_print_status "pass" "${title} installed"
   else
-    utils_print_status "pass" "${thing} already installed"
+    utils_print_status "pass" "${title} already installed"
   fi
 }
 
 install_git() {
-  thing="git"
-  if ! type_exists "git"; then
-    utils_print_heading "Installing ${thing}"
+  local title="git"
+  if ! utils_type_exists "git"; then
+    utils_print_heading "Installing ${title}"
     brew install git
     echo
-    utils_print_status "pass" "${thing} installed"
+    utils_print_status "pass" "${title} installed"
   else
-    utils_print_status "pass" "${thing} already installed"
+    utils_print_status "pass" "${title} already installed"
   fi
 }
 
 install_pip() {
-  thing="pip"
-  if ! type_exists "pip"; then
-    utils_print_heading "Installing ${thing}"
+  local title="pip"
+  if ! utils_type_exists "pip"; then
+    utils_print_heading "Installing ${title}"
     # Pip comes with Homebrew Python
     brew install python@2
     # Find and add pybin to PATH
     pip install pybin
     pybin put
+    # shellcheck source=/dev/null
     source "${HOME}/.bash_profile"
     echo
-    utils_print_status "pass" "${thing} installed"
+    utils_print_status "pass" "${title} installed"
   else
-    utils_print_status "pass" "${thing} already installed"
+    utils_print_status "pass" "${title} already installed"
   fi
 }
 
 install_yq() {
-  thing="yq"
-  if ! type_exists "yq"; then
-    utils_print_heading "Installing ${thing}"
+  local title="yq"
+  if ! utils_type_exists "yq"; then
+    utils_print_heading "Installing ${title}"
     pip install yq
     echo
-    utils_print_status "pass" "${thing} installed"
+    utils_print_status "pass" "${title} installed"
   else
-    utils_print_status "pass" "${thing} already installed"
+    utils_print_status "pass" "${title} already installed"
   fi
 }
 
 install_fresh() {
-  thing="macos-fresh"
-  if [ ! -d "${dir}/.git" ]; then
-    utils_print_heading "Installing ${thing}"
+  local title="macos-fresh"
+  if [ ! -d "${dir:?}/.git" ]; then
+    utils_print_heading "Installing ${title}"
     git clone --quiet https://github.com/d3v1an7/fresh.git "${dir}"
     echo
-    utils_print_status "pass" "${thing} installed"
+    utils_print_status "pass" "${title} installed"
   else
-    utils_print_status "pass" "${thing} already installed"
+    utils_print_status "pass" "${title} already installed"
   fi
-}
-
-type_exists() {
-  if [ "$(type -P $1)" ]; then
-    return 0
-  fi
-  return 1
 }
 
 source_utils
