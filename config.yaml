@@ -242,7 +242,7 @@ system:
 
   security:
     # System Preferences > Security & Privacy > General > Allow apps downloaded from: Anywhere
-    disable_gatekeeper: false
+    disable_gatekeeper: true
 
 
   labels:
