@@ -1,87 +1,120 @@
-# <img src="https://cdn.rawgit.com/d3v1an7/fresh/1285b4998e99232cfe70b8a11c3782f4943dcd91/logo.svg" alt="fresh" width="30%" />
+# fresh
 
-[![os_version](https://img.shields.io/badge/OS%20X-10.11-blue.svg?maxAge=2592000)](https://itunes.apple.com/au/app/os-x-el-capitan/id1018109117)
+Super opinionated tools, apps and defaults for macOS.
+
+[![os_version](https://img.shields.io/badge/macOS-10.14_Preview-blue.svg?maxAge=2592000)](https://www.apple.com/macos/mojave-preview/)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](LICENSE.md)
-[![status](https://img.shields.io/badge/status-WIP-red.svg?maxAge=2592000)](WIP.md)
+![status](https://img.shields.io/badge/status-not_widely_tested-orange.svg?maxAge=2592000)
 
-A super opinionated Ansible playbook (with bash bootstrap) that will provision a local workstation after a fresh install of OS X. Can be run safely on established machines too!
+## Overview
+This over-engineered macOS bootstrap is intended to be run after a fresh install of macOS, but can be run safely on established machines too!
 
-It's unlikely that the chosen applications and system defaults will suit your purposes exactly, but you should find it easy enough to customise on your own fork.
+It's unlikely that the chosen applications and system defaults will suit your purposes exactly, but you should find it easy enough to customise.
 
-[Pull requests](https://help.github.com/articles/creating-a-pull-request/) are welcome! :ok_hand:
+[Pull requests](https://help.github.com/articles/creating-a-pull-request/) are very welcome!
+
+## Optional prerequisites
+
+**Before formatting your machine**
+- Go through Atom packages and themes, and 'star' the ones you want to keep
+- Run `brew bundle dump` to create a `Brewfile` based on your current installation
+- Run `mackup --dry-run backup` to see which apps are compatible with mackup
+  - If you'd like to backup everything listed, just run the command again without `--dry-run`
+  - If you'd like to only backup selected apps, read more [here](https://github.com/lra/mackup/blob/master/doc/README.md#applications)
+
+You can use this information to start crafting your own [`config.yaml`](config.yaml)
 
 ## Installation
-Open terminal and run
+
+Open a terminal window and run:
 ``` sh
-$ curl --progress-bar https://raw.githubusercontent.com/d3v1an7/fresh/master/bin/fresh | bash -s init
-```
-> Hold on... isn't piping random scripts to shell a [really bad idea](http://www.seancassidy.me/dont-pipe-to-your-shell.html)?
-
-Yep! But it is also pretty convenient, so... :see_no_evil:  
-I'd recommend having a general understanding of any script before installing, but I'll leave that up to you!
-
-## Usage
-```
-$ fresh
-usage: fresh [--version] [--help] <command> [<args>]
-
-Available commands are:
-    install  Installs applications and makes changes to system defaults
-    undo     Restores system to last known state
-    init     Ensures system has tools and apps required
-
-Optional flags for the INSTALL and UNDO commands:
-    --skip   Skips specified role [apps|system|config]
+bash <(curl -s https://raw.githubusercontent.com/d3v1an7/fresh/master/bin/setup)
 ```
 
-## Known issues
-1. **IMPORTANT:** At this time, `undo` will NOT rollback the following settings:  
-  - OS X Energy Saver settings
-    - Previous settings are saved as raw output in `ansible/vars/system.backup.yml`
-  - All application config in `ansible/roles/config`, including Atom, iTerm, Google Chrome, etc...
-    - You can avoid this for now by running `install` with `--skip config`
-1. Cannot modify dock/menubar using the osx_defaults module: https://github.com/ansible/ansible-modules-extras/issues/2610
+This will install the tools required to run the script, and download this repo to `~/.fresh`.
 
-## FAQ
-### Why this and not [something else]?
-1. Rollbacks. A backup variable file is created on each run of `install`. The `undo` command will unset _most_ changes (see known issues above), meaning you can return your system very closely to the state before running.
-<!-- drop this line back in when the example files have been made: or even back to factory default (when using the example rollback config supplied).  -->
-1. Ansible. Ansible has a trivial learning curve (in comparison to say, Puppet) and Ansible Playbooks are cleaner and easier to configure than most bash scripts.
+I _highly_ recommend getting familiar with what's in `~/.fresh/config.yaml` before proceeding further. Feel free to remove chunks you aren't interested in (i.e. `.misc.font`) and update any values that aren't to your liking.
 
-### In summary, what does the install script actually do?
-When run with the `init` command, the script will:
+Once you're happy, run:
+``` sh
+~/.fresh/bin/fresh
+```
 
-1. [`bin/fresh`](bin/fresh)
-  - Ensure the following are available on system:
-    - [Xcode Command Line Tools](https://developer.apple.com/xcode/downloads/)
-    - [Homebrew](http://brew.sh/)
-    - [Git](http://git-scm.com/downloads/)
-    - [Ansible](http://docs.ansible.com/intro_installation.html)
-  - Clone this repo into `~/.fresh/`
-  - Run the Ansible playbook below
-1. [`ansible/playbook.yml`](ansible/playbook.yml)
-  - Symlink `bin/fresh` to `/usr/local/bin/fresh`
+## What will the script do?
+
+- Use [homebrew](https://github.com/Homebrew/brew) to install everything in [Brewfile](Brewfile) (`brew bundle install`)
+- Use [mackup](https://github.com/lra/mackup) to restore .dotfiles, app config & licences (`mackup restore`)
+- Use [plutil](http://scriptingosx.com/2016/11/editing-property-lists/) to check and update system defaults (`plutil -replace`)
+- Use a bunch of bash to configure `misc` settings
+
+## Uninstall
+
+**Manual steps**
+- Remove taps, formulae and casks in the generated `~/.fresh/Brewfile`
+- Check the `~/.fresh/fresh.log` for original system defaults and fix as required
+- Check all `misc_` named functions in `~/.fresh/bin/fresh` and clean up as required
+
+**Commands**
+```
+$ mackup uninstall
+$ rm ~/.mackup.cfg
+$ rm -R ~/.fresh
+```
+
+## Problems to solve
+
+`Finder > Preferences > Sidebar`
+- Uncheck all, except the following
+  - Favorites: iCloud Drive, AirDrop, Desktop, Home
+  - Shared: Connected servers
+  - Devices: Hard disks, External disks, CDs
+
+`[New Finder window]`
+- Add `~/Applications`
+- Set order of sidebar
+  - Desktop
+  - Home
+  - ~/Applications
+  - AirDrop
+
+## More info
+
+`~/.fresh/config.yaml`
+
+Although it's not as straightforward as just using a shell script, I like the idea of all the tools, apps, and system settings in a single file and format. It requires a bit of love, but I think it's worth it :sparkles:
+
+ `~/.fresh/fresh.log`
+
+Just executing someone else's giant dotfile config gives me the willies. What if something doesn't _feel_ right afterwards? So every change to `defaults` will be appended to `fresh.log`, so you can manually revert changes if you aren't feeling it.
+
+`~/mackup.cfg`
+
+Thi exists as I only want Mackup to handle the the apps in `config.yaml` as I tend to install a bunch of stuff 'for fun' over time, which I don't necessarily want to store config for.
 
 ## Contributing
+
 If you have any questions or suggestions, you can:
 - Submit a [pull request](https://github.com/d3v1an7/fresh/pull/new/master)
+  - Please see style guide [here](https://google.github.io/styleguide/shell.xml)
+  - Please lint with ShellCheck before submitting PRs (`make check`)
 - Submit an [issue](https://github.com/d3v1an7/fresh/issues/new), or
 - Say hello on [Twitter](https://twitter.com/d3v1an7)
 
 ## Acknowledgements
+
 Shout out to the many who have tread this ground before:
-- boxen [our-boxen](https://boxen.github.com/)
-- ptb [osx-setup](https://github.com/ptb/Mac-OS-X-Lion-Setup)
-- mathiasbynens [dotfiles](https://github.com/mathiasbynens/dotfiles)
-- necolas [dotfiles](https://github.com/necolas/dotfiles)
-- rafeca [dotfiles](https://github.com/rafeca/dotfiles)
-- pongstr [dotfiles](https://github.com/pongstr/dotfiles)
-- paularmstrong [dotfiles](https://github.com/paularmstrong/dotfiles)
+- boxen/[our-boxen](https://boxen.github.com/)
+- mathiasbynens/[dotfiles](https://github.com/mathiasbynens/dotfiles)
+- ptb/[osx-setup](https://github.com/ptb/Mac-OS-X-Lion-Setup)
+- necolas/[dotfiles](https://github.com/necolas/dotfiles)
+- rafeca/[dotfiles](https://github.com/rafeca/dotfiles)
+- pongstr/[dotfiles](https://github.com/pongstr/dotfiles)
+- paularmstrong/[dotfiles](https://github.com/paularmstrong/dotfiles)
 
 This would not be possible without:
-- [homebrew](https://github.com/Homebrew/homebrew)
+- [homebrew](https://github.com/Homebrew/brew)
 - [homebrew-cask](https://github.com/caskroom/homebrew-cask)
-- [ansible](https://github.com/ansible/ansible)
+- [mackup](https://github.com/lra/mackup)
 
 And much :heart: to:
 - [base16](https://github.com/chriskempson/base16)
