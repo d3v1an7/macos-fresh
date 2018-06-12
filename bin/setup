@@ -121,5 +121,6 @@ install_homebrew
 install_git
 install_pip
 install_yq
+install_jq
 install_fresh
 utils_print_heading "Setup complete!"
