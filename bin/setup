@@ -90,6 +90,18 @@ install_yq() {
   fi
 }
 
+install_jq() {
+  local title="jq"
+  if ! utils_type_exists "jq"; then
+    utils_print_heading "Installing ${title}"
+    brew install jq
+    echo
+    utils_print_status "pass" "${title} installed"
+  else
+    utils_print_status "pass" "${title} already installed"
+  fi
+}
+
 install_fresh() {
   local title="macos-fresh"
   if [ ! -d "${dir:?}/.git" ]; then
