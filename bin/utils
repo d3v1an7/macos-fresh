@@ -75,9 +75,15 @@ utils_defaults_update() {
     uuid="$(system_profiler SPHardwareDataType | awk '/UUID/ { print $3; }')"
     domain_path="${domain_path/UUID/$uuid}"
     echo "${domain}: ${item_key}"
-    existing="$(utils_plutil_extract "${item_key}" "${domain_path}")"
-    [[ -z "${existing}" ]] && result="Did not exist" || result="${existing}"
-    echo "${colour_error:?}${result}${colour_reset:?}"
+    # Create empty plist file if it doesn't exist
+    if [ ! -f "${domain_path}" ]; then
+      echo "${colour_error:?}File did not exist${colour_reset:?}"
+      /usr/libexec/PlistBuddy -c "Clear dict" "${domain_path}" >/dev/null
+    else
+      existing="$(utils_plutil_extract "${item_key}" "${domain_path}")"
+      [[ -z "${existing}" ]] && result="Property did not exist" || result="${existing}"
+      echo "${colour_error:?}${result}${colour_reset:?}"
+    fi
     plutil -replace "${item_key}" "-${item_type}" "${item_value}" "${domain_path}"
     result="$(utils_plutil_extract "${item_key}" "${domain_path}")"
     echo "${colour_pass:?}${result}${colour_reset:?}"
