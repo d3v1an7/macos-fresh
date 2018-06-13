@@ -3,7 +3,7 @@
 Super opinionated tools, apps and defaults for macOS.
 
 [![os_version](https://img.shields.io/badge/macOS-10.14_Preview-blue.svg?maxAge=2592000)](https://www.apple.com/macos/mojave-preview/)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](LICENSE.md)
+[![license](https://img.shields.io/badge/license-GLWTPL-green.svg?maxAge=2592000)](LICENSE)
 ![status](https://img.shields.io/badge/status-not_widely_tested-orange.svg?maxAge=2592000)
 
 ## Overview
