@@ -66,14 +66,6 @@ run_mackup_restore() {
   utils_print_status "pass" "${title}"
 }
 
-run_applescript() {
-  local title="System defaults (applescript)"
-  utils_print_heading "${title}"
-  osascript -e 'tell application "System Preferences" to quit'
-  osascript "${dir}/misc/displaysettings.applescript"
-  utils_print_status "pass" "${title}"
-}
-
 system_defaults() {
   local title="System defaults (plutil)"
   utils_print_heading "${title}"
@@ -233,6 +225,20 @@ see_you_space_cowboy(){
   say --voice=fred --rate=250 "See you, Space Cowboy"
 }
 
+print_manual_steps() {
+  local title="Manual steps"
+  utils_print_heading "${title}"
+  echo "Some applescripts will error when running the first time, as"
+  echo "Terminal/iTerm needs to be granted access to accessibility features."
+  echo
+  echo "Add Terminal/iTerm to:"
+  echo "System Preferences > Security & Privacy > Privacy > Accessibility"
+  echo "and run the applescript again."
+  echo
+  echo "Run: osascript ${dir}/misc/displaysettings.applescript"
+  echo
+}
+
 main() {
   source_utils
   utils_sudo_keep_alive
@@ -240,7 +246,6 @@ main() {
   run_brew_bundle_install
   open_dropbox
   run_mackup_restore
-  run_applescript
   system_defaults
   system_security
   system_labels
@@ -252,6 +257,7 @@ main() {
   apps_iterm2
   clear_preference_cache
   see_you_space_cowboy
+  print_manual_steps
 }
 
 main
