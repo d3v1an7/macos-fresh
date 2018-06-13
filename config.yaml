@@ -5,14 +5,13 @@ brew:
   brew:
     - awscli
     - bash-completion
-    - bork
     - coreutils
-    - curl
     - git
     - jq
     - mackup
-    - openssh
-    - shellcheck
+    # TODO: Add shellcheck again when bottle is available
+    # NOTE: Takes way too long to build on developer preview
+    # - shellcheck
     - vim
     - wget
   cask:
@@ -20,7 +19,6 @@ brew:
     - adobe-creative-cloud
     - aerial
     - atom
-    - beamer
     - d3v1an7/custom/spotlight-apps
     - daisydisk
     - docker
@@ -29,25 +27,23 @@ brew:
     - flux
     - google-chrome
     - google-drive-file-stream
-    - handbrake
     - istat-menus
     - iterm2
     - kaleidoscope
-    - keybase
     - muzzle
     - private-internet-access
     - sketch
     - slack
-    - spectacle
     - spotify
-    - steam
     - the-unarchiver
     - tower
     - vlc
-  mas:
-    - { name: Final Cut Pro, id: 424389933 }
-    - { name: iMovie, id: 408981434 }
-    - { name: Magnet, id: 441258766 }
+  # TODO: Add mas back when it doesn't need to be compiled
+  # NOTE: Requires full installation of xcode, not just cli tools
+  # mas:
+  #   - { name: Final Cut Pro, id: 424389933 }
+  #   - { name: iMovie, id: 408981434 }
+  #   - { name: Magnet, id: 441258766 }
 
 mackup:
   storage:
@@ -171,11 +167,6 @@ system:
       # Tap to click (checkbox)
       - { key: Clicking, type: integer, value: 1 }
 
-    # System Preferences > Sharing
-    com.apple.NetworkBrowser:
-      # Enable AirDrop over ethernet
-      - { key: BrowseAllInterfaces, type: bool, value: true }
-
     # System Preferences > Time Machine
     com.apple.TimeMachine:
       # Prevent Time Machine from prompting to use new hard drives as backup volume
@@ -211,10 +202,8 @@ system:
       # Allow text selection in Quick Look
       - { key: QLEnableTextSelection, type: bool, value: true }
       # Show icons for hard drives, servers, and removable media on the desktop
-      - { key: ShowExternalHardDrivesOnDesktop, type: bool, value: true }
       - { key: ShowHardDrivesOnDesktop, type: bool, value: true }
       - { key: ShowMountedServersOnDesktop, type: bool, value: true }
-      - { key: ShowRemovableMediaOnDesktop, type: bool, value: true }
       # Arrange by
       - { key: DesktopViewSettings.IconViewSettings.arrangeBy, type: string, value: grid }
       - { key: FK_StandardViewSettings.IconViewSettings.arrangeBy, type: string, value: grid }
