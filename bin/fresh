@@ -43,7 +43,7 @@ create_mackupcfg() {
 run_brew_bundle_install() {
   local title="brew bundle install"
   utils_print_heading "Run ${title}"
-  brew bundle install --file="${dir}/Brewfile"
+  brew bundle install --file="${dir}/Brewfile" --verbose
   echo
   utils_print_status "pass" "${title}"
 }
@@ -176,13 +176,14 @@ apps_iterm2() {
   local title="iTerm2"
   utils_print_heading "Setup ${title}"
   if utils_check_if_true ".apps.iterm2.import_style"; then
-    style_src="${dir}/misc/iTerm2/style.json"
-    style_dest="${HOME}/Library/Application Support/iTerm2/DynamicProfiles/style.json"
-    if [ ! -f "${style_dest}" ]; then
-      cp "${style_src}" "${style_dest}"
-    fi
     if [ ! -f "${HOME}/Library/Preferences/com.googlecode.iTerm2.plist" ]; then
       open -a iTerm && sleep 2 && killall iTerm2
+    fi
+    style_src="${dir}/misc/iTerm2/style.json"
+    style_dest="${HOME}/Library/Application Support/iTerm2/DynamicProfiles"
+    if [ ! -f "${style_dest}/style.json" ]; then
+      mkdir -p "${style_dest}"
+      cp "${style_src}" "${style_dest}/style.json"
     fi
     utils_print_status "pass" "Import style"
     item="com.googlecode.iterm2|Default Bookmark Guid|string|ba19744f-6af3-434d-aaa6-0a48e0969958"
