@@ -7,7 +7,7 @@ Super opinionated tools, apps and defaults for macOS.
 ![status](https://img.shields.io/badge/status-not_widely_tested-orange.svg?maxAge=2592000)
 
 ## Overview
-This over-engineered macOS bootstrap is intended to be run after a fresh install of macOS, but can be run safely on established machines too!
+This over-engineered macOS bootstrap is intended to be run after a fresh install of macOS, but can be run safely on established machines too.
 
 It's unlikely that the chosen applications and system defaults will suit your purposes exactly, but you should find it easy enough to customise.
 
