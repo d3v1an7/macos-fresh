@@ -98,7 +98,7 @@ system:
 
       # System Preferences > Mouse
       # Scroll direction: natural (checkbox)
-      - { key: com\\\\.apple\\\\.swipescrolldirection, type: bool, value: false }
+      - { key: com\.apple\.swipescrolldirection, type: bool, value: false }
 
       # Other hidden preferences
       # Speed up window resize animations
