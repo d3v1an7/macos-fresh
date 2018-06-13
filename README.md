@@ -42,7 +42,7 @@ Once you're happy, run:
 
 ## What will the script do?
 
-- Use [homebrew](https://github.com/Homebrew/brew) to install everything in [Brewfile](Brewfile) (`brew bundle install`)
+- Use [homebrew](https://github.com/Homebrew/brew) to install apps and tools in config (`brew bundle install`)
 - Use [mackup](https://github.com/lra/mackup) to restore .dotfiles, app config & licences (`mackup restore`)
 - Use [plutil](http://scriptingosx.com/2016/11/editing-property-lists/) to check and update system defaults (`plutil -replace`)
 - Use a bunch of bash to configure `misc` settings
