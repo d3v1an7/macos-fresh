@@ -6,12 +6,8 @@ brew:
     - awscli
     - bash-completion
     - coreutils
-    - git
-    - jq
     - mackup
-    # TODO: Add shellcheck again when bottle is available
-    # NOTE: Takes way too long to build on developer preview
-    # - shellcheck
+    - shellcheck
     - vim
     - wget
   cask:
@@ -24,26 +20,22 @@ brew:
     - docker
     - dropbox
     - firefox
-    - flux
     - google-chrome
     - google-drive-file-stream
     - istat-menus
     - iterm2
     - kaleidoscope
     - muzzle
-    - private-internet-access
     - sketch
     - slack
+    - spectacle
     - spotify
     - the-unarchiver
     - tower
     - vlc
-  # TODO: Add mas back when it doesn't need to be compiled
-  # NOTE: Requires full installation of xcode, not just cli tools
-  # mas:
-  #   - { name: Final Cut Pro, id: 424389933 }
-  #   - { name: iMovie, id: 408981434 }
-  #   - { name: Magnet, id: 441258766 }
+  mas:
+    - { name: Final Cut Pro, id: 424389933 }
+    - { name: iMovie, id: 408981434 }
 
 mackup:
   storage:
