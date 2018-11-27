@@ -60,17 +60,11 @@ install_git() {
   fi
 }
 
-install_pip() {
-  local title="pip"
-  if ! utils_type_exists "pip"; then
+install_jq() {
+  local title="jq"
+  if ! utils_type_exists "jq"; then
     utils_print_heading "Installing ${title}"
-    # Pip comes with Homebrew Python
-    brew install python@2
-    # Find and add pybin to PATH
-    pip install pybin
-    pybin put
-    # shellcheck source=/dev/null
-    source "${HOME}/.bash_profile"
+    brew install jq
     echo
     utils_print_status "pass" "${title} installed"
   else
@@ -82,19 +76,7 @@ install_yq() {
   local title="yq"
   if ! utils_type_exists "yq"; then
     utils_print_heading "Installing ${title}"
-    pip install yq
-    echo
-    utils_print_status "pass" "${title} installed"
-  else
-    utils_print_status "pass" "${title} already installed"
-  fi
-}
-
-install_jq() {
-  local title="jq"
-  if ! utils_type_exists "jq"; then
-    utils_print_heading "Installing ${title}"
-    brew install jq
+    brew install python-yq
     echo
     utils_print_status "pass" "${title} installed"
   else
@@ -119,8 +101,7 @@ utils_sudo_keep_alive
 install_cli_tools
 install_homebrew
 install_git
-install_pip
-install_yq
 install_jq
+install_yq
 install_fresh
 utils_print_heading "Setup complete!"
