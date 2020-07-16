@@ -2,94 +2,83 @@
 
 Super opinionated tools, apps and defaults for macOS.
 
-[![os_version](https://img.shields.io/badge/macOS-10.14_Preview-blue.svg?maxAge=2592000)](https://www.apple.com/macos/mojave-preview/)
+[![os_version](https://img.shields.io/badge/macOS-10.15-blue.svg?maxAge=2592000)](https://www.apple.com/macos/catalina/)
 [![license](https://img.shields.io/badge/license-GLWTPL-green.svg?maxAge=2592000)](LICENSE)
-![status](https://img.shields.io/badge/status-not_widely_tested-orange.svg?maxAge=2592000)
 
 ## Overview
+
 This over-engineered macOS bootstrap is intended to be run after a fresh install of macOS, but can be run safely on established machines too.
 
 It's unlikely that the chosen applications and system defaults will suit your purposes exactly, but you should find it easy enough to customise.
 
 [Pull requests](https://help.github.com/articles/creating-a-pull-request/) are very welcome!
 
-## Optional prerequisites
-
-**Before formatting your machine**
-- Go through Atom packages and themes, and 'star' the ones you want to keep
-- Run `brew bundle dump` to create a `Brewfile` based on your current installation
-- Run `mackup --dry-run backup` to see which apps are compatible with mackup
-  - If you'd like to backup everything listed, just run the command again without `--dry-run`
-  - If you'd like to only backup selected apps, read more [here](https://github.com/lra/mackup/blob/master/doc/README.md#applications)
-
-You can use this information to start crafting your own [`config.yaml`](config.yaml)
-
-## Installation
+## Installing fresh
 
 Open a terminal window and run:
 ``` sh
 bash <(curl -s https://raw.githubusercontent.com/d3v1an7/fresh/master/bin/setup)
 ```
 
-This will install the tools required to run the script, and download this repo to `~/.fresh`.
+This will:
 
-I _highly_ recommend getting familiar with what's in `~/.fresh/config.yaml` before proceeding further. Feel free to remove chunks you aren't interested in (i.e. `.misc.font`) and update any values that aren't to your liking.
+- Install the tools required to run the script
+- Download this repo to `~/.fresh`.
+
+I _highly_ recommend getting familiar with what's in `~/.fresh/config.yaml` before proceeding further. Feel free to remove chunks you aren't interested in (i.e. `.misc.font`) and update any values that aren't to your liking. You can also just ignore all of this and jump right in! I do my best to track how your system was before the changes so you can manually revert if needed.
+
+## Running fresh
 
 Once you're happy, run:
 ``` sh
 ~/.fresh/bin/fresh
 ```
 
-## What will the script do?
+This will:
 
-- Use [homebrew](https://github.com/Homebrew/brew) to install apps and tools in config (`brew bundle install`)
-- Use [mackup](https://github.com/lra/mackup) to restore .dotfiles, app config & licences (`mackup restore`)
-- Use [plutil](http://scriptingosx.com/2016/11/editing-property-lists/) to check and update system defaults (`plutil -replace`)
-- Use a bunch of bash to configure `misc` settings
+- Use [homebrew](https://github.com/Homebrew/brew) to install apps and tools in config (`brew bundle install`).
+- Use [mackup](https://github.com/lra/mackup) to restore .dotfiles, app config & licences (`mackup restore`).
+- Use [plutil](http://scriptingosx.com/2016/11/editing-property-lists/) to check and update system defaults (`plutil -replace`).
+- Use a bunch of bash to configure `misc` settings.
+
+## Optional prerequisites
+
+**Craft your own config**
+
+- Run `brew bundle dump` to create a `Brewfile` in your current directory, which lists your current `brew` tools and apps.
+- Run `mackup --dry-run backup` to see which apps are compatible with mackup.
+  - If you'd like to backup everything listed, just run the command again without `--dry-run`.
+  - If you'd like to only backup selected apps, read more [here](https://github.com/lra/mackup/blob/master/doc/README.md#applications).
 
 ## Uninstall
 
-**Manual steps**
-- Remove taps, formulae and casks in the generated `~/.fresh/Brewfile`
-- Check the `~/.fresh/fresh.log` for original system defaults and fix as required
-- Check all `misc_` named functions in `~/.fresh/bin/fresh` and clean up as required
+**Revert**
 
-**Commands**
+- Remove taps, formulae and casks in the generated `~/.fresh/Brewfile`.
+- Check the `~/.fresh/fresh.log` for original system defaults and fix as required.
+- Check all `misc_` named functions in `~/.fresh/bin/fresh` and clean up as required.
+
+**Remove**
+
+``` sh
+mackup uninstall
+rm ~/.mackup.cfg
+rm -R ~/.fresh
 ```
-$ mackup uninstall
-$ rm ~/.mackup.cfg
-$ rm -R ~/.fresh
-```
-
-## Problems to solve
-
-`Finder > Preferences > Sidebar`
-- Uncheck all, except the following
-  - Favorites: iCloud Drive, AirDrop, Desktop, Home
-  - Shared: Connected servers
-  - Devices: Hard disks, External disks, CDs
-
-`[New Finder window]`
-- Add `~/Applications`
-- Set order of sidebar
-  - Desktop
-  - Home
-  - ~/Applications
-  - AirDrop
 
 ## More info
 
 `~/.fresh/config.yaml`
 
-Although it's not as straightforward as just using a shell script, I like the idea of all the tools, apps, and system settings in a single file and format. It requires a bit of love, but I think it's worth it :sparkles:
+I like the idea of putting all the tools, apps, and system settings in a single file and format. It requires a bit of faffing about, but I think it's worth it! :sparkles:
 
  `~/.fresh/fresh.log`
 
-Just executing someone else's giant dotfile config gives me the willies. What if something doesn't _feel_ right afterwards? So every change to `defaults` will be appended to `fresh.log`, so you can manually revert changes if you aren't feeling it.
+Just executing someone else's giant dotfile config gives me the jibblies. What if something doesn't feel right afterwards? So every change to `defaults` will be appended to `fresh.log`, which gives you the information needed to manually revert changes if you aren't feeling it.
 
 `~/mackup.cfg`
 
-Thi exists as I only want Mackup to handle the the apps in `config.yaml` as I tend to install a bunch of stuff 'for fun' over time, which I don't necessarily want to store config for.
+This exists as I only want Mackup to handle the the apps specified in `config.yaml`. I tend to install a bunch of stuff 'for fun' over time, which I don't necessarily want to store config for.
 
 ## Contributing
 
