@@ -1,61 +1,39 @@
 ---
 brew:
-  tap:
-    - caskroom/cask
   brew:
     - awscli
     - bash-completion
     - coreutils
     - mackup
     - shellcheck
-    - vim
-    - wget
   cask:
     - 1password
     - adobe-creative-cloud
     - aerial
-    - atom
-    - d3v1an7/custom/spotlight-apps
-    - daisydisk
-    - docker
+    - brave-browser
     - dropbox
-    - firefox
-    - google-chrome
-    - google-drive-file-stream
     - istat-menus
     - iterm2
     - kaleidoscope
     - muzzle
-    - sketch
+    - rectangle
     - slack
-    - spectacle
     - spotify
-    - the-unarchiver
-    - tower
+    - visual-studio-code
     - vlc
-  mas:
-    - { name: Final Cut Pro, id: 424389933 }
-    - { name: iMovie, id: 408981434 }
 
 mackup:
   storage:
     engine: dropbox
   applications_to_sync:
     - 1password-4
-    - atom
     - aws
     - bash
-    - daisydisk
-    - docker
-    - flux
     - git
-    - istat-menus-5
     - iterm2
     - kaleidoscope
-    - sketch
     - spotify
     - ssh
-    - tower-2
     - vlc
 
 system:
@@ -64,15 +42,9 @@ system:
       # System Preferences > General
       # Appearance (image selection)
       - { key: AppleInterfaceStyle, type: string, value: Dark }
-      # Accent colour (radio selection)
-      - { key: AppleAccentColor, type: integer, value: -1 }
-      # Close/minimise/expand button color (this is implied from accent color when using UI)
-      - { key: AppleAquaColorVariant, type: integer, value: 6 }
-      # Highlight colour (dropdown selection)
-      - { key: AppleHighlightColor, type: string, value: '0.847059 0.847059 0.862745 Gray' }
 
-      # System Preferences > Acessibility
-      # Display > Shake mouse pointer to locate (checkbox)
+      # System Preferences > Acessibility > Display > Cursor
+      # Shake mouse pointer to locate (checkbox)
       - { key: CGDisableCursorLocationMagnification, type: bool, value: true }
 
       # System Preferences > Keyboard
@@ -121,18 +93,18 @@ system:
       # Semi transparent dock icons for hidden apps (hidden)
       - { key: showhidden, type: bool, value: true }
       # Remove all apps (user action)
-      - { key: persistent-apps, type: json, value: "[]" }
+      - { key: persistent-apps, type: json, value: [{}] }
       # Add new apps (user action)
-      - { key: persistent-apps.0, type: json, value: { "tile-data": { "file-data": { "_CFURLString": "/Applications/Google Chrome.app", "_CFURLStringType": 0 } } } }
+      - { key: persistent-apps.0, type: json, value: { "tile-data": { "file-data": { "_CFURLString": "/Applications/Brave Browser.app", "_CFURLStringType": 0 } } } }
       - { key: persistent-apps.1, type: json, value: { "tile-data": { "file-data": { "_CFURLString": "/Applications/Spotify.app", "_CFURLStringType": 0 } } } }
       - { key: persistent-apps.2, type: json, value: { "tile-data": { "file-data": { "_CFURLString": "/Applications/Slack.app", "_CFURLStringType": 0 } } } }
-      - { key: persistent-apps.3, type: json, value: { "tile-data": { "file-data": { "_CFURLString": "/Applications/Atom.app", "_CFURLStringType": 0 } } } }
+      - { key: persistent-apps.3, type: json, value: { "tile-data": { "file-data": { "_CFURLString": "/Applications/Visual Studio Code.app", "_CFURLStringType": 0 } } } }
       - { key: persistent-apps.4, type: json, value: { "tile-data": { "file-data": { "_CFURLString": "/Applications/iTerm.app", "_CFURLStringType": 0 } } } }
 
     # Menu bar
     com.apple.systemuiserver:
       # Remove apps
-      - { key: menuExtras, type: json, value: [] }
+      - { key: menuExtras, type: json, value: [{}] }
       # Add apps
       - { key: menuExtras.0, type: string, value: /System/Library/CoreServices/Menu Extras/Battery.menu }
       - { key: menuExtras.1, type: string, value: /System/Library/CoreServices/Menu Extras/Bluetooth.menu }
@@ -271,13 +243,10 @@ misc:
         - { key: idleTime, type: integer, value: 120 }
 
 apps:
-  atom:
-    install_packages: true
-
-  chrome:
+  brave:
     set_as_default: true
     defaults:
-      com.google.Chrome:
+      com.brave.Browser:
         # Disable the all too sensitive backswipe on trackpads and Magic Mouse
         - { key: AppleEnableSwipeNavigateWithScrolls, type: bool, value: false }
         - { key: AppleEnableMouseSwipeNavigateWithScrolls, type: bool, value: false }

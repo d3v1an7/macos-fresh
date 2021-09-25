@@ -147,26 +147,17 @@ misc_screensaver() {
     | "\(.key)|\($item.key)|\($item.type)|\($item.value)"')"
 }
 
-apps_atom() {
-  local title="Setup Atom"
-  utils_print_heading "${title}"
-  if utils_check_if_true ".apps.atom.install_packages"; then
-    apm stars --install
-    utils_print_status "pass" "Install starred Atom packages"
-  fi
-}
-
-apps_chrome() {
-  local title="Google Chrome"
+apps_brave() {
+  local title="Brave Browser"
   utils_print_heading "Setup ${title}"
-  if utils_check_if_true ".apps.chrome.set_as_default"; then
-    open --new -a "Google Chrome" --args --make-default-browser
-    utils_print_status "pass" "Set Chrome as default"
+  if utils_check_if_true ".apps.brave.set_as_default"; then
+    open --new -a "Brave Browser" --args --make-default-browser
+    utils_print_status "pass" "Set Brave Browser as default"
   fi
   echo
   while read -r item; do
     utils_defaults_update
-  done <<< "$(utils_run_yq '.apps.chrome.defaults
+  done <<< "$(utils_run_yq '.apps.brave.defaults
     | to_entries[]
     | .value[] as $item
     | "\(.key)|\($item.key)|\($item.type)|\($item.value)"')"
@@ -253,8 +244,7 @@ main() {
   system_power
   misc_font
   misc_screensaver
-  apps_atom
-  apps_chrome
+  apps_brave
   apps_iterm2
   clear_preference_cache
   see_you_space_cowboy
