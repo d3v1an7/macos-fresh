@@ -1,0 +1,33 @@
+name: CD
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: '0'
+      - id: semver
+        name: Bump version and push tag
+        uses: anothrNick/github-tag-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version-file: '.python-version'
+          cache: 'poetry'
+      - run: pip install --root-user-action=ignore poetry
+      - run: poetry version ${{ steps.semver.outputs.new_tag }}
+      - run: poetry install --no-dev
+      - run: poetry build --format=sdist
+      - uses: actions/upload-artifact@v3
+        with:
+          path: /dist/
