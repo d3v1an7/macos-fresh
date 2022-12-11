@@ -8,10 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - run: pip install poetry
       - uses: actions/setup-python@v4
         with:
           python-version-file: '.python-version'
-      - run: pip install --root-user-action=ignore poetry
+          cache: 'poetry'
       - run: poetry install
       - run: poetry run flake8 ./fresh
       - run: poetry run black ./fresh --check

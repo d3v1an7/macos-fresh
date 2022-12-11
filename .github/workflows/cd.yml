@@ -1,28 +1,46 @@
 name: CD
-on:
-  push:
-    tags:
-      - '*'
+on: [push]
+#   pull_request:
+#     types:
+#       - closed
+#     branches:
+#       - main
+concurrency: production
 jobs:
-  build:
+  semver:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: '0'
+      - name: Determine semver
+        id: semver
+        uses: anothrNick/github-tag-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MAJOR_STRING_TOKEN: major
+          MINOR_STRING_TOKEN: minor
+          PATCH_STRING_TOKEN: patch
+          NONE_STRING_TOKEN: skip
+          DRY_RUN: true
+      - name: Install Poetry
+        run: pip install poetry
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version-file: '.python-version'
-      - name: Install Poetry
-        run: pip install --root-user-action=ignore poetry
+          cache: 'poetry'
       - name: Set new version for CLI tool based on tag
-        run: poetry version ${{ github.ref }}
+        run: poetry version ${{ steps.semver.outputs.new_tag }}
       - name: Install dependencies
         run: poetry install --no-dev
       - name: Build CLI tool
         run: poetry build --format=sdist
+      - name: Add semver tag
+        run: |
+          git tag ${{ steps.semver.outputs.new_tag }}
+          git push --tags
       - name: Create GitHub release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: dist/
+        run: gh release create ${{ steps.semver.outputs.new_tag }} ./dist/*
