@@ -1,10 +1,10 @@
 name: CD
-on: [push]
-#   pull_request:
-#     types:
-#       - closed
-#     branches:
-#       - main
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
 concurrency: production
 jobs:
   build:
