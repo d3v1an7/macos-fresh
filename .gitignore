@@ -1,3 +1,4 @@
 .DS_Store
 Brewfile*
-fresh.log
+__pycache__
+WIP.md
