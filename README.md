@@ -26,8 +26,7 @@ First, install `homebrew` by opening a terminal window and running:
 Then install `fresh`:
 
 ``` sh
-brew tap [TBC]
-brew install [TBC]
+brew install d3v1an7/taps/macos-fresh
 ```
 
 ## Running fresh
