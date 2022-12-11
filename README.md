@@ -45,7 +45,6 @@ fresh --config-url https://gist.githubusercontent.com/d3v1an7/ba0e1a530bfe27121d
 Install the following tools, remembering to also follow any post install instructions:
 
 ``` sh
-brew install act
 brew install pyenv
 brew install pyenv-virtualenv
 brew install --cask visual-studio-code
