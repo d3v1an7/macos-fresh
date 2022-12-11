@@ -7,7 +7,7 @@ on: [push]
 #       - main
 concurrency: production
 jobs:
-  semver:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -46,3 +46,16 @@ jobs:
         run: gh release create ${{ steps.semver.outputs.new_tag }} ./dist/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Bump Homebrew formula
+        uses: mislav/bump-homebrew-formula-action@v2
+        with:
+          formula-name: macos-fresh
+          formula-path: Formula/macos-fresh.rb
+          homebrew-tap: d3v1an7/homebrew-taps
+          base-branch: main
+          download-url: https://github.com/d3v1an7/macos-fresh/releases/download/${{ steps.semver.outputs.new_tag }}/macos_fresh-${{ steps.semver.outputs.new_tag }}.tar.gz
+          commit-message: |
+            {{formulaName}} {{version}}
+        env:
+          COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
+
