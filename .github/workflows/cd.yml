@@ -32,7 +32,7 @@ jobs:
         with:
           python-version-file: '.python-version'
           cache: 'poetry'
-      - name: Set new version for CLI tool based on tag
+      - name: Set new version for CLI tool
         run: poetry version ${{ steps.semver.outputs.new_tag }}
       - name: Install dependencies
         run: poetry install --no-dev
@@ -44,3 +44,5 @@ jobs:
           git push --tags
       - name: Create GitHub release
         run: gh release create ${{ steps.semver.outputs.new_tag }} ./dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
