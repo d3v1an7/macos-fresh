@@ -39,12 +39,14 @@ class Fresh:
                 Installer.install_app(spinner, app, installer="mas")
 
     def main_set_system_name(self):
-        spinner = self._spinner
-        print(return_border("Setting system name"))
-        print(
-            "Your sudo password/fingerprint will be required to adjust the system name."
-        )
-        MacOS.set_system_name(spinner)
+        system_name_update = config.get("system_name_update")
+        if system_name_update:
+            spinner = self._spinner
+            print(return_border("Setting system name"))
+            print(
+                "Your sudo password/fingerprint will be required to adjust the system name."
+            )
+            MacOS.set_system_name(spinner)
 
     def main_adjust_power_settings(self):
         config = self._config
