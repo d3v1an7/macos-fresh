@@ -19,19 +19,19 @@ It's unlikely that the [chosen applications and system defaults](https://gist.gi
 
 First, install `homebrew` by opening a terminal window and running:
 
-``` sh
+```sh
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
 Then install `fresh`:
 
-``` sh
+```sh
 brew install d3v1an7/taps/macos-fresh
 ```
 
 ## Running fresh
 
-``` sh
+```sh
 fresh --config=[url of your config file]
 
 # For example:
@@ -44,7 +44,7 @@ fresh --config-url https://gist.githubusercontent.com/d3v1an7/ba0e1a530bfe27121d
 
 Install the following tools, remembering to also follow any post install instructions:
 
-``` sh
+```sh
 brew install pyenv
 brew install pyenv-virtualenv
 brew install --cask visual-studio-code
@@ -52,16 +52,17 @@ brew install --cask visual-studio-code
 
 Clone the project, and create a new virtualenv for it to run in:
 
-``` sh
+```sh
 git clone https://github.com/d3v1an7/macos-fresh.git ~/workspace/macos-fresh
 cd ~/workspace/macos-fresh
+pyenv install
 pyenv virtualenv fresh
 ```
 
 Open up Visual Studio Code, and the IDE terminal should start in the fresh virtual environment.
 Or, use whatever terminal you want, and just activate the virtual env from there:
 
-``` sh
+```sh
 code ~/workspace/macos-fresh
 # OR
 pyenv activate fresh
@@ -69,13 +70,14 @@ pyenv activate fresh
 
 Once you're in the correct virtual environment, go ahead and install the dependencies!
 
-``` sh
+```sh
 poetry install
+poetry run fresh --config=[url of your config file]
 ```
 
 If you'd like to test the GitHub Actions locally, you'll need:
 
-``` sh
+```sh
 brew install act
 brew install --cask docker
 ```

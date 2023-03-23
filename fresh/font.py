@@ -11,7 +11,8 @@ class Font:
         for font_name, font_url in font.items():
             font_file = os.path.basename(font_url)
             spinner.start(font_name)
-            output = subprocess.run(["fc-list"], stdout=subprocess.PIPE)
+            command = "system_profiler SPFontsDataType | grep 'Full Name: ' | awk -F': ' '{print $2}'"
+            output = subprocess.run(command, shell=True, stdout=subprocess.PIPE)
             if font_name in output.stdout.decode():
                 spinner.succeed()
             else:
