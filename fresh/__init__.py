@@ -39,6 +39,7 @@ class Fresh:
                 Installer.install_app(spinner, app, installer="mas")
 
     def main_set_system_name(self):
+        config = self._config
         system_name_update = config.get("system_name_update")
         if system_name_update:
             spinner = self._spinner
