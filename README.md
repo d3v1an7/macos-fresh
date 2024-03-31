@@ -59,6 +59,13 @@ pyenv install
 pyenv virtualenv fresh
 ```
 
+Install poetry
+```sh
+brew install pipx
+pipx ensurepath
+pipx install poetry
+```
+
 Open up Visual Studio Code, and the IDE terminal should start in the fresh virtual environment.
 Or, use whatever terminal you want, and just activate the virtual env from there:
 

@@ -7,19 +7,19 @@ readme = "README.md"
 packages = [{include = "fresh"}]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.12"
 PyYAML = "^6.0"
-requests = "^2.28.1"
+requests = "^2.31.0"
 halo = "^0.0.31"
-psutil = "^5.9.4"
-termcolor = "^2.1.1"
+psutil = "^5.9.8"
+termcolor = "^2.4.0"
 
 [tool.poetry.scripts]
 fresh = 'fresh:init'
 
 [tool.poetry.group.dev.dependencies]
-black = "^22.10.0"
-flake8 = "^6.0.0"
+black = "^24.3.0"
+flake8 = "^7.0.0"
 
 [build-system]
 requires = ["poetry-core"]
