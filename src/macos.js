@@ -81,6 +81,31 @@ function deepEqual(a, b) {
   return false;
 }
 
+// Walk a nested path inside obj; returns undefined if any segment is missing.
+function getNested(obj, path) {
+  let cur = obj;
+  for (const seg of path) {
+    if (cur == null || typeof cur !== "object") return undefined;
+    cur = cur[seg];
+  }
+  return cur;
+}
+
+// Assign `value` at `path` inside obj, creating intermediate dicts as needed.
+// If an intermediate exists but isn't a plain dict, it's replaced.
+function setNested(obj, path, value) {
+  let cur = obj;
+  for (let i = 0; i < path.length - 1; i++) {
+    const seg = path[i];
+    const next = cur[seg];
+    if (next == null || typeof next !== "object" || Array.isArray(next)) {
+      cur[seg] = {};
+    }
+    cur = cur[seg];
+  }
+  cur[path[path.length - 1]] = value;
+}
+
 // Update a single plist: per-key diff, write changed keys via `defaults`.
 // Using `defaults` (vs direct file writes) routes through cfprefsd, which is
 // required for ACL-protected domains like com.apple.universalaccess.
@@ -93,7 +118,23 @@ export async function updatePlist(setting, spinner, hardwareUuid) {
   const current = await readDomain(domain, byHost);
   const results = [];
 
+  // Partition keys: flat keys write directly, dotted keys are paths into a nested
+  // dict at the root segment and are batched per-root so we merge into the live
+  // value instead of clobbering sibling keys we don't manage.
+  const flatEntries = [];
+  const dottedGroups = new Map();
   for (const [key, value] of Object.entries(setting.values)) {
+    if (!key.includes(".")) {
+      flatEntries.push({ key, value });
+      continue;
+    }
+    const path = key.split(".");
+    const root = path[0];
+    if (!dottedGroups.has(root)) dottedGroups.set(root, []);
+    dottedGroups.get(root).push({ key, path, value });
+  }
+
+  for (const { key, value } of flatEntries) {
     if (key in current && deepEqual(current[key], value)) {
       results.push(renderChange(key, current[key], value, "Skipped"));
       continue;
@@ -112,6 +153,47 @@ export async function updatePlist(setting, spinner, hardwareUuid) {
     results.push(
       renderChange(key, hadKey ? current[key] : null, value, hadKey ? "Changed" : "Added"),
     );
+  }
+
+  for (const [root, entries] of dottedGroups) {
+    const currentRoot =
+      root in current && current[root] && typeof current[root] === "object" && !Array.isArray(current[root])
+        ? current[root]
+        : {};
+    const merged = structuredClone(currentRoot);
+    for (const { path, value } of entries) {
+      setNested(merged, path.slice(1), value);
+    }
+
+    if (deepEqual(currentRoot, merged)) {
+      for (const { key, value } of entries) {
+        results.push(renderChange(key, value, value, "Skipped"));
+      }
+      continue;
+    }
+
+    if (isDryRun()) {
+      for (const { key, path, value } of entries) {
+        const prev = getNested(current, path);
+        results.push(renderChange(key, prev ?? null, value, "Would set"));
+      }
+      continue;
+    }
+
+    const result = await writeKey(domain, byHost, root, merged);
+    if (result?.exitCode && result.exitCode !== 0) {
+      const detail = result.stderr?.trim() || `exit ${result.exitCode}`;
+      for (const { key } of entries) {
+        results.push(pc.yellow(`⚠ Failed to set ${key}: ${detail}`));
+      }
+      continue;
+    }
+
+    for (const { key, path, value } of entries) {
+      const prev = getNested(current, path);
+      const had = prev !== undefined;
+      results.push(renderChange(key, had ? prev : null, value, had ? "Changed" : "Added"));
+    }
   }
 
   spinner.succeed(action);

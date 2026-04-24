@@ -185,6 +185,86 @@ describe("updatePlist", () => {
     expect(call[3]).toMatch(/1048576/);
   });
 
+  it("treats dotted keys as nested paths and merges into the root dict", async () => {
+    stubExport({
+      "com.apple.finder": plistXml(
+        "<dict><key>DesktopViewSettings</key><dict><key>IconViewSettings</key><dict><key>showItemInfo</key><true/><key>iconSize</key><integer>32</integer></dict></dict></dict>",
+      ),
+    });
+    await updatePlist(
+      {
+        path: "/p/com.apple.finder.plist",
+        values: {
+          "DesktopViewSettings.IconViewSettings.arrangeBy": "grid",
+          "DesktopViewSettings.IconViewSettings.iconSize": 44,
+        },
+      },
+      fakeSpinner(),
+      "",
+    );
+    expect(runMock).toHaveBeenCalledTimes(1);
+    const [, args] = runMock.mock.calls[0];
+    expect(args.slice(0, 3)).toEqual(["write", "com.apple.finder", "DesktopViewSettings"]);
+    const xml = args[3];
+    expect(xml).toMatch(/<key>arrangeBy<\/key>\s*<string>grid<\/string>/);
+    expect(xml).toMatch(/<key>iconSize<\/key>\s*<integer>44<\/integer>/);
+    expect(xml).toMatch(/<key>showItemInfo<\/key>\s*<true\/>/);
+  });
+
+  it("creates the nested structure when the root dict does not yet exist", async () => {
+    stubExport({});
+    await updatePlist(
+      {
+        path: "/p/com.apple.finder.plist",
+        values: { "DesktopViewSettings.IconViewSettings.arrangeBy": "grid" },
+      },
+      fakeSpinner(),
+      "",
+    );
+    const [, args] = runMock.mock.calls[0];
+    expect(args.slice(0, 3)).toEqual(["write", "com.apple.finder", "DesktopViewSettings"]);
+    expect(args[3]).toMatch(/<key>IconViewSettings<\/key>/);
+    expect(args[3]).toMatch(/<key>arrangeBy<\/key>\s*<string>grid<\/string>/);
+  });
+
+  it("skips dotted-key writes when every leaf already matches", async () => {
+    stubExport({
+      "com.apple.finder": plistXml(
+        "<dict><key>DesktopViewSettings</key><dict><key>IconViewSettings</key><dict><key>arrangeBy</key><string>grid</string></dict></dict></dict>",
+      ),
+    });
+    const logs = [];
+    vi.spyOn(console, "log").mockImplementation((m) => logs.push(String(m)));
+    await updatePlist(
+      {
+        path: "/p/com.apple.finder.plist",
+        values: { "DesktopViewSettings.IconViewSettings.arrangeBy": "grid" },
+      },
+      fakeSpinner(),
+      "",
+    );
+    expect(runMock).not.toHaveBeenCalled();
+    expect(logs.join("\n")).toMatch(/Skipped value for DesktopViewSettings\.IconViewSettings\.arrangeBy/);
+  });
+
+  it("batches dotted keys under different roots into separate writes", async () => {
+    stubExport({});
+    await updatePlist(
+      {
+        path: "/p/com.apple.finder.plist",
+        values: {
+          "DesktopViewSettings.IconViewSettings.arrangeBy": "grid",
+          "StandardViewSettings.IconViewSettings.arrangeBy": "grid",
+        },
+      },
+      fakeSpinner(),
+      "",
+    );
+    expect(runMock).toHaveBeenCalledTimes(2);
+    const roots = runMock.mock.calls.map(([, args]) => args[2]);
+    expect(roots.sort()).toEqual(["DesktopViewSettings", "StandardViewSettings"]);
+  });
+
   it("continues on per-key write failure and reports a warning", async () => {
     stubExport({});
     const logs = [];

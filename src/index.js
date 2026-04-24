@@ -101,7 +101,7 @@ async function installFonts(config, spinner) {
 
 async function clearPreferenceCache(spinner) {
   printHeader("Clearing preference cache");
-  for (const proc of ["Finder", "Dock", "SystemUIServer", "cfprefsd"]) {
+  for (const proc of ["Finder", "Dock", "SystemUIServer", "WindowManager", "cfprefsd"]) {
     spinner.start(proc);
     await exec("killall", [proc]);
     spinner.succeed(proc);
