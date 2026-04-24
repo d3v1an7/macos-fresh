@@ -11,18 +11,15 @@
   "bin": {
     "fresh": "bin/fresh.js"
   },
-  "files": [
-    "bin",
-    "dist",
-    "src"
-  ],
+  "files": ["bin", "dist", "src"],
   "scripts": {
     "build": "node scripts/build.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "biome check .",
     "format": "biome format --write .",
-    "start": "node bin/fresh.js"
+    "start": "node bin/fresh.js",
+    "version": "biome format --write package.json && git add package.json"
   },
   "dependencies": {
     "adm-zip": "^0.5.14",

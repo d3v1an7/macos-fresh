@@ -119,14 +119,24 @@ npm start -- --config ./my-config.yaml --dry-run
 
 ## Release
 
-Releases are tag-triggered. Tag locally, push the tag, and CD does the rest:
+Releases are tag-triggered. Cut a new version from a clean `main`:
 
 ```sh
-npm version patch        # or: minor, major — updates package.json + creates an unprefixed tag
-git push --follow-tags
+git checkout main && git pull
+
+npm version patch        # or: minor, major
+# ↳ bumps package.json, runs `biome format` on it, creates an unprefixed git tag (e.g. 1.0.3)
+
+git push --follow-tags   # pushes the commit AND the tag — tag push triggers CD
 ```
 
-The tag push triggers CD, which builds `dist/fresh.mjs`, tars up `dist/ + package.json + README.md + LICENSE`, publishes a GitHub release, and bumps the formula in the [`d3v1an7/homebrew-taps`](https://github.com/d3v1an7/homebrew-taps) tap. Every step is idempotent, so reruns are safe.
+Watch the workflow:
+
+```sh
+gh run watch -R d3v1an7/macos-fresh
+```
+
+CD checks out at the tag, builds `dist/fresh.mjs`, tars up `dist/ + package.json + README.md + LICENSE`, publishes a GitHub release, and bumps the formula in the [`d3v1an7/homebrew-taps`](https://github.com/d3v1an7/homebrew-taps) tap. Every step is idempotent — reruns are safe.
 
 To re-release against an existing tag (e.g. after fixing a flaky tap bump): **GitHub → Actions → CD → Run workflow** and enter the tag.
 
