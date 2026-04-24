@@ -1,31 +1,43 @@
 name: CD
 on:
   push:
-    branches:
-      - main
+    tags: ['[0-9]+.[0-9]+.[0-9]+']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to (re-)release, e.g. 1.0.2'
+        required: true
+        type: string
 concurrency: production
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
     steps:
-      - name: Checkout code
+      - name: Checkout at tag
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: "0"
+          ref: ${{ env.TAG }}
+          fetch-depth: 0
 
-      - name: Determine semver
-        id: semver
-        uses: anothrNick/github-tag-action@v1
+      - name: Probe COMMITTER_TOKEN (fail fast)
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MAJOR_STRING_TOKEN: major
-          MINOR_STRING_TOKEN: minor
-          PATCH_STRING_TOKEN: patch
-          NONE_STRING_TOKEN: skip
-          DRY_RUN: true
+          COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
+        run: |
+          if [ -z "$COMMITTER_TOKEN" ]; then
+            echo "::error::COMMITTER_TOKEN secret is not set"; exit 1
+          fi
+          status=$(curl -sS -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer $COMMITTER_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/d3v1an7/homebrew-taps/contents/Formula/macos-fresh.rb")
+          if [ "$status" != "200" ]; then
+            echo "::error::COMMITTER_TOKEN cannot read d3v1an7/homebrew-taps/Formula/macos-fresh.rb (HTTP $status)"
+            exit 1
+          fi
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -33,46 +45,37 @@ jobs:
           node-version-file: .node-version
           cache: npm
 
-      - name: Install dependencies
-        run: npm ci --force    # bypass package.json `os: [darwin]` guard
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
 
-      - name: Set package version
-        run: npm version --no-git-tag-version "${{ steps.semver.outputs.new_tag }}"
-
-      - name: Run tests
-        run: npm test
-
-      - name: Build bundled CLI
-        run: npm run build
+      - name: Sync package.json version to tag
+        run: npm version --no-git-tag-version --allow-same-version "$TAG"
 
       - name: Create release tarball
         id: tarball
         run: |
           set -euo pipefail
-          VERSION="${{ steps.semver.outputs.new_tag }}"
-          STAGE="macos-fresh-${VERSION}"
-          mkdir -p "${STAGE}"
-          cp -R dist "${STAGE}/"
-          cp package.json README.md LICENSE "${STAGE}/"
-          tar -czf "${STAGE}.tar.gz" "${STAGE}"
+          STAGE="macos-fresh-${TAG}"
+          mkdir -p "$STAGE"
+          cp -R dist "$STAGE/"
+          cp package.json README.md LICENSE "$STAGE/"
+          tar -czf "${STAGE}.tar.gz" "$STAGE"
           echo "tarball=${STAGE}.tar.gz" >> "$GITHUB_OUTPUT"
 
-      - name: Add semver tag
-        run: |
-          git tag ${{ steps.semver.outputs.new_tag }}
-          git push --tags
-
-      - name: Create GitHub release
-        run: gh release create ${{ steps.semver.outputs.new_tag }} ${{ steps.tarball.outputs.tarball }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish GitHub release (idempotent)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          files: ${{ steps.tarball.outputs.tarball }}
+          fail_on_unmatched_files: true
 
       - name: Bump Homebrew formula
         uses: mislav/bump-homebrew-formula-action@v3
         with:
-          tag-name: ${{ steps.semver.outputs.new_tag }}
+          tag-name: ${{ env.TAG }}
           homebrew-tap: d3v1an7/homebrew-taps
           formula-name: macos-fresh
-          download-url: https://github.com/d3v1an7/macos-fresh/releases/download/${{ steps.semver.outputs.new_tag }}/macos-fresh-${{ steps.semver.outputs.new_tag }}.tar.gz
+          download-url: https://github.com/d3v1an7/macos-fresh/releases/download/${{ env.TAG }}/macos-fresh-${{ env.TAG }}.tar.gz
         env:
           COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}

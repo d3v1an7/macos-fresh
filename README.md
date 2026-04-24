@@ -119,7 +119,18 @@ npm start -- --config ./my-config.yaml --dry-run
 
 ## Release
 
-CD runs on merges to `main`. Include `major`, `minor`, or `patch` in the merge commit message to bump the version; `skip` to skip. The workflow builds `dist/fresh.mjs`, tars up `dist/ + package.json + README.md + LICENSE`, creates a GitHub release, and bumps the formula in the [`d3v1an7/homebrew-taps`](https://github.com/d3v1an7/homebrew-taps) tap.
+Releases are tag-triggered. Tag locally, push the tag, and CD does the rest:
+
+```sh
+npm version patch        # or: minor, major — updates package.json + creates an unprefixed tag
+git push --follow-tags
+```
+
+The tag push triggers CD, which builds `dist/fresh.mjs`, tars up `dist/ + package.json + README.md + LICENSE`, publishes a GitHub release, and bumps the formula in the [`d3v1an7/homebrew-taps`](https://github.com/d3v1an7/homebrew-taps) tap. Every step is idempotent, so reruns are safe.
+
+To re-release against an existing tag (e.g. after fixing a flaky tap bump): **GitHub → Actions → CD → Run workflow** and enter the tag.
+
+Required repo secret: `COMMITTER_TOKEN` — a fine-grained PAT with `Contents: Read and write` on both `d3v1an7/macos-fresh` and `d3v1an7/homebrew-taps`. CD probes it before doing any work and fails fast if it's missing or can't read the formula.
 
 The Homebrew formula looks roughly like:
 
