@@ -81,29 +81,21 @@ function deepEqual(a, b) {
   return false;
 }
 
-// Walk a nested path inside obj; returns undefined if any segment is missing.
-function getNested(obj, path) {
-  let cur = obj;
-  for (const seg of path) {
-    if (cur == null || typeof cur !== "object") return undefined;
-    cur = cur[seg];
-  }
-  return cur;
+function isPlainDict(v) {
+  return v != null && typeof v === "object" && !Array.isArray(v);
 }
 
-// Assign `value` at `path` inside obj, creating intermediate dicts as needed.
-// If an intermediate exists but isn't a plain dict, it's replaced.
-function setNested(obj, path, value) {
-  let cur = obj;
-  for (let i = 0; i < path.length - 1; i++) {
-    const seg = path[i];
-    const next = cur[seg];
-    if (next == null || typeof next !== "object" || Array.isArray(next)) {
-      cur[seg] = {};
-    }
-    cur = cur[seg];
+// Deep-merge incoming over base. Returns a new value; never mutates inputs.
+// Dict ∩ dict recurses; everything else (arrays, scalars, type mismatch) is
+// replaced by incoming. `defaults write <domain> <key> <dict>` clobbers the
+// whole root, so we merge first to preserve sibling keys we don't manage.
+function deepMerge(base, incoming) {
+  if (!isPlainDict(base) || !isPlainDict(incoming)) return structuredClone(incoming);
+  const out = structuredClone(base);
+  for (const [k, v] of Object.entries(incoming)) {
+    out[k] = isPlainDict(v) && isPlainDict(out[k]) ? deepMerge(out[k], v) : structuredClone(v);
   }
-  cur[path[path.length - 1]] = value;
+  return out;
 }
 
 // Update a single plist: per-key diff, write changed keys via `defaults`.
@@ -118,82 +110,30 @@ export async function updatePlist(setting, spinner, hardwareUuid) {
   const current = await readDomain(domain, byHost);
   const results = [];
 
-  // Partition keys: flat keys write directly, dotted keys are paths into a nested
-  // dict at the root segment and are batched per-root so we merge into the live
-  // value instead of clobbering sibling keys we don't manage.
-  const flatEntries = [];
-  const dottedGroups = new Map();
   for (const [key, value] of Object.entries(setting.values)) {
-    if (!key.includes(".")) {
-      flatEntries.push({ key, value });
-      continue;
-    }
-    const path = key.split(".");
-    const root = path[0];
-    if (!dottedGroups.has(root)) dottedGroups.set(root, []);
-    dottedGroups.get(root).push({ key, path, value });
-  }
+    // Dict values deep-merge with the current value: `defaults write <domain>
+    // <key> <dict>` clobbers the whole root, so without this we'd wipe sibling
+    // keys Finder/Dock manage themselves. Arrays and scalars replace.
+    const desired = isPlainDict(value) ? deepMerge(current[key] ?? {}, value) : value;
 
-  for (const { key, value } of flatEntries) {
-    if (key in current && deepEqual(current[key], value)) {
-      results.push(renderChange(key, current[key], value, "Skipped"));
+    if (key in current && deepEqual(current[key], desired)) {
+      results.push(renderChange(key, current[key], desired, "Skipped"));
       continue;
     }
     const hadKey = key in current;
     if (isDryRun()) {
-      results.push(renderChange(key, hadKey ? current[key] : null, value, "Would set"));
+      results.push(renderChange(key, hadKey ? current[key] : null, desired, "Would set"));
       continue;
     }
-    const result = await writeKey(domain, byHost, key, value);
+    const result = await writeKey(domain, byHost, key, desired);
     if (result?.exitCode && result.exitCode !== 0) {
       const detail = result.stderr?.trim() || `exit ${result.exitCode}`;
       results.push(pc.yellow(`⚠ Failed to set ${key}: ${detail}`));
       continue;
     }
     results.push(
-      renderChange(key, hadKey ? current[key] : null, value, hadKey ? "Changed" : "Added"),
+      renderChange(key, hadKey ? current[key] : null, desired, hadKey ? "Changed" : "Added"),
     );
-  }
-
-  for (const [root, entries] of dottedGroups) {
-    const currentRoot =
-      root in current && current[root] && typeof current[root] === "object" && !Array.isArray(current[root])
-        ? current[root]
-        : {};
-    const merged = structuredClone(currentRoot);
-    for (const { path, value } of entries) {
-      setNested(merged, path.slice(1), value);
-    }
-
-    if (deepEqual(currentRoot, merged)) {
-      for (const { key, value } of entries) {
-        results.push(renderChange(key, value, value, "Skipped"));
-      }
-      continue;
-    }
-
-    if (isDryRun()) {
-      for (const { key, path, value } of entries) {
-        const prev = getNested(current, path);
-        results.push(renderChange(key, prev ?? null, value, "Would set"));
-      }
-      continue;
-    }
-
-    const result = await writeKey(domain, byHost, root, merged);
-    if (result?.exitCode && result.exitCode !== 0) {
-      const detail = result.stderr?.trim() || `exit ${result.exitCode}`;
-      for (const { key } of entries) {
-        results.push(pc.yellow(`⚠ Failed to set ${key}: ${detail}`));
-      }
-      continue;
-    }
-
-    for (const { key, path, value } of entries) {
-      const prev = getNested(current, path);
-      const had = prev !== undefined;
-      results.push(renderChange(key, had ? prev : null, value, had ? "Changed" : "Added"));
-    }
   }
 
   spinner.succeed(action);
