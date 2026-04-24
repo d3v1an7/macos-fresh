@@ -49,8 +49,8 @@ jobs:
       - run: npm test
       - run: npm run build
 
-      - name: Sync package.json version to tag
-        run: npm version --no-git-tag-version --allow-same-version "$TAG"
+      # No version sync needed: `npm version` locally already committed the
+      # bump before tagging, so the tag's tree has the right version.
 
       - name: Create release tarball
         id: tarball
