@@ -1,7 +1,5 @@
-import { mkdtempSync, rmSync } from "node:fs";
-import { homedir, tmpdir } from "node:os";
+import { homedir } from "node:os";
 import { join } from "node:path";
-import plist from "simple-plist";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { runMock, captureMock } = vi.hoisted(() => ({
@@ -30,6 +28,21 @@ function fakeSpinner() {
   return { start: vi.fn(), succeed: vi.fn(), fail: vi.fn(), info: vi.fn(), stop: vi.fn() };
 }
 
+function stubExport(xmlByDomain) {
+  captureMock.mockImplementation(async (cmd, args) => {
+    if (cmd !== "defaults") return { stdout: "", exitCode: 0 };
+    const idx = args.indexOf("export");
+    if (idx === -1) return { stdout: "", exitCode: 0 };
+    const domain = args[idx + 1];
+    const xml = xmlByDomain[domain];
+    return xml ? { stdout: xml, exitCode: 0 } : { stdout: "", exitCode: 1 };
+  });
+}
+
+function plistXml(body) {
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n${body}\n</plist>`;
+}
+
 describe("sanitizeSystemName", () => {
   it("strips non-alphanumerics except hyphens", () => {
     expect(_internal.sanitizeSystemName("Ben's Mac!")).toBe("BensMac");
@@ -53,6 +66,25 @@ describe("expandPath", () => {
   });
 });
 
+describe("parsePlistPath", () => {
+  it("returns the bare domain for a normal plist path", () => {
+    expect(_internal.parsePlistPath("/Users/x/Library/Preferences/com.apple.finder.plist")).toEqual(
+      {
+        domain: "com.apple.finder",
+        byHost: false,
+      },
+    );
+  });
+
+  it("strips the uuid suffix and flags byHost for ByHost paths", () => {
+    const p = "/Users/x/Library/Preferences/ByHost/com.apple.Spotlight.DEAD-BEEF-CAFE.plist";
+    expect(_internal.parsePlistPath(p)).toEqual({
+      domain: "com.apple.Spotlight",
+      byHost: true,
+    });
+  });
+});
+
 describe("getHardwareUuid", () => {
   it("parses `Hardware UUID: <value>` from system_profiler output", async () => {
     captureMock.mockResolvedValue({
@@ -68,37 +100,106 @@ describe("getHardwareUuid", () => {
 });
 
 describe("updatePlist", () => {
-  let scratch;
   beforeEach(() => {
-    scratch = mkdtempSync(join(tmpdir(), "macos-fresh-test-"));
+    runMock.mockReset();
+    captureMock.mockReset();
+    runMock.mockResolvedValue({ exitCode: 0 });
     vi.spyOn(console, "log").mockImplementation(() => {});
   });
   afterEach(() => {
-    rmSync(scratch, { recursive: true, force: true });
+    vi.restoreAllMocks();
   });
 
-  it("creates a new plist with the provided values when the file doesn't exist", () => {
-    const path = join(scratch, "new.plist");
-    updatePlist({ path, values: { A: 1, B: "two" } }, fakeSpinner(), "");
-    const written = plist.readFileSync(path);
-    expect(written).toEqual({ A: 1, B: "two" });
+  it("writes typed flags per value kind when the domain is empty", async () => {
+    stubExport({});
+    await updatePlist(
+      {
+        path: "/Users/x/Library/Preferences/com.example.plist",
+        values: { Flag: true, Count: 3, Ratio: 1.5, Name: "hi" },
+      },
+      fakeSpinner(),
+      "",
+    );
+    const calls = runMock.mock.calls.map(([, args]) => args);
+    expect(calls).toEqual([
+      ["write", "com.example", "Flag", "-bool", "TRUE"],
+      ["write", "com.example", "Count", "-int", "3"],
+      ["write", "com.example", "Ratio", "-float", "1.5"],
+      ["write", "com.example", "Name", "-string", "hi"],
+    ]);
   });
 
-  it("updates only changed keys and preserves other existing keys", () => {
-    const path = join(scratch, "existing.plist");
-    plist.writeFileSync(path, { A: 1, Keep: "keep-me" });
-    updatePlist({ path, values: { A: 2 } }, fakeSpinner(), "");
-    const written = plist.readFileSync(path);
-    expect(written).toEqual({ A: 2, Keep: "keep-me" });
-  });
-
-  it("reports Skipped when the key already has the desired value", () => {
-    const path = join(scratch, "same.plist");
-    plist.writeFileSync(path, { A: 42 });
+  it("skips keys that already match the desired value", async () => {
+    stubExport({
+      "com.example": plistXml("<dict><key>A</key><integer>42</integer></dict>"),
+    });
     const logs = [];
     vi.spyOn(console, "log").mockImplementation((m) => logs.push(String(m)));
-    updatePlist({ path, values: { A: 42 } }, fakeSpinner(), "");
+    await updatePlist({ path: "/p/com.example.plist", values: { A: 42 } }, fakeSpinner(), "");
+    expect(runMock).not.toHaveBeenCalled();
     expect(logs.join("\n")).toMatch(/Skipped value for A/);
+  });
+
+  it("prepends -currentHost for ByHost paths", async () => {
+    stubExport({});
+    await updatePlist(
+      {
+        path: "/Users/x/Library/Preferences/ByHost/com.apple.Spotlight.DEAD-BEEF-CAFE.plist",
+        values: { MenuItemHidden: true },
+      },
+      fakeSpinner(),
+      "",
+    );
+    expect(runMock).toHaveBeenCalledWith("defaults", [
+      "-currentHost",
+      "write",
+      "com.apple.Spotlight",
+      "MenuItemHidden",
+      "-bool",
+      "TRUE",
+    ]);
+  });
+
+  it("serializes nested values as an XML plist argument", async () => {
+    stubExport({});
+    await updatePlist(
+      {
+        path: "/p/com.apple.symbolichotkeys.plist",
+        values: {
+          AppleSymbolicHotKeys: {
+            64: { enabled: false, value: { parameters: [32, 49, 1048576], type: "standard" } },
+          },
+        },
+      },
+      fakeSpinner(),
+      "",
+    );
+    const call = runMock.mock.calls[0][1];
+    expect(call.slice(0, 3)).toEqual([
+      "write",
+      "com.apple.symbolichotkeys",
+      "AppleSymbolicHotKeys",
+    ]);
+    expect(call[3]).toMatch(/<plist/);
+    expect(call[3]).toMatch(/standard/);
+    expect(call[3]).toMatch(/1048576/);
+  });
+
+  it("continues on per-key write failure and reports a warning", async () => {
+    stubExport({});
+    const logs = [];
+    vi.spyOn(console, "log").mockImplementation((m) => logs.push(String(m)));
+    runMock.mockResolvedValueOnce({ exitCode: 1, stderr: "Operation not permitted" });
+    runMock.mockResolvedValueOnce({ exitCode: 0 });
+    await updatePlist(
+      { path: "/p/com.example.plist", values: { Bad: true, Good: true } },
+      fakeSpinner(),
+      "",
+    );
+    expect(runMock).toHaveBeenCalledTimes(2);
+    const text = logs.join("\n");
+    expect(text).toMatch(/Failed to set Bad.*Operation not permitted/);
+    expect(text).toMatch(/Added value for Good/);
   });
 });
 

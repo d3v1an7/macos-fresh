@@ -19,10 +19,10 @@
     "lint": "biome check .",
     "format": "biome format --write .",
     "start": "node bin/fresh.js",
-    "version": "biome format --write package.json && git add package.json"
+    "version": "biome format --write package.json && git add package.json",
+    "postversion": "git push --follow-tags"
   },
   "dependencies": {
-    "adm-zip": "^0.5.14",
     "commander": "^12.1.0",
     "execa": "^9.4.0",
     "ora": "^8.1.0",

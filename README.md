@@ -119,22 +119,22 @@ npm start -- --config ./my-config.yaml --dry-run
 
 ## Release
 
-Releases are tag-triggered. Cut a new version from a clean `main`:
+Releases are tag-triggered. Commit any code changes first, then cut a new version:
 
 ```sh
 git checkout main && git pull
 
 npm version patch        # or: minor, major
-# ↳ bumps package.json, runs `biome format` on it, creates an unprefixed git tag (e.g. 1.0.3)
-
-git push --follow-tags   # pushes the commit AND the tag — tag push triggers CD
+# ↳ formats package.json, bumps + commits + tags (e.g. 1.0.3), then pushes commit + tag
 ```
 
-Watch the workflow:
+That's it. The `postversion` hook runs `git push --follow-tags` automatically, and the tag push triggers CD. Watch it:
 
 ```sh
 gh run watch -R d3v1an7/macos-fresh
 ```
+
+`npm version` refuses to run with a dirty working tree — so you can't accidentally release mid-edit.
 
 CD checks out at the tag, builds `dist/fresh.mjs`, tars up `dist/ + package.json + README.md + LICENSE`, publishes a GitHub release, and bumps the formula in the [`d3v1an7/homebrew-taps`](https://github.com/d3v1an7/homebrew-taps) tap. Every step is idempotent — reruns are safe.
 
@@ -154,7 +154,8 @@ class MacosFresh < Formula
   depends_on "node"
 
   def install
-    libexec.install Dir["macos-fresh-*/dist/fresh.mjs"]
+    libexec.install "dist/fresh.mjs"
+    prefix.install "package.json"   # read at runtime for `fresh --version`
     (bin/"fresh").write <<~EOS
       #!/bin/sh
       exec "#{Formula["node"].opt_bin}/node" "#{libexec}/fresh.mjs" "$@"
@@ -167,3 +168,4 @@ class MacosFresh < Formula
   end
 end
 ```
+ 

@@ -77,7 +77,7 @@ async function updateSystemSettings(config, spinner) {
   printHeader("Updating system defaults");
   const hardwareUuid = await getHardwareUuid();
   for (const setting of config.settings) {
-    updatePlist(setting, spinner, hardwareUuid);
+    await updatePlist(setting, spinner, hardwareUuid);
   }
 }
 

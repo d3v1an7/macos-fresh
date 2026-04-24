@@ -1,5 +1,5 @@
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
+import { basename } from "node:path";
 import { createInterface } from "node:readline/promises";
 import pc from "picocolors";
 import plist from "simple-plist";
@@ -19,10 +19,57 @@ function expandPath(rawPath, hardwareUuid) {
   return p;
 }
 
+// Derive the defaults domain + byHost flag from a plist file path.
+//   ~/Library/Preferences/com.apple.finder.plist                       → com.apple.finder, byHost=false
+//   ~/Library/Preferences/ByHost/com.apple.Spotlight.<UUID>.plist      → com.apple.Spotlight, byHost=true
+function parsePlistPath(plistPath) {
+  const byHost = plistPath.includes("/ByHost/");
+  const name = basename(plistPath).replace(/\.plist$/, "");
+  const domain = byHost ? name.replace(/\.[A-F0-9-]{8,}$/i, "") : name;
+  return { domain, byHost };
+}
+
+async function readDomain(domain, byHost) {
+  const args = byHost ? ["-currentHost", "export", domain, "-"] : ["export", domain, "-"];
+  const { stdout, exitCode } = await capture("defaults", args);
+  if (exitCode !== 0 || !stdout?.trim()) return {};
+  try {
+    return plist.parse(stdout) ?? {};
+  } catch {
+    return {};
+  }
+}
+
+// Write a single key via `defaults`, type-dispatching so defaults stores the right
+// type. Complex values are handed off as XML plist, which `defaults write` parses.
+async function writeKey(domain, byHost, key, value) {
+  const pre = byHost ? ["-currentHost", "write", domain, key] : ["write", domain, key];
+  let args;
+  if (typeof value === "boolean") {
+    args = [...pre, "-bool", value ? "TRUE" : "FALSE"];
+  } else if (Number.isInteger(value)) {
+    args = [...pre, "-int", String(value)];
+  } else if (typeof value === "number") {
+    args = [...pre, "-float", String(value)];
+  } else if (typeof value === "string") {
+    args = [...pre, "-string", value];
+  } else {
+    args = [...pre, plist.stringify(value)];
+  }
+  return run("defaults", args);
+}
+
+function renderValue(v) {
+  if (v === undefined || v === null) return "None";
+  if (typeof v === "object") {
+    const j = JSON.stringify(v);
+    return j.length > 80 ? `${j.slice(0, 77)}...` : j;
+  }
+  return String(v);
+}
+
 function renderChange(key, oldValue, newValue, action) {
-  const oldStr = oldValue === undefined || oldValue === null ? "None" : String(oldValue);
-  const newStr = String(newValue);
-  return `${action} value for ${key}: ${oldStr} ${pc.gray("->")} ${newStr}`;
+  return `${action} value for ${key}: ${renderValue(oldValue)} ${pc.gray("->")} ${renderValue(newValue)}`;
 }
 
 function deepEqual(a, b) {
@@ -34,52 +81,41 @@ function deepEqual(a, b) {
   return false;
 }
 
-// Update a single plist entry: read, diff each key, write if changed.
-export function updatePlist(setting, spinner, hardwareUuid) {
+// Update a single plist: per-key diff, write changed keys via `defaults`.
+// Using `defaults` (vs direct file writes) routes through cfprefsd, which is
+// required for ACL-protected domains like com.apple.universalaccess.
+export async function updatePlist(setting, spinner, hardwareUuid) {
   const plistPath = expandPath(setting.path, hardwareUuid);
-  const exists = existsSync(plistPath);
-  const action = exists ? `Updating: ${plistPath}` : `Creating: ${plistPath}`;
-
-  let data = {};
-  if (exists) {
-    try {
-      data = plist.readFileSync(plistPath) ?? {};
-    } catch {
-      data = {};
-    }
-  }
-
+  const { domain, byHost } = parsePlistPath(plistPath);
+  const action = `Updating: ${plistPath}`;
   spinner.start(action);
 
+  const current = await readDomain(domain, byHost);
   const results = [];
-  let changed = !exists;
-  for (const [key, value] of Object.entries(setting.values)) {
-    if (key in data) {
-      if (!deepEqual(data[key], value)) {
-        const previous = data[key];
-        data[key] = value;
-        changed = true;
-        results.push(renderChange(key, previous, value, "Changed"));
-      } else {
-        results.push(renderChange(key, data[key], value, "Skipped"));
-      }
-    } else {
-      data[key] = value;
-      changed = true;
-      results.push(renderChange(key, null, value, "Added"));
-    }
-  }
 
-  if (changed && !isDryRun()) {
-    plist.writeFileSync(plistPath, data);
-  } else if (changed && isDryRun()) {
-    console.log(pc.dim(`  [dry-run] write plist ${plistPath}`));
+  for (const [key, value] of Object.entries(setting.values)) {
+    if (key in current && deepEqual(current[key], value)) {
+      results.push(renderChange(key, current[key], value, "Skipped"));
+      continue;
+    }
+    const hadKey = key in current;
+    if (isDryRun()) {
+      results.push(renderChange(key, hadKey ? current[key] : null, value, "Would set"));
+      continue;
+    }
+    const result = await writeKey(domain, byHost, key, value);
+    if (result?.exitCode && result.exitCode !== 0) {
+      const detail = result.stderr?.trim() || `exit ${result.exitCode}`;
+      results.push(pc.yellow(`⚠ Failed to set ${key}: ${detail}`));
+      continue;
+    }
+    results.push(
+      renderChange(key, hadKey ? current[key] : null, value, hadKey ? "Changed" : "Added"),
+    );
   }
 
   spinner.succeed(action);
-  for (const result of results) {
-    console.log(`  - ${result}`);
-  }
+  for (const r of results) console.log(`  - ${r}`);
 }
 
 function sanitizeSystemName(input) {
@@ -139,7 +175,7 @@ export async function adjustPowerSettings(settingName, setting, spinner) {
 export async function updateAppSettings(appName, appConfig, hardwareUuid, spinner) {
   console.log(`Settings for ${appName}`);
   for (const setting of appConfig.settings ?? []) {
-    updatePlist(setting, spinner, hardwareUuid);
+    await updatePlist(setting, spinner, hardwareUuid);
   }
   if (appName === "brave" && appConfig.set_as_default) {
     spinner.start("Setting Brave as the default browser");
@@ -148,4 +184,4 @@ export async function updateAppSettings(appName, appConfig, hardwareUuid, spinne
   }
 }
 
-export const _internal = { sanitizeSystemName, expandPath, renderChange };
+export const _internal = { sanitizeSystemName, expandPath, renderChange, parsePlistPath };

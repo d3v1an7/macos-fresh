@@ -1,11 +1,12 @@
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
-import AdmZip from "adm-zip";
 import pc from "picocolors";
-import { capture, isDryRun } from "./util/exec.js";
+import { capture, isDryRun, run } from "./util/exec.js";
 
-const FONT_DIR = "/Library/Fonts";
+// Install per-user so no sudo is needed. Fonts here are visible to the user
+// in every app. Use /Library/Fonts only for multi-user Macs.
+const FONT_DIR = join(homedir(), "Library", "Fonts");
 
 async function isFontInstalled(fontName) {
   const { stdout } = await capture("sh", [
@@ -31,6 +32,7 @@ export async function installFont(spinner, fontEntry) {
       continue;
     }
 
+    mkdirSync(FONT_DIR, { recursive: true });
     const scratch = mkdtempSync(join(tmpdir(), "macos-fresh-font-"));
     const zipPath = join(scratch, "font.zip");
 
@@ -43,8 +45,15 @@ export async function installFont(spinner, fontEntry) {
       const buf = Buffer.from(await res.arrayBuffer());
       writeFileSync(zipPath, buf);
 
-      const zip = new AdmZip(zipPath);
-      zip.extractAllTo(FONT_DIR, /* overwrite */ true);
+      // Use system `unzip` — AdmZip tripped on Nerd Fonts archives (chmod on
+      // entries whose file extraction was skipped). `unzip -o -q` is the
+      // battle-tested path that macOS uses for the same archives elsewhere.
+      const result = await run("unzip", ["-o", "-q", zipPath, "-d", FONT_DIR]);
+      if (result.exitCode !== 0) {
+        spinner.fail(`${fontName} (unzip exit ${result.exitCode})`);
+        if (result.stderr) console.error(result.stderr.trim());
+        continue;
+      }
 
       spinner.succeed(fontName);
     } catch (err) {
