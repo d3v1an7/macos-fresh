@@ -7,12 +7,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - run: pip install poetry
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          python-version-file: '.python-version'
-          cache: 'poetry'
-      - run: poetry install
-      - run: poetry run flake8 ./fresh
-      - run: poetry run black ./fresh --check
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test

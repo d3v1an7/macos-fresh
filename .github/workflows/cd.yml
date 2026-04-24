@@ -7,12 +7,15 @@ concurrency: production
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: '0'
+          fetch-depth: "0"
+
       - name: Determine semver
         id: semver
         uses: anothrNick/github-tag-action@v1
@@ -23,33 +26,53 @@ jobs:
           PATCH_STRING_TOKEN: patch
           NONE_STRING_TOKEN: skip
           DRY_RUN: true
-      - name: Install Poetry
-        run: pip install poetry
-      - name: Set up Python
-        uses: actions/setup-python@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          python-version-file: '.python-version'
-          cache: 'poetry'
-      - name: Set new version for CLI tool
-        run: poetry version ${{ steps.semver.outputs.new_tag }}
+          node-version-file: .node-version
+          cache: npm
+
       - name: Install dependencies
-        run: poetry install --no-dev
-      - name: Build CLI tool
-        run: poetry build --format=sdist
+        run: npm ci
+
+      - name: Set package version
+        run: npm version --no-git-tag-version "${{ steps.semver.outputs.new_tag }}"
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build bundled CLI
+        run: npm run build
+
+      - name: Create release tarball
+        id: tarball
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.semver.outputs.new_tag }}"
+          STAGE="macos-fresh-${VERSION}"
+          mkdir -p "${STAGE}"
+          cp -R dist "${STAGE}/"
+          cp package.json README.md LICENSE "${STAGE}/"
+          tar -czf "${STAGE}.tar.gz" "${STAGE}"
+          echo "tarball=${STAGE}.tar.gz" >> "$GITHUB_OUTPUT"
+
       - name: Add semver tag
         run: |
           git tag ${{ steps.semver.outputs.new_tag }}
           git push --tags
+
       - name: Create GitHub release
-        run: gh release create ${{ steps.semver.outputs.new_tag }} ./dist/*
+        run: gh release create ${{ steps.semver.outputs.new_tag }} ${{ steps.tarball.outputs.tarball }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Bump Homebrew formula
-        uses: mislav/bump-homebrew-formula-action@v2
+        uses: mislav/bump-homebrew-formula-action@v3
         with:
           tag-name: ${{ steps.semver.outputs.new_tag }}
           homebrew-tap: d3v1an7/homebrew-taps
-          download-url: https://github.com/d3v1an7/macos-fresh/releases/download/${{ steps.semver.outputs.new_tag }}/macos_fresh-${{ steps.semver.outputs.new_tag }}.tar.gz
+          formula-name: macos-fresh
+          download-url: https://github.com/d3v1an7/macos-fresh/releases/download/${{ steps.semver.outputs.new_tag }}/macos-fresh-${{ steps.semver.outputs.new_tag }}.tar.gz
         env:
           COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
-

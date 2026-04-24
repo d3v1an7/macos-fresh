@@ -1,4 +1,8 @@
 .DS_Store
 Brewfile*
-__pycache__
 WIP.md
+node_modules/
+dist/
+coverage/
+.vitest-cache/
+.claude/

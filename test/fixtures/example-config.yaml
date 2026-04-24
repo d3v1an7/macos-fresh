@@ -1,0 +1,52 @@
+brew:
+  brew:
+    - git
+    - fnm
+  cask:
+    - visual-studio-code
+
+mas:
+  - id: 1333542190
+    name: "1Password 7 - Password Manager"
+
+system_name_update: true
+
+power:
+  power_settings_all:
+    values:
+      displaysleep: 10
+      sleep: 30
+  power_settings_battery:
+    values:
+      displaysleep: 5
+  power_settings_charger:
+    values:
+      displaysleep: 15
+
+settings:
+  - path: "~/Library/Preferences/com.apple.finder.plist"
+    values:
+      AppleShowAllFiles: true
+      FXDefaultSearchScope: "SCcf"
+      ShowPathbar: true
+      ShowStatusBar: true
+      _FXSortFoldersFirst: true
+  - path: "~/Library/Preferences/com.apple.screencapture.plist"
+    values:
+      location: "~/Desktop"
+      type: "png"
+      disable-shadow: true
+  - path: "~/Library/Preferences/com.apple.universalaccess.plist"
+    values:
+      reduceTransparency: true
+
+apps:
+  brave:
+    settings:
+      - path: "~/Library/Application Support/BraveSoftware/Brave-Browser/Default/Preferences"
+        values:
+          homepage: "https://example.com"
+    set_as_default: true
+
+fonts:
+  - "JetBrains Mono": "https://example.invalid/jetbrains-mono.zip"
