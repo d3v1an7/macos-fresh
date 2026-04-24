@@ -1,6 +1,6 @@
 {
   "name": "macos-fresh",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Super opinionated tools, apps and defaults for macOS.",
   "author": "Ben White",
   "license": "SEE LICENSE IN LICENSE",
@@ -11,7 +11,11 @@
   "bin": {
     "fresh": "bin/fresh.js"
   },
-  "files": ["bin", "dist", "src"],
+  "files": [
+    "bin",
+    "dist",
+    "src"
+  ],
   "scripts": {
     "build": "node scripts/build.js",
     "test": "vitest run",
