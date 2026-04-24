@@ -146,4 +146,3 @@ class MacosFresh < Formula
   end
 end
 ```
- 
